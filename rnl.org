@@ -1,0 +1,473 @@
+* Functions
+** Lecture1
+*** Expressions
+**** Types of expressions
+     An expression describes a computation and evaluates to a value
+***** Primitive expressions
+      ~2 + 1~
+***** Call expressions
+      ~max(2,3)~
+**** Call Expressions in Python
+     All expressions can use function call notation
+     ~max(2,3)~
+**** Anatomy of a Call Expression
+     Evaluation procedure for call expressions:
+     ~add(2, 3)~ 
+     Operators and operands are also expressions, so they evaluate to values.
+***** Evaluate the operator and then the operand subexpressions
+
+     | operator | add |
+     | operand1 |   2 |
+     | operand2 |   3 |
+
+***** Apply the function that is the value of the operator subexpression to the arguments that are the values of the operand subexpression
+
+     | function  | value of add |
+     | argument1 | value of 2   |
+     | argument2 | value of 3   |
+
+**** Evaluating Nested Expressions
+    ~mul(add(4,mul(4, 6)), add(3, 5))~ 
+
+    #+BEGIN_SRC dot :file ./function-1.png :exports results
+      digraph function1 {
+            a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
+            a2 [label="add(4,mul(4,6))"];
+            a3 [label="add(3,5)"];
+            a5 [label="mul(4,6)"];
+            4 [shape=box];
+            6 [shape=box];
+            3 [shape=box];
+            5 [shape=box];
+            a1->a2->4;
+            a2->a5->4;
+            a5->6;
+            a1->a3->3;
+            a3->5;
+      }     
+    #+END_SRC
+
+    #+RESULTS:
+    [[file:./function-1.png]]
+
+*** Functions, Values, Objects, Interpreters, and Data
+**** Objects
+
+     #+BEGIN_SRC python :session Objects :results output
+       from urllib.request import urlopen
+       shakes = urlopen('http://composingprograms.com/shakespeare.txt')
+       text = shakes.read().split()
+     #+END_SRC 
+
+     #+BEGIN_SRC python :session Objects :results output
+       print(len(text),'\n',text[:25],'\n', text.count(b'the'), '\n', text.count(b','))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 980637 
+     :  [b'A', b"MIDSUMMER-NIGHT'S", b'DREAM', b'Now', b',', b'fair', b'Hippolyta', b',', b'our', b'nuptial', b'hour', b'Draws', b'on', b'apace', b':', b'four', b'happy', b'days', b'bring', b'in', b'Another', b'moon', b';', b'but', b'O'] 
+     :  23272 
+     :  81827
+
+**** Sets 
+
+     #+BEGIN_SRC python :session Objects :results output
+       words = set(text)
+       print(len(words),'\n',max(words))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 33505 
+     :  b'zwaggered'
+
+**** Reversals 
+
+     #+BEGIN_SRC python :session Objects :results output
+       print('draw'[::-1])
+       print({w for w in words if w == w[::-1] and len(w)>4})
+       print({w for w in words if w[::-1] in words and len(w) == 4})
+       print({w for w in words if w[::-1] in words and len(w) > 6})
+     #+END_SRC 
+
+     #+RESULTS:
+     : ward
+     : {b'rever', b'madam', b'level', b'minim', b'redder', b'refer'}
+     : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
+     : set()
+     
+** 1.1 Getting Started
+** 1.2 Elements of Programming
+   
+* Names
+** Lecture2
+*** Environment Diagrams
+**** Environment Diagrams
+     Environment diagrams visualize the interpreter’s process.
+***** Code
+      Statements and expressions
+
+      #+BEGIN_SRC python 
+        from math import pi
+        tau = 2 * pi
+        return pi, tau
+      #+END_SRC 
+
+      #+RESULTS:
+      | 3.141592653589793 | 6.283185307179586 |
+
+***** Frames
+      Each name is bound to a value. Within a frame, a name cannot be repeated
+
+     | Global frame |        |
+     |--------------+--------|
+     | name         |  value |
+     | pi           | 3.1416 |
+     | tau          | 6.2832 |
+
+**** Assignment Statements
+***** Execution rule for assignment statements:
+      - Evaluate all expressions to the right of = from left to right.
+      - Bind all names to the left of = to those resulting values in the current frame.
+       
+      #+BEGIN_SRC python :results output
+        a = 1
+        b = 2
+        b, a = a + b, b
+        print(a,b)
+      #+END_SRC
+
+      #+RESULTS:
+      : 2 3
+
+*** Defining Functions
+**** Defining Functions
+     Assignment is a simple means of abstraction: binds names to values
+     Function definition is a more powerful means of abstraction: binds names to expressions
+    
+     #+BEGIN_SRC python
+       def <name>(<formal parameters>): 
+           return <return expression>
+     #+END_SRC
+
+***** Execution procedure for def statements:
+      1. Create a function with signature ~<name>(<formal parameters>)~, function signature indicates how many arguments a function takes, it has all the
+ information needed to create a local frame.
+      2. Set the body of that function to be everything indented after the first line, function body defines the computation performed when the function is applied
+      3. Bind ~<name>~ to that function in the current frame
+**** Calling User-Defined Functions
+***** Procedure for calling/applying user-defined functions
+      1. Add a local frame, forming a new environment
+      2. Bind the function's formal parameters to its arguments in that frame
+      3. Execute the body of the function in that new environment
+**** Looking Up Names In Environment
+     Every expression is evaluated in the context of an environment. So far, the current environment is either: 
+     - The global frame alone, or
+     - A local frame, followed by the global frame. 
+***** Most important two things:
+      1. An environment is a sequence of frames. 
+      2. A name evaluates to the value bound to that name in the earliest frame of the current environment in which that name is found.
+* Control
+** Lecture3
+*** Print and None
+**** None Indicates that Nothing is Returned
+    - The special value ~None~ represents nothing in Python
+    - A function that does not explicitly return a value will return ~None~
+    - Careful: ~None~ is not displayed by the interpreter as the value of an expression
+     
+     #+begin_src python 
+       def does_not_return_square(a):
+           a*a
+       x = does_not_return_square(4) + 3 
+       return x
+     #+end_src
+
+**** Pure Functions & Non-Pure Functions
+***** Pure Functions
+      just return *values*: ~abs()~   
+     
+      #+begin_src python 
+        return abs(-2)
+      #+end_src
+
+      #+RESULTS:
+      : 2
+
+***** Non-Pure Functions     
+      return *values(None)* and have *side effects*: ~print()~
+
+      #+begin_src python :results output
+        a = print(2)
+        print(a)
+      #+end_src
+
+      #+RESULTS:
+      : 2
+      : None
+
+**** Nested Expressions with Print
+    
+     #+begin_src python :results output
+       a = print(print(1), print(2))
+       print(a)
+     #+end_src
+
+     #+RESULTS:
+     : 1
+     : 2
+     : None None
+     : None
+    
+*** Multiple Environments
+**** Life Cycle of a User-Defined Function 
+***** Def statement:
+
+      #+begin_src python
+        def square(x):
+            return mul(x, x)
+      #+end_src
+    
+      - A new function is created!
+      - Name bound to that function in the current frame 
+***** Call expression: 
+      ~square(2+2)~ 
+      - Operator & operands evaluated
+      - Function (value of operator) called on arguments (values of operands):
+***** Calling/Applying: 
+      - A new frame is created!
+      - Body is executed in that new environment
+**** Multiple Environments in One Diagram!
+    
+     #+BEGIN_SRC python :results output
+       from operator import mul
+       def square(x):
+           return mul(x, x);
+       print(square(square(3)))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 81
+
+     An environment is a sequence of frames.
+     - The global frame alone
+     - A local, then the global frame
+     *One environment per frame here* 
+***** ENV1 
+
+      | Frames | Global      |
+      | funcs  | mul, square |
+
+***** ENV2
+
+      | Frames       | f2: square [parent=Global |
+      | x            |                         3 |
+      | return value |                         9 |
+
+***** ENV3
+
+      | Frames       | f3: square [parent=Global |
+      | x            |                         9 |
+      | return value |                        81 |
+
+**** Names Have No Meaning Without Environments
+     - Every expression is evaluated in the context of an environment.
+     - A name evaluates to the value bound to that name in the earliest frame of the current environment in which that name is found.
+**** Names Have Different Meanings in Different Environments
+    
+     #+BEGIN_SRC python :results output
+       from operator import mul
+       def square(square):
+           return mul(square, square)
+       print(square(4))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 16
+
+     *A call expression and the body of the function being called are evaluated in different environments*
+
+     | call of square(4) | ENV1:Global                |
+     | body of square(4) | ENV2:f1 followed by Global |
+
+*** Miscellaneous Python Features
+**** Operators
+***** Addition 
+
+      #+BEGIN_SRC python :results output
+        print(2+3*4+5,'\n',(2+3)*(4+5))
+      #+END_SRC 
+
+      #+RESULTS:
+      : 19 
+      :  45
+
+***** Division
+
+      #+BEGIN_SRC python :results output
+        print(618 / 10, 618 // 10, 618 % 10)
+        from operator import truediv, floordiv, mod
+        print(truediv(618, 10), floordiv(618, 10), mod(618, 10))
+      #+END_SRC 
+
+      #+RESULTS:
+      : 61.8 61 8
+      : 61.8 61 8
+
+**** Multiple Return Values 
+
+     #+BEGIN_SRC python :results output
+       def divide_exact(n, d):
+           return n // d, n % d
+       quotient, remainder = divide_exact(618, 10)
+       print(quotient, remainder)
+     #+END_SRC 
+
+     #+RESULTS:
+     : 61 8
+
+**** Docstrings, doctests, & default arguments
+     use *python3 -m doctest test.py* to doctest. 
+
+     #+BEGIN_SRC python :results output
+       def divide_exact(n, d=10):
+           """Return the quotient and remainder of dividing N by D.
+
+           >>> quotient, remainder = divide_exact(618, 10)
+           >>> quotient
+           61
+           >>> remainder
+           8
+           """
+           return floordiv(n, d), mod(n, d)
+     #+END_SRC 
+
+**** Conditional Statements
+***** Statements
+      A *statement* is executed by the *interpreter* to perform an action
+
+***** Compound statements 
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
+      [[file:Control/screenshot_2019-03-05_16-46-10.png]]
+ 
+      The first header determins a *statement's type*: ~def~ ~if~ ~while~...
+ 
+***** Conditional Statements
+
+      #+begin_src python :results output
+        def absolute_value(x):
+            if x < 0:
+                return -x
+            elif x == 0:
+                return0
+            else:
+                return x
+      #+end_src 
+      
+      1 statement, 3 clauses, 3 headers, 3 suites.
+
+***** Boolean Contexts
+      In python
+
+      | False | False, 0, '', None, [], ... |
+      | True  | Not false                   |
+
+**** Iteration
+***** While Statements
+      
+      #+begin_src python :results output
+        i,total = 0, 0
+        while i < 3:
+            i = i + 1
+            total = total + 1
+      #+end_src 
+
+***** Example: The Fibonacci Sequence
+      
+      #+begin_src python :results output
+        def fib(n):
+            """Compute the nth Fibonacci number"""
+            pred, curr = 0, 1 #--> pred, curr = 1, 0
+            k = 1             #--> k = 0
+            while k < n:
+                pred, curr = curr, pred + curr
+                k = k + 1
+            return curr
+      #+end_src 
+      
+* 1.6 Higher-Order Functions
+  Functions that *manipulate functions* are called *higher-order functions*
+
+** 1.6.1 Functions as Arguments
+
+   #+begin_src python :results output
+     def sum_naturals(n):
+             total, k = 0, 1
+             while k <= n:
+                 total, k = total + k, k + 1
+             return total
+
+     def sum_cubes(n):
+             total, k = 0, 1
+             while k <= n:
+                 total, k = total + k*k*k, k + 1
+             return total
+
+     def pi_sum(n):
+             total, k = 0, 1
+             while k <= n:
+                 total, k = total + 8 / ((4*k-3) * (4*k-1)), k + 1
+             return total
+
+     def summation(n, term):
+             total, k = 0, 1
+             while k <= n:
+                 total, k = total + term(k), k + 1
+             return total
+
+     def identity(x):
+             return x
+
+     def sum_naturals(n):
+             return summation(n, identity)
+
+     def cube(x):
+         return x*x*x
+
+     def sum_cubes(n):
+         return summation(n, cube)
+
+     def pi_term(x):
+             return 8 / ((4*x-3) * (4*x-1))
+
+     def pi_sum(n):
+             return summation(n, pi_term)
+   #+end_src 
+
+** 1.6.2 Functions as General Methods
+   some functions express general methods of computation, independent of the particular functions they call
+
+   When a user-defined function is applied to some arguments, the formal parameters are bound to the values of those arguments (which may be functions) in a new local frame.
+
+
+** 1.6.3 Defining Functions III: Nested Definitions
+** 1.6.4 Functions as Returned Values
+** 1.6.5 Example: Newton's Method
+** 1.6.6 Currying
+** 1.6.7 Lambda Expressions
+** 1.6.8 Abstractions and First-Class Functions
+** 1.6.9 Function Decorators
+* Environments 
+* Iteration
+* Recursion
+* Function Examples
+* Tree Recursion
+* Data Abstraction
+* Containers
+* Trees
+* Mutable Values
+* Mutable Functions
+* Iterators
+* Objects
+* Inheritance
+* Representation
+* Growth

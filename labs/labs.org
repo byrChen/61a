@@ -1,0 +1,133 @@
+* Lab 0: Workflow and Python Basics
+  - Unlock tests: ~python ok -q testname -u~
+  - Run tests: ~python ok~
+  - Show all tests: ~python ok -v~ 
+  - Run .py in an interactive session: ~python -i .py~
+  - Run doctests in .py: ~python -m doctest .py~ 
+* Lab 1: Function and Control
+** Topics
+*** Functions
+**** ~return~ and ~print~  
+     - ~return~: When Python executes a *return statement*, the function *terminates immediately*. If Python reaches the end of the function body *without executing a return statement*, it will *automatically return None*.
+     - ~print~: When Python evaluates a *print expression*, the function does *not terminate immediately*.
+     
+     #+begin_src python :results output
+       def what_prints():
+           print('Hello World!')
+           return 'Exiting this function.'
+           print('61A is awesome!')
+
+       print(what_prints())
+     #+end_src 
+
+     #+RESULTS:
+     : Hello World!
+     : Exiting this function.
+ 
+*** Control
+**** Boolean Operators
+
+     | booblean operators | priority |
+     | ~not~              | highest  |
+     | ~and~              | medium   |
+     | ~or~               | lowest   |
+
+     For *A is True* and *B is False*
+
+     | expression       | return  |
+     | ~A and C~        | ~C~     |
+     | ~A or C~         | ~A~     |
+     | ~B and C~        | ~B~     |
+     | ~B or C~         | ~C~     |
+     | ~Error and/or C~ | ~Error~ |
+     
+     ~and~ and ~or~ *don't always return booleans* when using values other than ~True and False~: A,B,C above, they can be booleans, numbers, strings and even ~Error~.
+     
+*** Error Messages
+
+    | Error Types         | Descriptions                              |
+    | ~SyntaxError~       | Contained improper syntax                 |
+    | ~IndentationError~  | Contained improper indentation            |
+    | ~TypeError~         | Attempted operation on incompatible types |
+    | ~ZeroDivisionError~ | Attempted division by zero                |
+
+** Required Questions
+*** Coding Practice
+**** Q4: Sum Digits
+
+     #+begin_src python :results output
+       def sum_digits(n):
+           """Sum all the digits of n.
+
+           >>> sum_digits(10) # 1 + 0 = 1
+           1
+           >>> sum_digits(4224) # 4 + 2 + 2 + 4 = 12
+           12
+           >>> sum_digits(1234567890)
+           45
+           """
+           "*** YOUR CODE HERE ***"
+           s = 0
+           while n // 10 > 0:
+               r = n % 10
+               n = (n - r) // 10
+               s += r
+           return s + n % 10
+     #+end_src 
+
+** Optional Questions
+*** Q6: Falling Factorial
+
+    #+begin_src python :results output
+      def falling(n, k):
+          """Compute the falling factorial of n to depth k.
+
+          >>> falling(6, 3)  # 6 * 5 * 4
+          120
+          >>> falling(4, 0)
+          1
+          >>> falling(4, 3)  # 4 * 3 * 2
+          24
+          >>> falling(4, 1)  # 4
+          4
+          """
+          "*** YOUR CODE HERE ***"
+          a = n
+          f = 1
+          while k > 0:
+              f = f * a
+              k -= 1
+              a -= 1
+          return f
+    #+end_src 
+
+*** Q7: Double Eights
+
+    #+begin_src python :results output
+      def double_eights(n):
+          """Return true if n has two eights in a row.
+          >>> double_eights(8)
+          False
+          >>> double_eights(88)
+          True
+          >>> double_eights(2882)
+          True
+          >>> double_eights(880088)
+          True
+          >>> double_eights(12345)
+          False
+          >>> double_eights(80808080)
+          False
+          """
+          "*** YOUR CODE HERE ***"
+          while n // 10 > 0:
+              if n % 100 == 88:
+                  break
+              else:
+                  n = (n - n % 10) // 10
+          if n // 10 == 0:
+              return False
+          else:
+              return True
+    #+end_src 
+
