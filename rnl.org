@@ -1,4 +1,4 @@
-* Functions
+* Funcs
 ** Lecture1
 *** Expressions
 **** Types of expressions
@@ -8,7 +8,7 @@
 ***** Call expressions
       ~max(2,3)~
 **** Call Expressions in Python
-     All expressions can use function call notation
+     All expressions can use func call notation
      ~max(2,3)~
 **** Anatomy of a Call Expression
      Evaluation procedure for call expressions:
@@ -20,17 +20,17 @@
      | operand1 |   2 |
      | operand2 |   3 |
 
-***** Apply the function that is the value of the operator subexpression to the arguments that are the values of the operand subexpression
+***** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
 
-     | function  | value of add |
-     | argument1 | value of 2   |
-     | argument2 | value of 3   |
+     | func  | value of add |
+     | arg1 | value of 2   |
+     | arg2 | value of 3   |
 
 **** Evaluating Nested Expressions
     ~mul(add(4,mul(4, 6)), add(3, 5))~ 
 
-    #+BEGIN_SRC dot :file ./function-1.png :exports results
-      digraph function1 {
+    #+BEGIN_SRC dot :file ./func-1.png :exports results
+      digraph func1 {
             a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
             a2 [label="add(4,mul(4,6))"];
             a3 [label="add(3,5)"];
@@ -48,9 +48,9 @@
     #+END_SRC
 
     #+RESULTS:
-    [[file:./function-1.png]]
+    [[file:./func-1.png]]
 
-*** Functions, Values, Objects, Interpreters, and Data
+*** Funcs, Values, Objects, Interpreters, and Data
 **** Objects
 
      #+BEGIN_SRC python :session Objects :results output
@@ -95,14 +95,11 @@
      : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
      : set()
      
-** 1.1 Getting Started
-** 1.2 Elements of Programming
-   
 * Names
 ** Lecture2
-*** Environment Diagrams
-**** Environment Diagrams
-     Environment diagrams visualize the interpreter’s process.
+*** Env Diagrams
+**** Env Diagrams
+     Env diagrams visualize the interpreter’s process.
 ***** Code
       Statements and expressions
 
@@ -139,10 +136,10 @@
       #+RESULTS:
       : 2 3
 
-*** Defining Functions
-**** Defining Functions
+*** Defining Funcs
+**** Defining Funcs
      Assignment is a simple means of abstraction: binds names to values
-     Function definition is a more powerful means of abstraction: binds names to expressions
+     Func def is a more powerful means of abstraction: binds names to expressions
     
      #+BEGIN_SRC python
        def <name>(<formal parameters>): 
@@ -150,28 +147,28 @@
      #+END_SRC
 
 ***** Execution procedure for def statements:
-      1. Create a function with signature ~<name>(<formal parameters>)~, function signature indicates how many arguments a function takes, it has all the
+      1. Create a func with signature ~<name>(<formal parameters>)~, func signature indicates how many args a func takes, it has all the
  information needed to create a local frame.
-      2. Set the body of that function to be everything indented after the first line, function body defines the computation performed when the function is applied
-      3. Bind ~<name>~ to that function in the current frame
-**** Calling User-Defined Functions
-***** Procedure for calling/applying user-defined functions
-      1. Add a local frame, forming a new environment
-      2. Bind the function's formal parameters to its arguments in that frame
-      3. Execute the body of the function in that new environment
-**** Looking Up Names In Environment
-     Every expression is evaluated in the context of an environment. So far, the current environment is either: 
+      2. Set the body of that func to be everything indented after the first line, func body defines the computation performed when the func is applied
+      3. Bind ~<name>~ to that func in the current frame
+**** Calling User-Defined Funcs
+***** Procedure for calling/applying user-defined funcs
+      1. Add a local frame, forming a new env
+      2. Bind the func's formal parameters to its args in that frame
+      3. Execute the body of the func in that new env
+**** Looking Up Names In Env
+     Every expression is evaluated in the context of an env. So far, the current env is either: 
      - The global frame alone, or
      - A local frame, followed by the global frame. 
 ***** Most important two things:
-      1. An environment is a sequence of frames. 
-      2. A name evaluates to the value bound to that name in the earliest frame of the current environment in which that name is found.
+      1. An env is a sequence of frames. 
+      2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
 * Control
 ** Lecture3
 *** Print and None
 **** None Indicates that Nothing is Returned
     - The special value ~None~ represents nothing in Python
-    - A function that does not explicitly return a value will return ~None~
+    - A func that does not explicitly return a value will return ~None~
     - Careful: ~None~ is not displayed by the interpreter as the value of an expression
      
      #+begin_src python 
@@ -181,8 +178,8 @@
        return x
      #+end_src
 
-**** Pure Functions & Non-Pure Functions
-***** Pure Functions
+**** Pure Funcs & Non-Pure Funcs
+***** Pure Funcs
       just return *values*: ~abs()~   
      
       #+begin_src python 
@@ -192,7 +189,7 @@
       #+RESULTS:
       : 2
 
-***** Non-Pure Functions     
+***** Non-Pure Funcs     
       return *values(None)* and have *side effects*: ~print()~
 
       #+begin_src python :results output
@@ -217,8 +214,8 @@
      : None None
      : None
     
-*** Multiple Environments
-**** Life Cycle of a User-Defined Function 
+*** Multiple Envs
+**** Life Cycle of a User-Defined Func 
 ***** Def statement:
 
       #+begin_src python
@@ -226,16 +223,16 @@
             return mul(x, x)
       #+end_src
     
-      - A new function is created!
-      - Name bound to that function in the current frame 
+      - A new func is created!
+      - Name bound to that func in the current frame 
 ***** Call expression: 
       ~square(2+2)~ 
       - Operator & operands evaluated
-      - Function (value of operator) called on arguments (values of operands):
+      - Func (value of operator) called on args (values of operands):
 ***** Calling/Applying: 
       - A new frame is created!
-      - Body is executed in that new environment
-**** Multiple Environments in One Diagram!
+      - Body is executed in that new env
+**** Multiple Envs in One Diagram!
     
      #+BEGIN_SRC python :results output
        from operator import mul
@@ -247,10 +244,10 @@
      #+RESULTS:
      : 81
 
-     An environment is a sequence of frames.
+     An env is a sequence of frames.
      - The global frame alone
      - A local, then the global frame
-     *One environment per frame here* 
+     *One env per frame here* 
 ***** ENV1 
 
       | Frames | Global      |
@@ -268,10 +265,10 @@
       | x            |                         9 |
       | return value |                        81 |
 
-**** Names Have No Meaning Without Environments
-     - Every expression is evaluated in the context of an environment.
-     - A name evaluates to the value bound to that name in the earliest frame of the current environment in which that name is found.
-**** Names Have Different Meanings in Different Environments
+**** Names Have No Meaning Without Envs
+     - Every expression is evaluated in the context of an env.
+     - A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+**** Names Have Different Meanings in Different Envs
     
      #+BEGIN_SRC python :results output
        from operator import mul
@@ -283,7 +280,7 @@
      #+RESULTS:
      : 16
 
-     *A call expression and the body of the function being called are evaluated in different environments*
+     *A call expression and the body of the func being called are evaluated in different envs*
 
      | call of square(4) | ENV1:Global                |
      | body of square(4) | ENV2:f1 followed by Global |
@@ -324,7 +321,7 @@
      #+RESULTS:
      : 61 8
 
-**** Docstrings, doctests, & default arguments
+**** Docstrings, doctests, & default args
      use *python3 -m doctest test.py* to doctest. 
 
      #+BEGIN_SRC python :results output
@@ -394,11 +391,10 @@
             return curr
       #+end_src 
       
-* 1.6 Higher-Order Functions
-  Functions that *manipulate functions* are called *higher-order functions*
-
-** 1.6.1 Functions as Arguments
-
+* 1.6 Higher-Order Funcs
+  Funcs that *manipulate funcs* are called *higher-order funcs*
+** 1.6.1 Funcs as Args
+   
    #+begin_src python :results output
      def sum_naturals(n):
              total, k = 0, 1
@@ -443,29 +439,139 @@
              return summation(n, pi_term)
    #+end_src 
 
-** 1.6.2 Functions as General Methods
-   some functions express general methods of computation, independent of the particular functions they call
+** 1.6.2 Funcs as General Methods
+*** A more powerful kind of abstraction in higher-order funcs
+    Some funcs express *general methods of computation*, *independent of the particular funcs* they call.
 
-   When a user-defined function is applied to some arguments, the formal parameters are bound to the values of those arguments (which may be functions) in a new local frame.
+    #+begin_src python :results output
+      def improve(update, close, guess=1):
+              while not close(guess):
+                  guess = update(guess)
+              return guess
 
+      def golden_update(guess):
+              return 1/guess + 1
 
-** 1.6.3 Defining Functions III: Nested Definitions
-** 1.6.4 Functions as Returned Values
+      def square_close_to_successor(guess):
+              return approx_eq(guess * guess, guess + 1)
+
+      def approx_eq(x, y, tolerance=1e-15):
+              return abs(x - y) < tolerance
+
+      phi = improve(golden_update,square_close_to_successor)
+    #+end_src 
+
+    - This ~improve~ func is a *general expression* of repetitive refinement.It *doesn't specify* what problem is being solved: those *details* are left to the ~update~ and ~close~ funcs passed in as args.
+    - When a user-defined func is *applied* to some args, the formal parameters are bound to the values of those arguments (which *may be funcs*) in a *new local frame*.
+     
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 07:28:36
+    [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_07-28-36.png]]
+
+*** Two related big ideas in computer science
+    - *Naming and funcs* allow us to *abstract away* a vast amount of *complexity*.
+    - Only an *extremely general evaluation procedure* for the Python language can make *small components* composed into *complex processes*.
+   
+*** A test to check its correctness. 
+
+    #+begin_src python :results output
+      from math import sqrt
+      phi = 1/2 + sqrt(5)/2
+      def improve_test():
+              approx_phi = improve(golden_update, square_close_to_successor)
+              assert approx_eq(phi, approx_phi), 'phi differs from its approximation'
+
+      improve_test()
+    #+end_src 
+
+** 1.6.3 Defining Funcs III: Nested Defs
+*** Problems of passing funcs as args
+    Pass functions as arguments significantly *enhances the expressive power* of python.
+****  Two problems 
+     - *Global frame* becomes *cluttered with names* of small functions, which must all be *unique*.
+     - We are *constrained by particular function signatures*.(the ~update~ argument to ~improve~ must take exactly *one argument*.)
+*** Nested func def address problems above
+**** Square root of a number
+   
+     #+begin_src python :results output
+       def average(x, y):
+           return (x + y)/2
+
+       def improve(update, close, guess=1):
+           while not close(guess):
+               guess = update(guess)
+           return guess
+
+       def approx_eq(x, y, tolerance=1e-3):
+           return abs(x - y) < tolerance
+
+       def sqrt(a):
+           def sqrt_update(x):
+               return average(x, a/x)
+           def sqrt_close(x):
+               return approx_eq(x * x, a)
+           return improve(sqrt_update, sqrt_close)
+
+       result = sqrt(256)
+     #+end_src 
+
+***** Env review
+****** Most important two things:
+       1. An env is a sequence of frames. 
+       2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+****** Life Cycle of a User-Defined Func 
+******* Def statement:
+        - Name bound to that func in the current frame 
+******* Calling/Applying: 
+        - A new frame is created!
+        - Body is executed in that new env
+***** Env analysis
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:03:05
+      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-03-05.png]]
+
+      | Env                     | Frame(created when calling func)           | Func evaluated within frame               | Arg evaluted within frame                            |
+      | Env1                    | Global                                     | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
+      | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                  | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
+      | Env3 extended from Env1 | f2: ~improve~ [parent=Global               | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
+      | Env4 extended from Env2 | f3: ~sqrt_close~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
+      | Env5 extended from Env1 | f4: ~approx_eq~ [parent=Global             | None                                      | x=1, y=256, tolerance=0.001                          |
+     
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:05:31
+      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-05-31.png]]  
+ 
+      | Env                     | Frame(created when calling func)            | Func evaluated within frame               | Arg evaluted within frame                            |
+      | Env1                    | Global                                      | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
+      | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                   | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
+      | Env3 extended from Env1 | f2: ~improve~ [parent=Global                | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
+      | Env6 extended from Env2 | f5: ~sqrt_update~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
+      | Env7 extended from Env1 | f6: ~average~ [parent=Global                | None                                      | x=1, y=256                                           |
+      |                         |                                             |                                           |                                                      |
+
+***** Lexical scope
+      The *inner funcs* have access to the *names* in the env where they are *defined* (*not* where they are *called*).
+****** Two extensions to our env model to enable lexical scoping
+       - Each user-defined func has a *parent env*: the environment in which it was *defined*.
+       - When a user-defined func is *called*, its *local frame extends its parent env*.
+****** Two key advantages of lexical scoping in Python
+       - The *names of a local func* do *not interfere* with *names external* to the function in which it is *defined*, because the local function name will be bound in the *current local env* in which it was *defined*, rather than the *global environment*.
+       - A local func can *access the env* of the *enclosing func*, because the *body of the local func* is evaluated in an env that *extends the evaluation environment* in which it was *defined*.
+
+** 1.6.4 Funcs as Returned Values
 ** 1.6.5 Example: Newton's Method
 ** 1.6.6 Currying
 ** 1.6.7 Lambda Expressions
-** 1.6.8 Abstractions and First-Class Functions
-** 1.6.9 Function Decorators
-* Environments 
+** 1.6.8 Abstractions and First-Class Funcs
+** 1.6.9 Func Decorators
+* Envs 
 * Iteration
 * Recursion
-* Function Examples
+* Func Examples
 * Tree Recursion
 * Data Abstraction
 * Containers
 * Trees
 * Mutable Values
-* Mutable Functions
+* Mutable Funcs
 * Iterators
 * Objects
 * Inheritance
