@@ -391,111 +391,217 @@
             return curr
       #+end_src 
       
-* 1.6 Higher-Order Funcs
-  Funcs that *manipulate funcs* are called *higher-order funcs*
-** 1.6.1 Funcs as Args
+* Higher-Order Func
+** 1.6 Higher-Order Funcs
+   Funcs that *manipulate funcs* are called *higher-order funcs*
+*** 1.6.1 Funcs as Args
    
-   #+begin_src python :results output
-     def sum_naturals(n):
-             total, k = 0, 1
-             while k <= n:
-                 total, k = total + k, k + 1
-             return total
-
-     def sum_cubes(n):
-             total, k = 0, 1
-             while k <= n:
-                 total, k = total + k*k*k, k + 1
-             return total
-
-     def pi_sum(n):
-             total, k = 0, 1
-             while k <= n:
-                 total, k = total + 8 / ((4*k-3) * (4*k-1)), k + 1
-             return total
-
-     def summation(n, term):
-             total, k = 0, 1
-             while k <= n:
-                 total, k = total + term(k), k + 1
-             return total
-
-     def identity(x):
-             return x
-
-     def sum_naturals(n):
-             return summation(n, identity)
-
-     def cube(x):
-         return x*x*x
-
-     def sum_cubes(n):
-         return summation(n, cube)
-
-     def pi_term(x):
-             return 8 / ((4*x-3) * (4*x-1))
-
-     def pi_sum(n):
-             return summation(n, pi_term)
-   #+end_src 
-
-** 1.6.2 Funcs as General Methods
-*** A more powerful kind of abstraction in higher-order funcs
-    Some funcs express *general methods of computation*, *independent of the particular funcs* they call.
-
     #+begin_src python :results output
-      def improve(update, close, guess=1):
-              while not close(guess):
-                  guess = update(guess)
-              return guess
+      def sum_naturals(n):
+              total, k = 0, 1
+              while k <= n:
+                  total, k = total + k, k + 1
+              return total
 
-      def golden_update(guess):
-              return 1/guess + 1
+      def sum_cubes(n):
+              total, k = 0, 1
+              while k <= n:
+                  total, k = total + k*k*k, k + 1
+              return total
 
-      def square_close_to_successor(guess):
-              return approx_eq(guess * guess, guess + 1)
+      def pi_sum(n):
+              total, k = 0, 1
+              while k <= n:
+                  total, k = total + 8 / ((4*k-3) * (4*k-1)), k + 1
+              return total
 
-      def approx_eq(x, y, tolerance=1e-15):
-              return abs(x - y) < tolerance
+      def summation(n, term):
+              total, k = 0, 1
+              while k <= n:
+                  total, k = total + term(k), k + 1
+              return total
 
-      phi = improve(golden_update,square_close_to_successor)
+      def identity(x):
+              return x
+
+      def sum_naturals(n):
+              return summation(n, identity)
+
+      def cube(x):
+          return x*x*x
+
+      def sum_cubes(n):
+          return summation(n, cube)
+
+      def pi_term(x):
+              return 8 / ((4*x-3) * (4*x-1))
+
+      def pi_sum(n):
+              return summation(n, pi_term)
     #+end_src 
 
-    - This ~improve~ func is a *general expression* of repetitive refinement.It *doesn't specify* what problem is being solved: those *details* are left to the ~update~ and ~close~ funcs passed in as args.
-    - When a user-defined func is *applied* to some args, the formal parameters are bound to the values of those arguments (which *may be funcs*) in a *new local frame*.
-     
-    #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 07:28:36
-    [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_07-28-36.png]]
+*** 1.6.2 Funcs as General Methods
+**** A more powerful kind of abstraction in higher-order funcs
+     Some funcs express *general methods of computation*, *independent of the particular funcs* they call.
 
-*** Two related big ideas in computer science
-    - *Naming and funcs* allow us to *abstract away* a vast amount of *complexity*.
-    - Only an *extremely general evaluation procedure* for the Python language can make *small components* composed into *complex processes*.
-   
-*** A test to check its correctness. 
-
-    #+begin_src python :results output
-      from math import sqrt
-      phi = 1/2 + sqrt(5)/2
-      def improve_test():
-              approx_phi = improve(golden_update, square_close_to_successor)
-              assert approx_eq(phi, approx_phi), 'phi differs from its approximation'
-
-      improve_test()
-    #+end_src 
-
-** 1.6.3 Defining Funcs III: Nested Defs
-*** Problems of passing funcs as args
-    Pass functions as arguments significantly *enhances the expressive power* of python.
-****  Two problems 
-     - *Global frame* becomes *cluttered with names* of small functions, which must all be *unique*.
-     - We are *constrained by particular function signatures*.(the ~update~ argument to ~improve~ must take exactly *one argument*.)
-*** Nested func def address problems above
-**** Square root of a number
-   
      #+begin_src python :results output
-       def average(x, y):
-           return (x + y)/2
+       def improve(update, close, guess=1):
+               while not close(guess):
+                   guess = update(guess)
+               return guess
 
+       def golden_update(guess):
+               return 1/guess + 1
+
+       def square_close_to_successor(guess):
+               return approx_eq(guess * guess, guess + 1)
+
+       def approx_eq(x, y, tolerance=1e-15):
+               return abs(x - y) < tolerance
+
+       phi = improve(golden_update,square_close_to_successor)
+     #+end_src 
+
+     - This ~improve~ func is a *general expression* of repetitive refinement.It *doesn't specify* what problem is being solved: those *details* are left to the ~update~ and ~close~ funcs passed in as args.
+     - When a user-defined func is *applied* to some args, the formal parameters are bound to the values of those arguments (which *may be funcs*) in a *new local frame*.
+     
+     #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 07:28:36
+     [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_07-28-36.png]]
+
+**** Two related big ideas in computer science
+     - *Naming and funcs* allow us to *abstract away* a vast amount of *complexity*.
+     - Only an *extremely general evaluation procedure* for the Python language can make *small components* composed into *complex processes*.
+   
+**** A test to check its correctness. 
+
+     #+begin_src python :results output
+       from math import sqrt
+       phi = 1/2 + sqrt(5)/2
+       def improve_test():
+               approx_phi = improve(golden_update, square_close_to_successor)
+               assert approx_eq(phi, approx_phi), 'phi differs from its approximation'
+
+       improve_test()
+     #+end_src 
+
+*** 1.6.3 Defining Funcs III: Nested Defs
+**** Problems of passing funcs as args
+     Pass functions as arguments significantly *enhances the expressive power* of python.
+*****  Two problems 
+      - *Global frame* becomes *cluttered with names* of small functions, which must all be *unique*.
+      - We are *constrained by particular function signatures*.(the ~update~ argument to ~improve~ must take exactly *one argument*.)
+**** Nested func def address problems above
+***** Example: square root of a number
+   
+      #+begin_src python :results output
+        def average(x, y):
+            return (x + y)/2
+
+        def improve(update, close, guess=1):
+            while not close(guess):
+                guess = update(guess)
+            return guess
+
+        def approx_eq(x, y, tolerance=1e-3):
+            return abs(x - y) < tolerance
+
+        def sqrt(a):
+            def sqrt_update(x):
+                return average(x, a/x)
+            def sqrt_close(x):
+                return approx_eq(x * x, a)
+            return improve(sqrt_update, sqrt_close)
+
+        result = sqrt(256)
+      #+end_src 
+
+****** Env review
+******* Most important two things:
+        1. An env is a sequence of frames. 
+        2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+******* Life Cycle of a User-Defined Func 
+******** Def statement:
+         - Name bound to that func in the current frame 
+******** Calling/Applying: 
+         - A new frame is created!
+         - Body is executed in that new env
+****** Env analysis
+
+       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:03:05
+       [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-03-05.png]]
+
+       | Env                     | Frame(created when calling func)           | Func evaluated within frame               | Arg evaluted within frame                            |
+       | Env1                    | Global                                     | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
+       | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                  | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
+       | Env3 extended from Env1 | f2: ~improve~ [parent=Global               | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
+       | Env4 extended from Env2 | f3: ~sqrt_close~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
+       | Env5 extended from Env1 | f4: ~approx_eq~ [parent=Global             | None                                      | x=1, y=256, tolerance=0.001                          |
+     
+       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:05:31
+       [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-05-31.png]]  
+ 
+       | Env                     | Frame(created when calling func)            | Func evaluated within frame               | Arg evaluted within frame                            |
+       | Env1                    | Global                                      | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
+       | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                   | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
+       | Env3 extended from Env1 | f2: ~improve~ [parent=Global                | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
+       | Env6 extended from Env2 | f5: ~sqrt_update~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
+       | Env7 extended from Env1 | f6: ~average~ [parent=Global                | None                                      | x=1, y=256                                           |
+
+****** Lexical scope
+       The *inner funcs* have access to the *names* in the env where they are *defined* (*not* where they are *called*).
+******* Two extensions to our env model to enable lexical scoping
+        - Each user-defined func has a *parent env*: the environment in which it was *defined*.
+        - When a user-defined func is *called*, its *local frame extends its parent env*.
+******* Two key advantages of lexical scoping in Python
+        - The *names of a local func* do *not interfere* with *names external* to the function in which it is *defined*, because the local function name will be bound in the *current local env* in which it was *defined*, rather than the *global environment*.
+        - A local func can *access the env* of the *enclosing func*, because the *body of the local func* is evaluated in an env that *extends the evaluation environment* in which it was *defined*.
+
+*** 1.6.4 Funcs as Returned Values
+    Funcs as returned values can achieve more *expressive power*.
+**** Example: function *composition* h(x) = f(g(x))
+
+    #+begin_src python :results output
+      def square(x):
+          return x*x
+
+      def successor(x):
+          return x + 1
+
+      def composel(f, g):
+          def h(x):
+              return f(g(x))
+          return h
+
+      def f(x):
+          """Never called"""
+          return -x
+
+      square_successor = composel(square, successor)
+      result = square_successor(12)
+    #+end_src 
+
+***** Env analysis
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-12 09:30:50
+      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_09-30-50.png]]
+ 
+      | Env                     | Frame(created when calling func)  | Func evaluated within frame                                | Arg evaluted within frame   |
+      | Env1                    | Global                            | ~square~, ~successor~, ~compose1~, ~f~, ~square_successor~ | None                        |
+      | Env2 extended from Env1 | f1: ~compose1~ [parent=Global     | ~h~                                                        | f= ~square~, g= ~successor~ |
+      | Env3 extended from Env2 | f2: ~h~ [parent=f1 [parent=Global | None                                                       | x=12                        |
+      | Env4 extended from Env1 | f3: ~successor~ [parent=Global    | None                                                       | x=12                        |
+      | Env5 extended from Env1 | f4: ~square~ [parent=Global       | None                                                       | x=13                        |
+     
+      - ~f~ and ~g~ are ~resolved correctly~, even in the presence of *conflicting* names(~f~ defined in Global frame).
+      - An important feature of *lexically scoped* programming languages: *locally defined* functions *maintain* their *parent environment* when they are *returned* (when return ~f(g(x))~, ~f~ and ~g~ are found from parent frame f1)
+***** Question:
+      1. 怎么结合env分析比较好的描述程序执行过程？包括环境之间的跳转，返回等。用哪种方式，dot画环境跳转、参数传递、返回值和拓展关系图可行吗？
+
+*** 1.6.5 Example: Newton's Method
+    This extended example shows how function *return values and local definitions* can *work together* to express general ideas concisely.
+**** Square root
+
+     #+begin_src python :results output
        def improve(update, close, guess=1):
            while not close(guess):
                guess = update(guess)
@@ -504,67 +610,198 @@
        def approx_eq(x, y, tolerance=1e-3):
            return abs(x - y) < tolerance
 
-       def sqrt(a):
-           def sqrt_update(x):
-               return average(x, a/x)
-           def sqrt_close(x):
-               return approx_eq(x * x, a)
-           return improve(sqrt_update, sqrt_close)
+       def newton_update(f, df):
+           def update(x):
+               return x - f(x) / df(x)
+           return update
 
-       result = sqrt(256)
+       def find_zero(f, df):
+           def near_zero(x):
+               return approx_eq(f(x), 0)
+           return improve(newton_update(f, df), near_zero)
+
+       def square_root_newton(a):
+           def f(x):
+               return x * x - a
+           def df(x):
+               return 2 * x
+           return find_zero(f, df)
+
+       square_root_newton(64)
      #+end_src 
 
-***** Env review
-****** Most important two things:
-       1. An env is a sequence of frames. 
-       2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
-****** Life Cycle of a User-Defined Func 
-******* Def statement:
-        - Name bound to that func in the current frame 
-******* Calling/Applying: 
-        - A new frame is created!
-        - Body is executed in that new env
-***** Env analysis
+**** Nth root
 
-      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:03:05
-      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-03-05.png]]
+     #+begin_src python :results output
+       def improve(update, close, guess=1):
+           while not close(guess):
+               guess = update(guess)
+           return guess
 
-      | Env                     | Frame(created when calling func)           | Func evaluated within frame               | Arg evaluted within frame                            |
-      | Env1                    | Global                                     | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
-      | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                  | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
-      | Env3 extended from Env1 | f2: ~improve~ [parent=Global               | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
-      | Env4 extended from Env2 | f3: ~sqrt_close~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
-      | Env5 extended from Env1 | f4: ~approx_eq~ [parent=Global             | None                                      | x=1, y=256, tolerance=0.001                          |
-     
-      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:05:31
-      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-05-31.png]]  
+       def approx_eq(x, y, tolerance=1e-3):
+           return abs(x - y) < tolerance
+
+       def newton_update(f, df):
+           def update(x):
+               return x - f(x) / df(x)
+           return update
+
+       def find_zero(f, df):
+           def near_zero(x):
+               return approx_eq(f(x), 0)
+           return improve(newton_update(f, df), near_zero)
+
+       def power(x, n):
+           """Return x*x*x*...*x for x repeated n times."""
+           product, k = 1, 0
+           while k < n:
+               product, k = product * x, k + 1
+           return product
+
+       def nth_root_of_a(n, a):
+           def f(x):
+               return power(x, n) - a
+           def df(x):
+               return n * power(x, n-1)
+           return find_zero(f, df)
+
+       nth_root_of_a(3, 64)
+     #+end_src 
+
+**** Question:
+     1. 仍然是怎么结合env分析清晰的整理程序执行过程？特别是在参数传递和返回值环节。
+*** 1.6.6 Currying
+    Use *higher-order functions* to convert *a function* that takes *multiple arguments* into *a chain of functions* that each take *a single argument*.
+**** Example 1: manual currying
+
+     #+begin_src python :results output
+       def curried_pow(x):
+           def h(y):
+               return pow(x, y)
+           return h
+
+
+       def map_to_range(start, end, f):
+           while start < end:
+               print(f(start))
+               start = start + 1
+
+
+       map_to_range(0, 10, curried_pow(2))
+     #+end_src 
+
+     - ~curried_pow(x)(y)~ = ~pow(x, y)~
+**** Example 2: automate currying
+
+     #+begin_src python :results output
+       def curry2(f):
+           """Return a curried version of the given two-argument function."""
+           def g(x):
+               def h(y):
+                   return f(x, y)
+               return h
+           return g
+
+
+       def uncurry2(g):
+           """Return a two-argument version of the given curried function."""
+           def f(x, y):
+               return g(x)(y)
+           return f
+
+
+       def map_to_range(start, end, f):
+           while start < end:
+               print(f(start))
+               start = start + 1
+
+
+       pow_curried = curry2(pow)
+       map_to_range(0, 10, pow_curried(2))
+       uncurry2(pow_curried)(2, 5)
+     #+end_src 
+
+     - ~curry2(f)(x)(y)~ = ~f(x, y)~
+     - ~uncurry2(curry2(f))~ = ~f~ 
+**** Question:
+     1. 什么情况下需要curry？为何不直接最外用多个形参？结合嵌套函数的参数传递方式理解curry的传参方式？
+     2. 结合env分析？
+    
+*** 1.6.7 Lambda Expressions
+    A lambda expression evaluates to a function that has a single return expression as its body. Assignment and control statements are not allowed.
+    - ~lambda x: f(g(x))~: A *function* that takes ~x~ and *returns* ~f(g(x))~.
+    - The *result* of a *lambda expression* is called a *lambda function*: ~<function <lambda> at 0xf3f490>~.
+**** Example 1: compose with ~lambda~ expressions
+
+     #+begin_src python :results output
+       def compose1(f, g):
+           return lambda x: f(g(x))
+
+       f = compose1(lambda x: x * x, lambda y: y + 1)
+
+       result = f(12)
+     #+end_src 
+
+*****  Env analysis
  
-      | Env                     | Frame(created when calling func)            | Func evaluated within frame               | Arg evaluted within frame                            |
-      | Env1                    | Global                                      | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
-      | Env2 extended from Env1 | f1: ~sqrt~ [parent=Global                   | ~sqrt_update~, ~sqrt_close~               | a=256                                                |
-      | Env3 extended from Env1 | f2: ~improve~ [parent=Global                | None                                      | update= ~sqrt_update~, close= ~sqrt_close~ , guess=1 |
-      | Env6 extended from Env2 | f5: ~sqrt_update~ [parent=f1 [parent=Global | None                                      | x=1, a=256(from parent f1)                           |
-      | Env7 extended from Env1 | f6: ~average~ [parent=Global                | None                                      | x=1, y=256                                           |
-      |                         |                                             |                                           |                                                      |
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-12 16:45:59
+      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_16-45-59.png]]
+ 
+**** Example 2: *compound* ~lambda~ expressions
+    
+     #+begin_src python :results output
+       compose1 = lambda f,g: lambda x: f(g(x))
+     #+end_src 
 
-***** Lexical scope
-      The *inner funcs* have access to the *names* in the env where they are *defined* (*not* where they are *called*).
-****** Two extensions to our env model to enable lexical scoping
-       - Each user-defined func has a *parent env*: the environment in which it was *defined*.
-       - When a user-defined func is *called*, its *local frame extends its parent env*.
-****** Two key advantages of lexical scoping in Python
-       - The *names of a local func* do *not interfere* with *names external* to the function in which it is *defined*, because the local function name will be bound in the *current local env* in which it was *defined*, rather than the *global environment*.
-       - A local func can *access the env* of the *enclosing func*, because the *body of the local func* is evaluated in an env that *extends the evaluation environment* in which it was *defined*.
+**** Question:
+     1. Example 1中结合env分析过程？
+     2. Example 2的理解？ 
 
-** 1.6.4 Funcs as Returned Values
-** 1.6.5 Example: Newton's Method
-** 1.6.6 Currying
-** 1.6.7 Lambda Expressions
-** 1.6.8 Abstractions and First-Class Funcs
-** 1.6.9 Func Decorators
-* Envs 
+*** 1.6.8 Abstractions and First-Class Funcs
+    - *Higher-order funcs* can *represent abstractions explicitly as elements* so they can be handled like other *computational elements*.
+    - *Elements* with the *fewest restrictions* are said to have *first-class status*.Some of the "rights and privileges" of first-class elements are:
+      1. They may be *bound to names*.
+      2. They may be *passed as arguments to functions*.
+      3. They may be *returned as the results of functions*.
+      4. They may be *included in data structures*.
+    - Python awards *functions full first-class status*.
+   
+*** 1.6.9 Func Decorators
+    Python provides *special syntax* to apply *higher-order functions* as *part of executing a def statement*, called a *decorator*.
+**** Example 1: trace
+
+     #+begin_src python :results output
+       def trace(fn):
+           def wrapped(x):
+               print('-> ', fn, '(', x, ')')
+               return fn(x)
+           return wrapped
+
+       @trace  # or triple = trace(triple)
+       def triple(x):
+           return 3 * x
+
+       triple(12)
+     #+end_src 
+    
+     - A higher-order function ~trace~ returns a function that *precedes a call to its argument* with a print statement that *outputs the argument*.
+     - With ~@trace~, name ~triple~ is bound to the ~returned function value~ of *calling ~trace~ on the newly defined ~triple~ function*: ~trace(triple(12))~.
+**** Extra for experts
+     The decorator symbol @ may also be followed by a call expression. The expression following @ is evaluated first (just as the name trace was evaluated above), the def statement second, and finally the result of evaluating the decorator expression is applied to the newly defined function, and the result is bound to the name in the def statement.
+**** Question:
+     1. Extra for experts的理解？decorator用在什么地方？用内存去追踪程序吗？
+** Lecture4
+* Envs
+** 1.6 
+** Lecture5
 * Iteration
 * Recursion
+** 1.7 Recursive Funcs
+*** 1.7.1 The Anatomy of Recursive Functions
+*** 1.7.2 Mutual Recursion
+*** 1.7.3 Printing in Recursive Functions
+*** 1.7.4 Tree Recursion
+*** 1.7.5 Example: Partitions
 * Func Examples
 * Tree Recursion
 * Data Abstraction
