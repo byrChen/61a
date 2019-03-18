@@ -797,8 +797,123 @@
 * Iteration
 * Recursion
 ** 1.7 Recursive Funcs
+   A function is called *recursive* if the *body of the function calls the function itself*, either *directly or indirectly*. 
+
+   #+begin_src python :results output
+     def sum_digits(n):
+         """Return the sum of the digits of positive integer n."""
+         if n < 10:
+             return n
+         else:
+             all_but_last, last = n // 10, n % 10
+             return sum_digits(all_but_last) + last
+   #+end_src 
+   
+   Two steps:
+   - Summing all but the last digit: ~sum_digits(all_but_last)~.
+   - Adding the last digit: ~sum_digits(all_but_last) + last~.
+    
+   Env analysis:
+   #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 14:04:32
+   [[file:Recursion/screenshot_2019-03-18_14-04-32.png]]
+
 *** 1.7.1 The Anatomy of Recursive Functions
+    *Base cases* + *recursive calls*: to express computation by *simplifying problems incrementally*.
+**** Example: *Recursion* vs *Iteration* 
+
+     #+begin_src python :results output
+       def fact_iter(n):
+           total, k = 1, 1
+           while k <= n:
+               total, k = total * k, k + 1
+           return total
+
+       def fact(n):
+           if n == 1:
+               return 1
+           else:
+               return n * fact(n-1)
+     #+end_src 
+     
+***** Env analysis(only recursion)
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 21:22:51
+      [[file:Recursion/screenshot_2019-03-18_21-22-51.png]]
+      
+***** Differences
+      *Recursive* functions leverage the *rules of evaluating call expressions* to *bind names to values*, often *avoiding the nuisance* of *correctly assigning local names* during *iteration*. 
+****** Computation cases
+       - Recursion
+       *final to base*: *complicate to simple*.
+       - Iteration
+       *final to base or base to final*: *identical*.
+****** Name and frame numbers:
+       - Recursion
+       *less names(usually one)* but *more frames*: bind *different values* to *less names* in *different frames* to *track to characterize computation state* and return values from *all frames one by one(base to final)*.
+       - Iteration
+       *more names* but *less frames(usually one)*: *explicitly track some names* to *characterize computation state* and *return other names* once in *less frames*.
+****** Correctness varification:
+       - Recursion
+       *trust simpler cases* and *only check final*: treat *recursive calls(simpler cases)* as *functional abstraction*, a form of proof by *induction*.
+       - Iteration
+       
+****** Question        
+       1. 怎么检查iteration的正确?检查base开头和final结尾并trust中间过程？
+      
+       |                          | ~fact~                                                                                   | ~fact_iter~                     |
+       | Computation              | *final to base* and *complicate to simple*                                               | *base to final* and *identical* |
+       | Name numbers             | 1: ~n~                                                                                   | 2: ~total, k~                   |
+       | Env numbers              | 4: f1~f4                                                                                 | 2: f1~f2                        |
+       | Correctness varification | a form of proof by *induction*: *trust* ~fact(n-1)~ *correct* and *only check* ~fact(n)~ |                                 |
+       |                          |                                                                                          |                                 |
+       
 *** 1.7.2 Mutual Recursion
+    When a recursive procedure is *divided among two functions* that *call each other*, the functions are said to be *mutually recursive*. 
+**** Example: even or odd for non-negative integers
+     - a number is *even* if it is *one more than* an *odd* number
+     - a number is odd if it is *one more than* an *even* number
+     - 0 is even
+      
+     #+begin_src python :results output
+       def is_even(n):
+           if n == 0:
+               return True
+           else:
+               return is_odd(n-1)
+
+       def is_odd(n):
+           if n == 0:
+               return False
+           else:
+               return is_even(n-1)
+
+       result = is_even(4)
+     #+end_src 
+
+***** Env analysis
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 23:20:17
+      [[file:Recursion/screenshot_2019-03-18_23-20-17.png]]
+ 
+     
+***** Multually recursive to single recursive
+      *Mutually* recursive functions can be turned into a *single* recursive function by *breaking the abstraction boundary* between the two functions. 
+
+      #+begin_src python :results output
+        def is_even(n):
+            if n == 0:
+                return True
+            else:
+                if (n-1) == 0:
+                    return False
+                else:
+                    return is_even((n-1)-1)
+      #+end_src 
+
+      - *put base cases together* and pass *next updated para* to the *remaining func*.
+      - *mutual* recursion provides a *mechanism* for *maintaining abstraction* within a *complicated(single)* recursive program.
+****** Question:
+       1. 怎么理解 *breaking the abstraction boundary* ？是不是就是 *put base cases together* ？
 *** 1.7.3 Printing in Recursive Functions
 *** 1.7.4 Tree Recursion
 *** 1.7.5 Example: Partitions
