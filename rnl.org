@@ -859,14 +859,6 @@
        
 ****** Question        
        1. 怎么检查iteration的正确?检查base开头和final结尾并trust中间过程？
-      
-       |                          | ~fact~                                                                                   | ~fact_iter~                     |
-       | Computation              | *final to base* and *complicate to simple*                                               | *base to final* and *identical* |
-       | Name numbers             | 1: ~n~                                                                                   | 2: ~total, k~                   |
-       | Env numbers              | 4: f1~f4                                                                                 | 2: f1~f2                        |
-       | Correctness varification | a form of proof by *induction*: *trust* ~fact(n-1)~ *correct* and *only check* ~fact(n)~ |                                 |
-       |                          |                                                                                          |                                 |
-       
 *** 1.7.2 Mutual Recursion
     When a recursive procedure is *divided among two functions* that *call each other*, the functions are said to be *mutually recursive*. 
 **** Example: even or odd for non-negative integers
@@ -915,6 +907,20 @@
 ****** Question:
        1. 怎么理解 *breaking the abstraction boundary* ？是不是就是 *put base cases together* ？
 *** 1.7.3 Printing in Recursive Functions
+**** Using calls to ~print~ to visualize the computational process evolved by a recursive function 
+***** Example: ~cascade~ to print all prefixes of a number from largest to smallest to largest.
+
+      #+begin_src python :results output
+        def cascade(n):
+            """Print a cascade of prefixes of n."""
+            if n < 10:
+                print(n)
+            else:
+                print(n)
+                cascade(n//10)
+                print(n)
+      #+end_src 
+
 *** 1.7.4 Tree Recursion
 *** 1.7.5 Example: Partitions
 * Func Examples

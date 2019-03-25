@@ -1,0 +1,331 @@
+* Project 1: The Game of Hog
+** Phase 1: Simulator
+*** Problem 0
+
+    #+begin_src python :results output
+      def make_test_dice(*outcomes):
+          """Return a die that cycles deterministically through OUTCOMES.
+
+          >>> dice = make_test_dice(1, 2, 3)
+          >>> dice()
+          1
+          >>> dice()
+          2
+          >>> dice()
+          3
+          >>> dice()
+          1
+          >>> dice()
+          2
+
+          This function uses Python syntax/techniques not yet covered in this course.
+          The best way to understand it is by reading the documentation and examples.
+          """
+          assert len(outcomes) > 0, 'You must supply outcomes to make_test_dice'
+          for o in outcomes:
+              assert type(o) == int and o >= 1, 'Outcome is not a positive integer'
+          index = len(outcomes) - 1
+          def dice():
+              nonlocal index
+              index = (index + 1) % len(outcomes)
+              return outcomes[index]
+          return dice
+    #+end_src 
+
+    1. ~assert~
+    2. func as return value: ~four_sided()~, ~six_sided()~
+    3. ~*outcomes~
+    4. ~for o in outcomes:~
+    5. ~nonlocal~
+*** Problem 1
+
+    #+begin_src python :results output
+      def roll_dice(num_rolls, dice=six_sided):
+          """Simulate rolling the DICE exactly NUM_ROLLS > 0 times. Return the sum of
+          the outcomes unless any of the outcomes is 1. In that case, return 1.
+
+          num_rolls:  The number of dice rolls that will be made.
+          dice:       A function that simulates a single dice roll outcome.
+          """
+          # These assert statements ensure that num_rolls is a positive integer.
+          assert type(num_rolls) == int, 'num_rolls must be an integer.'
+          assert num_rolls > 0, 'Must roll at least once.'
+          # BEGIN PROBLEM 1
+          "*** YOUR CODE HERE ***"
+          sum, sum_1, i = 0, 0, 0
+          while i < num_rolls:
+              i += 1
+              a = dice()
+              if (a == 1 or sum_1 == 1):
+                  sum_1 = 1
+                  continue
+              else:
+                  sum += a
+
+          return sum_1 if sum_1 else sum
+          # END PROBLEM 1
+    #+end_src 
+
+    1. ~sum, sum_1, i = 0, 0, 0~
+    2. ~a = dice()~
+    3. ~return sum_1 if sum_1 else sum~
+*** Problem 3
+    
+    #+begin_src python :results output
+      def take_turn(num_rolls, opponent_score, dice=six_sided):
+          """Simulate a turn rolling NUM_ROLLS dice, which may be 0 (Free Bacon).
+          Return the points scored for the turn by the current player.
+
+          num_rolls:       The number of dice rolls that will be made.
+          opponent_score:  The total score of the opponent.
+          dice:            A function that simulates a single dice roll outcome.
+          """
+          # Leave these assert statements here; they help check for errors.
+          assert type(num_rolls) == int, 'num_rolls must be an integer.'
+          assert num_rolls >= 0, 'Cannot roll a negative number of dice in take_turn.'
+          assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
+          assert opponent_score < 100, 'The game should be over.'
+          # BEGIN PROBLEM 3
+          "*** YOUR CODE HERE ***"
+          return roll_dice(num_rolls, dice) if num_rolls else free_bacon(opponent_score)
+          # END PROBLEM 3
+    #+end_src 
+
+    1. ~roll_dice(num_rolls, dice)~ not ~roll_dice(num_rolls, dice=six_sided)~
+    2. ~return roll_dice(num_rolls, dice) if num_rolls else free_bacon(opponent_score)~ 
+*** Problem 4
+    
+    #+begin_src python :results output
+      def is_swap(player_score, opponent_score):
+          """
+          Return whether the current player's score has the same absolute
+          difference between its last two digits as the opponent's score.
+          """
+          # BEGIN PROBLEM 4
+          "*** YOUR CODE HERE ***"
+          return abs(player_score % 100 // 10 - player_score % 100 % 10) == abs(opponent_score % 100 // 10 - opponent_score % 100 % 10)
+          # END PROBLEM 4
+    #+end_src 
+
+    1. *No need(no way)* to swap ~player_score~ and ~opponent_score~ , only return ~True~ or ~False~. 
+*** Problem 5
+
+    #+begin_src python :results output
+      def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
+               goal=GOAL_SCORE, say=silence):
+          """Simulate a game and return the final scores of both players, with Player
+          0's score first, and Player 1's score second.
+
+          A strategy is a function that takes two total scores as arguments (the
+          current player's score, and the opponent's score), and returns a number of
+          dice that the current player will roll this turn.
+
+          strategy0:  The strategy function for Player 0, who plays first.
+          strategy1:  The strategy function for Player 1, who plays second.
+          score0:     Starting score for Player 0
+          score1:     Starting score for Player 1
+          dice:       A function of zero arguments that simulates a dice roll.
+          goal:       The game ends and someone wins when this score is reached.
+          say:        The commentary function to call at the end of the first turn.
+          """
+          player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
+          # BEGIN PROBLEM 5
+          "*** YOUR CODE HERE ***"
+          while score0 < goal and score1 < goal:
+              if not player:
+                  score0 += take_turn(strategy0(score0, score1), score1, dice)
+              else:
+                  score1 += take_turn(strategy1(score1, score0), score0, dice)
+              player = other(player)
+              if is_swap(score0, score1):
+                  score0, score1 = score1, score0
+
+          # END PROBLEM 5
+          # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
+          # BEGIN PROBLEM 6
+          "*** YOUR CODE HERE ***"
+          # END PROBLEM 6
+          return score0, score1
+    #+end_src 
+
+    1. ~strategy0(score0, score1)~ and ~strategy1(score1,score0)~
+    2. no need 
+       #+begin_src python :results output
+         if not player:
+         #    if score0 >= goal:
+         #       break
+             score0 += take_turn(strategy0(score0, score1), score1, dice)
+       #+end_src
+     
+       wrong
+       #+begin_src python :results output
+         if not player:
+             score0 += take_turn(strategy0(score0, score1), score1, dice)
+         #    if score0 >= goal:
+         #       break
+       #+end_src
+    3. One iteration for one ~take_turn()~ + one ~is_swap()~
+    4. ~score0, score1 = score1, score0~ 
+** Phase 2: Commentary
+*** Commentary examples
+
+    #+begin_src python :results output
+      def say_scores(score0, score1):
+          """A commentary function that announces the score for each player."""
+          print("Player 0 now has", score0, "and Player 1 now has", score1)
+          return say_scores
+
+      def announce_lead_changes(previous_leader=None):
+          """Return a commentary function that announces lead changes.
+
+          >>> f0 = announce_lead_changes()
+          >>> f1 = f0(5, 0)
+          Player 0 takes the lead by 5
+          >>> f2 = f1(5, 12)
+          Player 1 takes the lead by 7
+          >>> f3 = f2(8, 12)
+          >>> f4 = f3(8, 13)
+          >>> f5 = f4(15, 13)
+          Player 0 takes the lead by 2
+          """
+          def say(score0, score1):
+              if score0 > score1:
+                  leader = 0
+              elif score1 > score0:
+                  leader = 1
+              else:
+                  leader = None
+              if leader != None and leader != previous_leader:
+                  print('Player', leader, 'takes the lead by', abs(score0 - score1))
+              return announce_lead_changes(leader)
+          return say
+
+      def both(f, g):
+          """Return a commentary function that says what f says, then what g says.
+
+          >>> h0 = both(say_scores, announce_lead_changes())
+          >>> h1 = h0(10, 0)
+          Player 0 now has 10 and Player 1 now has 0
+          Player 0 takes the lead by 10
+          >>> h2 = h1(10, 6)
+          Player 0 now has 10 and Player 1 now has 6
+          >>> h3 = h2(6, 17) # Player 0 gets 7 points, then Swine Swap applies
+          Player 0 now has 6 and Player 1 now has 17
+          Player 1 takes the lead by 11
+          """
+          def say(score0, score1):
+              return both(f(score0, score1), g(score0, score1))
+          return say
+    #+end_src 
+
+    1. ~say_scores~ returns a reference to itself.
+    2. ~announce_lead_changes~ and ~both~ are *high order* funcs.
+    3. ~func~ vs ~func()~: ~a = func~ means *a is a func* while ~a = func()~ means *a is a value* which = *return value(may also a func)* of ~func()~.
+    4. *Details*:
+       - ~say_scores(a, b)~ = ~say_scores~.
+       - ~announce_lead_changes()~ = ~announce_lead_changes(previous_leader)~ = ~say~; ~say(a, b)~ = ~announce_leader_changes(leader)~ = ~say~.
+       - ~both(say_scores, announce_lead_changes())~ = ~both(say_scores, say)~ = ~say~; ~say(a, b)~ = ~both(say_scores(a, b), announce_lead_changes(a, b))~ = ~both(say_scores(a, b), say(a, b))~ = ~both(say_scores, say)~ = ~say~.
+**** Question:
+     1. 关于 ~func~ 与 ~func()~ 的分析？
+     2. 如上关于评论函数的分析正误？有没有更简洁的理解分析？
+*** Problem 6
+    
+    #+begin_src python :results output
+      def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
+               goal=GOAL_SCORE, say=silence):
+          """Simulate a game and return the final scores of both players, with Player
+          0's score first, and Player 1's score second.
+
+          A strategy is a function that takes two total scores as arguments (the
+          current player's score, and the opponent's score), and returns a number of
+          dice that the current player will roll this turn.
+
+          strategy0:  The strategy function for Player 0, who plays first.
+          strategy1:  The strategy function for Player 1, who plays second.
+          score0:     Starting score for Player 0
+          score1:     Starting score for Player 1
+          dice:       A function of zero arguments that simulates a dice roll.
+          goal:       The game ends and someone wins when this score is reached.
+          say:        The commentary function to call at the end of the first turn.
+          """
+          player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
+          # BEGIN PROBLEM 5
+          "*** YOUR CODE HERE ***"
+          first_turn = 1
+
+          while score0 < goal and score1 < goal:
+              if not player:
+                  score0 += take_turn(strategy0(score0, score1), score1, dice)
+              else: # get score1
+                  score1 += take_turn(strategy1(score1, score0), score0, dice)
+
+              if is_swap(score0, score1):
+                  score0, score1 = score1, score0
+
+              if first_turn:
+                  commment_func = say(score0, score1)
+                  first_turn = 0
+              else:
+                  commment_func = commment_func(score0, score1)
+
+              # Switch player
+              player = other(player)
+          # END PROBLEM 5
+          # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
+          # BEGIN PROBLEM 6
+          "*** YOUR CODE HERE ***"
+          # END PROBLEM 6
+          return score0, score1
+
+    #+end_src 
+
+    1. A commentary function is called *at the end of each turn*, the *only side effect* of a commentary function should be to *print*, *no any return values*.
+    2. The *return value of calling a commentary function* gives you the *commentary function to call on the next turn*: ~comment_func~ = ~say(score0, score1)~ = ~say~; ~comment_func(score0, score1)~ = ~say(score0, score1)~ = ~say~ = ~comment_func~.
+
+*** Problem 7
+    
+    #+begin_src python :results output
+      def announce_highest(who, previous_high=0, previous_score=0):
+          """Return a commentary function that announces when WHO's score
+          increases by more than ever before in the game.
+
+          >>> f0 = announce_highest(1) # Only announce Player 1 score gains
+          >>> f1 = f0(12, 0)
+          >>> f2 = f1(12, 11)
+          11 point(s)! That's the biggest gain yet for Player 1
+          >>> f3 = f2(20, 11)
+          >>> f4 = f3(13, 20) # Player 1 gets 2 points, then Swine Swap applies
+          >>> f5 = f4(20, 35) # Player 0 gets 22 points, then Swine Swap applies
+          15 point(s)! That's the biggest gain yet for Player 1
+          >>> f6 = f5(20, 47) # Player 1 gets 12 points; not enough for a new high
+          >>> f7 = f6(21, 47)
+          >>> f8 = f7(21, 77)
+          30 point(s)! That's the biggest gain yet for Player 1
+          >>> f9 = f8(77, 22) # Swap!
+          >>> f10 = f9(33, 77) # Swap!
+          55 point(s)! That's the biggest gain yet for Player 1
+          """
+          assert who == 0 or who == 1, 'The who argument should indicate a player.'
+          # BEGIN PROBLEM 7
+          "*** YOUR CODE HERE ***"
+          def say(score0, score1, pre_score = previous_score, pre_high = previous_high):
+              if who == 0:
+                  if score0 - pre_score > pre_high:
+                      pre_high = score0 - previous_score
+                      print(pre_high, "point(s)! That's the biggest gain yet for Player", who)
+                  pre_score = score0
+              else:
+                  if score1 - pre_score > pre_high:
+                      pre_high = score1 - previous_score
+                      print(pre_high, "point(s)! That's the biggest gain yet for Player", who)
+                  pre_score = score1
+              return announce_highest(who, pre_high, pre_score)
+          return say
+    #+end_src 
+    
+    1. Use ~nonlocal~ or ~say(score0, score1, pre_score = previous_score, pre_high = previous_high)~.
+    2. Commentary func: ~announce_highest(who, previous_high, previous_score)~ = ~say~; ~say(a, b)~ = ~announce_highest(who, previous_high, previous_score)~ = ~say~.
+
+** Phase 3: Strategies
+*** Problem 8
+
