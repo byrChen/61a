@@ -326,6 +326,174 @@
     1. Use ~nonlocal~ or ~say(score0, score1, pre_score = previous_score, pre_high = previous_high)~.
     2. Commentary func: ~announce_highest(who, previous_high, previous_score)~ = ~say~; ~say(a, b)~ = ~announce_highest(who, previous_high, previous_score)~ = ~say~.
 
-** Phase 3: Strategies
 *** Problem 8
+    
+    #+begin_src python :results output
+      def make_averaged(fn, num_samples=1000):
+          """Return a function that returns the average value of FN when called.
+
+          To implement this function, you will have to use *args syntax, a new Python
+          feature introduced in this project.  See the project description.
+
+          >>> dice = make_test_dice(4, 2, 5, 1)
+          >>> averaged_dice = make_averaged(dice, 1000)
+          >>> averaged_dice()
+          3.0
+          """
+          # BEGIN PROBLEM 8
+          "*** YOUR CODE HERE ***"
+          def fn_average(*args):
+              sum, i = 0, 0
+              while i < num_samples:
+                  sum += fn(*args)
+                  i += 1
+              return sum / num_samples
+
+          return fn_average
+    #+end_src 
+
+    1. ~make_average~ is a *higher order func* as it *both takes in a function as an argument* and *returns a function*.
+    2. ~*args~ to accept an *arbitrary* number of args.
+
+*** Problem 9
+
+    #+begin_src python :results output
+      def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
+          """Return the number of dice (1 to 10) that gives the highest average turn
+          score by calling roll_dice with the provided DICE over NUM_SAMPLES times.
+          Assume that the dice always return positive outcomes.
+
+          >>> dice = make_test_dice(1, 6)
+          >>> max_scoring_num_rolls(dice)
+          1
+          """
+          # BEGIN PROBLEM 9
+          # num = 1
+          # if dice == 1:
+          #     num = 1
+          # else:
+          #     while dice != 1:
+          #         num += 1
+          #         if num == 10:
+          #             break
+          # return num
+          num = 2
+          min = 1
+          while num <= 10:
+              score = make_averaged(roll_dice, num_samples)
+              if score(num, dice) > score(min, dice):
+                  min = num
+              num += 1
+          return min
+          "*** YOUR CODE HERE ***"
+    #+end_src 
+
+    1. ~make_averaged~ returns a *func*, not ~if make_averaged(roll_dice(num, dice), num_samples) > make_averaged(roll_dice(min, dice), num_samples)~.
+    2. ~score = make_averaged(roll_dice, num_samples)~ and ~score(num, dice)~.
+    3. Computing average win rate in ~average_win_rate~: ~win_rate_as_player_0 = 1 - make_averaged(winner)(strategy, baseline)~ and ~win_rate_as_player_1 = make_averaged(winner)(baseline, strategy)~.
+    4. ~run_experiments()~ has *no return value*.
+**** Question:
+     1. 为什么 ~run_experiments()~ 没有返回值？什么情况下允许无返回值？为什么 ~comment_function~ 不能没有返回值直接 ~print~ ？
+
+*** Problem 10
+
+    #+begin_src python :results output
+    #+end_src 
+
+** Phase 3: Strategies
+*** Problem 10
+    
+    #+begin_src python :results output
+      def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
+          """This strategy rolls 0 dice if that gives at least MARGIN points, and
+          rolls NUM_ROLLS otherwise.
+          """
+          # BEGIN PROBLEM 10
+          return 0 if free_bacon(score) >= margin and free_bacon(opponent_score) >= margin else num_rolls  # Replace this statement
+    #+end_src 
+
+    1. This strategy *rolls 0 dice* if that *gives at least MARGIN points*, and *rolls NUM_ROLLS otherwise*: ~return 0 if free_bacon(score) >= margin and free_bacon(opponent_score) >= margin else num_rolls~
+
+*** Problem 11
+
+    #+begin_src python :results output
+      def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
+          """This strategy rolls 0 dice when it triggers a beneficial swap. It also
+          rolls 0 dice if it gives at least MARGIN points and does not trigger a
+          non-beneficial swap. Otherwise, it rolls NUM_ROLLS.
+          """
+          # BEGIN PROBLEM 11
+          score += free_bacon(opponent_score)
+
+          if is_swap(score, opponent_score):
+              if score < opponent_score:
+                  return 0
+              elif score == opponent_score and free_bacon(opponent_score) >= margin:
+                  return 0
+              else:
+                  return num_rolls
+          elif free_bacon(opponent_score) >= margin:
+              return 0
+          else:
+              return num_rolls
+
+          # if is_swap(score, opponent_score):
+          #     if score < opponent_score:
+          #         return 0
+          #     else:
+          #         return num_rolls
+          # elif free_bacon(opponent_score) >= margin:
+          #     return 0
+          # else:
+          #     return num_rolls
+
+          # return 0 if (is_swap(score, opponent_score) and score < opponent_score) or (not is_swap(score, opponent_score) and free_bacon(opponent_score) >= margin) else num_rolls
+    #+end_src 
+
+    1. Way1:
+
+       #+begin_src python :results output
+         if is_swap(score, opponent_score):
+             if score < opponent_score:
+                 return 0
+             elif score == opponent_score and free_bacon(opponent_score) >= margin:
+                 return 0
+             else:
+                 return num_rolls
+         elif free_bacon(opponent_score) >= margin:
+             return 0
+         else:
+             return num_rolls
+       #+end_src
+
+    2. Way2:
+
+       #+begin_src python :results output
+         if is_swap(score, opponent_score):
+             if score < opponent_score:
+                 return 0
+             else:
+                 return num_rolls
+         elif free_bacon(opponent_score) >= margin:
+             return 0
+         else:
+             return num_rolls
+
+       #+end_src
+
+    3. Way3:
+
+       #+begin_src python :results output
+         return 0 if (is_swap(score, opponent_score) and score < opponent_score) or (not is_swap(score, opponent_score) and free_bacon(opponent_score) >= margin) else num_rolls
+       #+end_src 
+
+**** Questions:
+     1. 方法一是逻辑上覆盖最全面的，但方法二也能跑通，是方法一可以减少冗余还是方法二未覆盖全面？
+     2. 方法三使用 ~return a if b else c~ 改写的方法二，实际工作中用哪种风格比较好？
+
+*** Optional: Problem 12
+
+    #+begin_src python :results output
+    #+end_src 
+
 

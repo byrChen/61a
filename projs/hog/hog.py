@@ -273,6 +273,14 @@ def make_averaged(fn, num_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def fn_average(*args):
+        sum, i = 0, 0
+        while i < num_samples:
+            sum += fn(*args)
+            i += 1
+        return sum / num_samples
+
+    return fn_average
     # END PROBLEM 8
 
 
@@ -286,6 +294,23 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     1
     """
     # BEGIN PROBLEM 9
+    # num = 1
+    # if dice == 1:
+    #     num = 1
+    # else:
+    #     while dice != 1:
+    #         num += 1
+    #         if num == 10:
+    #             break
+    # return num
+    num = 2
+    min = 1
+    while num <= 10:
+        score = make_averaged(roll_dice, num_samples)
+        if score(num, dice) > score(min, dice):
+            min = num
+        num += 1
+    return min
     "*** YOUR CODE HERE ***"
     # END PROBLEM 9
 
@@ -318,7 +343,7 @@ def run_experiments():
     if False:  # Change to True to test always_roll(8)
         print('always_roll(8) win rate:', average_win_rate(always_roll(8)))
 
-    if False:  # Change to True to test bacon_strategy
+    if True:  # Change to True to test bacon_strategy
         print('bacon_strategy win rate:', average_win_rate(bacon_strategy))
 
     if False:  # Change to True to test swap_strategy
@@ -335,7 +360,7 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 4  # Replace this statement
+    return 0 if free_bacon(score) >= margin and free_bacon(opponent_score) >= margin else num_rolls  # Replace this statement
     # END PROBLEM 10
 
 
@@ -345,7 +370,32 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     non-beneficial swap. Otherwise, it rolls NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 4  # Replace this statement
+    score += free_bacon(opponent_score)
+
+    if is_swap(score, opponent_score):
+        if score < opponent_score:
+            return 0
+        elif score == opponent_score and free_bacon(opponent_score) >= margin:
+            return 0
+        else:
+            return num_rolls
+    elif free_bacon(opponent_score) >= margin:
+        return 0
+    else:
+        return num_rolls
+
+    # if is_swap(score, opponent_score):
+    #     if score < opponent_score:
+    #         return 0
+    #     else:
+    #         return num_rolls
+    # elif free_bacon(opponent_score) >= margin:
+    #     return 0
+    # else:
+    #     return num_rolls
+
+    # return 0 if (is_swap(score, opponent_score) and score < opponent_score) or (not is_swap(score, opponent_score) and free_bacon(opponent_score) >= margin) else num_rolls
+
     # END PROBLEM 11
 
 
