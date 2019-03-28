@@ -184,7 +184,7 @@
          return accumulate(mul, 1, n, term)
    #+end_src 
 
-   1. *Loop method*: ~combiner(combiner(...combiner(base, term(1))..., term(n-1)), term(n))~.
+   1. *Loop method*: ~combiner(combiner(...combiner(term(1), base)..., term(n-1)), term(n))~.
    2. *Recursive method*:
       - ~accumulate2~: treat ~combiner(...combiner(base, term(1))..., term(n-1))~ as ~accumulate2(combiner, base, n-1, term)~ and ~return combiner(term(n), accumulate2(combiner, base, n-1, term)~.    
       - ~accumulate3~: treat ~combiner(base, term(n))~ as ~base~ and ~return accumulate3(combiner, combiner(base, term(n)), n-1, term)~.    
@@ -240,14 +240,25 @@
      def make_repeater4(f, n):
          if n == 0:
              return lambda x: x
-         return lambda x: f(make_repeater3(f, n - 1)(x))
+         return lambda x: f(make_repeater4(f, n - 1)(x))
 
      def make_repeater5(f, n):
          if n == 0:
              return lambda x: x
-         return compose1(f, make_repeater4(f, n - 1))
+         return compose1(f, make_repeater5(f, n - 1))
 
      def make_repeater6(f, n):
          return accumulate(compose1, lambda x: x, n, lambda k: f)
-
    #+end_src 
+
+   - *Loop method*: ~f(...f(f(x))...)~
+     1. Non ~x~ but ~compose1~ in ~make_repeater2~: Treat ~f~ as ~f(g)~ and def ~g = identity~, use ~compose1(f, g)~ to get ~f(g)~, each iteration *change* ~g = f(g)~, finally return ~g = f(...(f(g))...)~.
+     2. Non ~compose1~ but ~x~ in ~make_repeater3~: def ~h~ and return ~h~, in ~h~ *directly* return ~f(...f(f)...)~.
+   - *Recursive method*
+     1. Non ~compose1~ but ~x~ in ~make_repeater4~: Treat ~f(...f(f(x))...)~ as ~f(x)~ and ~x = ...f(f(x))... = make_repeater4(f, n - 1)(x)~, return ~f(x) = f(make_repeater4(f, n - 1)(x))~.
+     2. Non ~x~ but ~compose1~ in ~make_repeater5~: Treat ~f(...f(f)...)~ as ~f(g)~ and ~g = ...f(f)... = make_repeater5(f, n - 1)~, return ~f(g) = compose1(f, make_repeater5(f, n - 1))~.
+     3. *One line* return with ~compose1~ and ~accumulate~ in ~make_repeater6~: ~combiner~ take in *two values* and return a new *value*, while ~compose1~ take in *two funcs* and return a new *func*, ~combiner(combiner(...combiner(base, term(1))..., term(n-1)), term(n))~ = ~compose1(compose1(...compose1(x, k)..., k), k)~ = ~accumulate(compose1, lambda x: x, n, lambda k: f)~.
+*** Question:
+    1. 关于Loop方法，这两种思维上有何不同？是否用 ~compose1~ 加深了一层抽象？比较而言各适用于什么场景？
+    2. 关于Recursive方法，第3种中所有 ~term(i)~ 为什么都等于 ~f~ ？在 ~accumulate~ 中 ~combiner~ 中的操作数可以互换，这里由于 ~compose1~ 的定义应该考虑 ~(lambda k: f, lambda x: x)~ 才对，为何实际两者仍然可以互换？这3种方法思维上有何根本不同？各适用于什么场景？
+    3. 以上分析能否改进？（补充或精简统一）
