@@ -323,7 +323,7 @@
           return say
     #+end_src 
     
-    1. Use ~nonlocal~ or ~say(score0, score1, pre_score = previous_score, pre_high = previous_high)~.
+    1. Use ~nonlocal~ or ~say(score0, score1, pre_score = previous_score, pre_high = previous_high)~ to avoid ~local variable [var] reference before assignment~ error. 
     2. Commentary func: ~announce_highest(who, previous_high, previous_score)~ = ~say~; ~say(a, b)~ = ~announce_highest(who, previous_high, previous_score)~ = ~say~.
 
 *** Problem 8
@@ -496,4 +496,7 @@
     #+begin_src python :results output
     #+end_src 
 
+
+*** Question:
+    1. 12怎么做？
 
