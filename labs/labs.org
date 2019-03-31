@@ -305,6 +305,5 @@
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 22:47:46
      [[file:Lab%202:%20Higher%20Order%20Functions/screenshot_2019-03-31_22-47-46.png]]
  
-
 *** More Coding Practice
 **** Q6: Composite Identity Function
