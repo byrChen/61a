@@ -1,5 +1,5 @@
 * Funcs
-** Lecture1
+** Lecture 1
 *** Expressions
 **** Types of expressions
      An expression describes a computation and evaluates to a value
@@ -96,7 +96,7 @@
      : set()
      
 * Names
-** Lecture2
+** Lecture 2
 *** Env Diagrams
 **** Env Diagrams
      Env diagrams visualize the interpreter’s process.
@@ -164,7 +164,7 @@
       1. An env is a sequence of frames. 
       2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
 * Control
-** Lecture3
+** Lecture 3
 *** Print and None
 **** None Indicates that Nothing is Returned
     - The special value ~None~ represents nothing in Python
@@ -790,11 +790,12 @@
      The decorator symbol @ may also be followed by a call expression. The expression following @ is evaluated first (just as the name trace was evaluated above), the def statement second, and finally the result of evaluating the decorator expression is applied to the newly defined function, and the result is bound to the name in the def statement.
 **** Question:
      1. Extra for experts的理解？decorator用在什么地方？用内存去追踪程序吗？
-** Lecture4
+** Lecture 4
 * Envs
 ** 1.6 
-** Lecture5
+** Lecture 5
 * Iteration
+** Lecture 6
 * Recursion
 ** 1.7 Recursive Funcs
    A function is called *recursive* if the *body of the function calls the function itself*, either *directly or indirectly*. 

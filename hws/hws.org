@@ -262,3 +262,78 @@
     1. 关于Loop方法，这两种思维上有何不同？是否用 ~compose1~ 加深了一层抽象？比较而言各适用于什么场景？
     2. 关于Recursive方法，第3种中所有 ~term(i)~ 为什么都等于 ~f~ ？在 ~accumulate~ 中 ~combiner~ 中的操作数可以互换，这里由于 ~compose1~ 的定义应该考虑 ~(lambda k: f, lambda x: x)~ 才对，为何实际两者仍然可以互换？这3种方法思维上有何根本不同？各适用于什么场景？
     3. 以上分析能否改进？（补充或精简统一）
+       
+** Q5: Church numerals
+
+   #+begin_src python :results output
+     def zero(f):
+         return lambda x: x
+
+     def successor(n):
+         return lambda f: lambda x: f(n(f)(x))
+
+     def one(f):
+         """Church numeral 1: same as successor(zero)"""
+         "*** YOUR CODE HERE ***"
+         return lambda x: f(x)
+
+     def two(f):
+         """Church numeral 2: same as successor(successor(zero))"""
+         "*** YOUR CODE HERE ***"
+         return lambda x: f(f(x))
+
+     three = successor(two)
+
+     def church_to_int(n):
+         """Convert the Church numeral n to a Python integer.
+
+         >>> church_to_int(zero)
+         0
+         >>> church_to_int(one)
+         1
+         >>> church_to_int(two)
+         2
+         >>> church_to_int(three)
+         3
+         """
+         "*** YOUR CODE HERE ***"
+         return n(lambda x: x + 1)(0)
+
+     def add_church(m, n):
+         """Return the Church numeral for m + n, for Church numerals m and n.
+
+         >>> church_to_int(add_church(two, three))
+         5
+         """
+         "*** YOUR CODE HERE ***"
+         return lambda f: lambda x: m(f)(n(f)(x))
+
+     def mul_church(m, n):
+         """Return the Church numeral for m * n, for Church numerals m and n.
+
+         >>> four = successor(three)
+         >>> church_to_int(mul_church(two, three))
+         6
+         >>> church_to_int(mul_church(three, four))
+         12
+         """
+         "*** YOUR CODE HERE ***"
+         return lambda f: m(n(f))
+
+     def pow_church(m, n):
+         """Return the Church numeral m ** n, for Church numerals m and n.
+
+         >>> church_to_int(pow_church(two, three))
+         8
+         >>> church_to_int(pow_church(three, two))
+         9
+         """
+         "*** YOUR CODE HERE ***"
+         return n(m)
+   #+end_src 
+
+   1. f
+   2. 
+
+*** Question:
+    1. 怎么理解这种思路？这种问题与这种问题的解法的特点？与high order func联系起来，是否能从多级order或者说多层抽象来思考？
