@@ -1,10 +1,10 @@
-* Lab 0: Workflow and Python Basics
+* Lab 0 Workflow and Python Basics
   - Unlock tests: ~python ok -q testname -u~
   - Run tests: ~python ok~
   - Show all tests: ~python ok -v~ 
   - Run .py in an interactive session: ~python -i .py~
   - Run doctests in .py: ~python -m doctest .py~ 
-* Lab 1: Function and Control
+* Lab 1 Function and Control
 ** Topics
 *** Functions
 **** ~return~ and ~print~  
@@ -131,7 +131,7 @@
               return True
     #+end_src 
 
-* Lab 2: Higher Order Functions
+* Lab 2 Higher Order Functions
 ** Topics
 *** Lambda Expressions
     ~lambda <parameters>: <return expression>~. 
@@ -151,7 +151,7 @@
       #+end_src 
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 21:05:16
-      [[file:Lab%202:%20Higher%20Order%20Functions/screenshot_2019-03-31_21-05-16.png]]
+      [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_21-05-16.png]]
 
 ***** Two ways of def funcs 
 
@@ -289,7 +289,7 @@
      #+end_src 
 
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 22:41:46
-     [[file:Lab%202:%20Higher%20Order%20Functions/screenshot_2019-03-31_22-41-46.png]]
+     [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-41-46.png]]
  
 **** Q5: Lambda the Environment Diagram
 
@@ -303,7 +303,7 @@
      #+end_src 
 
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 22:47:46
-     [[file:Lab%202:%20Higher%20Order%20Functions/screenshot_2019-03-31_22-47-46.png]]
+     [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-47-46.png]]
  
 *** More Coding Practice
 **** Q6: Composite Identity Function
