@@ -92,7 +92,6 @@
 
    1. Hailstone sequence.
 ** Q6: Quine
-
 * HW02: Higher Order Functions
 ** Q1: Make Adder with a Lambda
 

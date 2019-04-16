@@ -73,6 +73,11 @@
                n = (n - r) // 10
                s += r
            return s + n % 10
+           "***SOLUTION***"
+           total = 0
+           while n > 0:
+               total, n = total + n % 10, n // 10
+           return total
      #+end_src 
 
 ** Optional Questions
@@ -99,6 +104,11 @@
               k -= 1
               a -= 1
           return f
+          "***SOLUTION***"
+          total, stop = 1, n-k
+          while n > stop:
+              total, n = total*n, n-1
+          return total
     #+end_src 
 
 *** Q7: Double Eights
@@ -129,6 +139,18 @@
               return False
           else:
               return True
+          "***SOLUTION***"
+          prev_eight = False
+          while n > 0:
+              last_digit = n % 10
+              if last_digit == 8 and prev_eight:
+                  return True
+              elif last_digit == 8:
+                  prev_eight = True
+              else:
+                  prev_eight = False
+              n = n // 10
+          return False
     #+end_src 
 
 * Lab 2 Higher Order Functions

@@ -394,12 +394,6 @@
     4. ~run_experiments()~ has *no return value*.
 **** Question:
      1. 为什么 ~run_experiments()~ 没有返回值？什么情况下允许无返回值？为什么 ~comment_function~ 不能没有返回值直接 ~print~ ？
-
-*** Problem 10
-
-    #+begin_src python :results output
-    #+end_src 
-
 ** Phase 3: Strategies
 *** Problem 10
     
