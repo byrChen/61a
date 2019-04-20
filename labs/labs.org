@@ -337,5 +337,6 @@
      4. Calling of ~b(x + a(x))~ under *f1* passes *func ~b=a~, args ~x=3~ under f1* and *args ~a = lambda x: x * 2 + 1~ under Global(previous)* to *func signature(need to calculate args ~x + a(x)~)*. ~a(x)~ which *called under f1* passes *args ~x=3~ under f1, func ~a = lambda x: x * 2 + 1~ under Global(previous)* to *func signature(no need to calculate)* and then creat *f2*, *f2's parent is Global, not f1*, as ~a~ is evaluated under *Global(~a~'s parent is Global)*.          
      5. ~b(x + a(x))~ passes *func ~b=a~, args ~x + a(x) = 10~ under f1* and *func ~a = lambda x: x * 2 + 1~ under Global* to *func signature(no need to calculate)*, then *f3* created, *f3's parent=Global* as ~a~ is evaluated under *Global*.
  
-*** More Coding Practice
-**** Q6: Composite Identity Function
+*** More Coding Practice                                        :OUTSTANDING:
+**** Q6: Composite Identity Function                            
+     

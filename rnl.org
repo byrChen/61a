@@ -1,3 +1,4 @@
+#+SEQ_TODO: NEXT(n) TODO(t) LATER(l) IFTIME(i) | DONE(d) CANCELLED(c) FAIL(f) WASTE(w) UNFINISHED(u)
 * Funcs
 ** Lecture 1
 *** Expressions
@@ -594,7 +595,7 @@
      
       - ~f~ and ~g~ are ~resolved correctly~, even in the presence of *conflicting* names(~f~ defined in Global frame).
       - An important feature of *lexically scoped* programming languages: *locally defined* functions *maintain* their *parent environment* when they are *returned* (when return ~f(g(x))~, ~f~ and ~g~ are found from parent frame f1)
-***** Question:
+***** Question:                                                   :QUESTIONS:
       1. 怎么结合env分析比较好的描述程序执行过程？包括环境之间的跳转，返回等。用哪种方式，dot画环境跳转、参数传递、返回值和拓展关系图可行吗？
 
 *** 1.6.5 Example: Newton's Method
@@ -668,7 +669,7 @@
        nth_root_of_a(3, 64)
      #+end_src 
 
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. 仍然是怎么结合env分析清晰的整理程序执行过程？特别是在参数传递和返回值环节。
 *** 1.6.6 Currying
     Use *higher-order functions* to convert *a function* that takes *multiple arguments* into *a chain of functions* that each take *a single argument*.
@@ -723,7 +724,7 @@
 
      - ~curry2(f)(x)(y)~ = ~f(x, y)~
      - ~uncurry2(curry2(f))~ = ~f~ 
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. 什么情况下需要curry？为何不直接最外用多个形参？结合嵌套函数的参数传递方式理解curry的传参方式？
      2. 结合env分析？
 *** 1.6.7 Lambda Expressions
@@ -752,7 +753,7 @@
        compose1 = lambda f,g: lambda x: f(g(x))
      #+end_src 
 
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. Example 1中结合env分析过程？
      2. Example 2的理解？ 
 
@@ -786,7 +787,7 @@
      - With ~@trace~, name ~triple~ is bound to the ~returned function value~ of *calling ~trace~ on the newly defined ~triple~ function*: ~trace(triple(12))~.
 **** Extra for experts
      The decorator symbol @ may also be followed by a call expression. The expression following @ is evaluated first (just as the name trace was evaluated above), the def statement second, and finally the result of evaluating the decorator expression is applied to the newly defined function, and the result is bound to the name in the def statement.
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. Extra for experts的理解？decorator用在什么地方？用内存去追踪程序吗？
 ** Lecture 4
 * Envs
@@ -855,7 +856,7 @@
        - Recursion
        *trust simpler cases* and *only check final*: treat *recursive calls(simpler cases)* as *functional abstraction*, a form of proof by *induction*.
        - Iteration
-****** Question        
+****** Question:                                                  :QUESTIONS:
        1. 怎么检查iteration的正确?检查base开头和final结尾并trust中间过程？
 *** 1.7.2 Mutual Recursion
     When a recursive procedure is *divided among two functions* that *call each other*, the functions are said to be *mutually recursive*. 
@@ -901,7 +902,7 @@
 
       - *put base cases together* and pass *next updated para* to the *remaining func*.
       - *mutual* recursion provides a *mechanism* for *maintaining abstraction* within a *complicated(single)* recursive program.
-****** Question:
+****** Question:                                                  :QUESTIONS:
        1. 怎么理解 *breaking the abstraction boundary* ？是不是就是 *put base cases together* ？
 *** 1.7.3 Printing in Recursive Functions
 **** Using calls to ~print~ to visualize the computational process evolved by a recursive function 

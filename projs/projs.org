@@ -225,7 +225,7 @@
        - ~say_scores(a, b)~ = ~say_scores~.
        - ~announce_lead_changes()~ = ~announce_lead_changes(previous_leader)~ = ~say~; ~say(a, b)~ = ~announce_leader_changes(leader)~ = ~say~.
        - ~both(say_scores, announce_lead_changes())~ = ~both(say_scores, say)~ = ~say~; ~say(a, b)~ = ~both(say_scores(a, b), announce_lead_changes(a, b))~ = ~both(say_scores(a, b), say(a, b))~ = ~both(say_scores, say)~ = ~say~.
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. 关于 ~func~ 与 ~func()~ 的分析？
      2. 如上关于评论函数的分析正误？有没有更简洁的理解分析？
 *** Problem 6
@@ -392,7 +392,7 @@
     2. ~score = make_averaged(roll_dice, num_samples)~ and ~score(num, dice)~.
     3. Computing average win rate in ~average_win_rate~: ~win_rate_as_player_0 = 1 - make_averaged(winner)(strategy, baseline)~ and ~win_rate_as_player_1 = make_averaged(winner)(baseline, strategy)~.
     4. ~run_experiments()~ has *no return value*.
-**** Question:
+**** Question:                                                    :QUESTIONS:
      1. 为什么 ~run_experiments()~ 没有返回值？什么情况下允许无返回值？为什么 ~comment_function~ 不能没有返回值直接 ~print~ ？
 ** Phase 3: Strategies
 *** Problem 10
@@ -481,16 +481,11 @@
          return 0 if (is_swap(score, opponent_score) and score < opponent_score) or (not is_swap(score, opponent_score) and free_bacon(opponent_score) >= margin) else num_rolls
        #+end_src 
 
-**** Questions:
+**** Question:                                                   :QUESTIONS:
      1. 方法一是逻辑上覆盖最全面的，但方法二也能跑通，是方法一可以减少冗余还是方法二未覆盖全面？
      2. 方法三使用 ~return a if b else c~ 改写的方法二，实际工作中用哪种风格比较好？
 
-*** Optional: Problem 12
+*** Optional: Problem 12                                        :OUTSTANDING:
 
     #+begin_src python :results output
     #+end_src 
-
-
-*** Question:
-    1. 12怎么做？
-

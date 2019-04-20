@@ -91,7 +91,22 @@
    #+end_src 
 
    1. Hailstone sequence.
-** Q6: Quine
+** Q6: Quine                                                    :OUTSTANDING:
+   
+   #+begin_src python :results output
+     s = 'print("s = " + repr(s) + "; eval(s)")'; eval(s)
+   #+end_src 
+
+   #+RESULTS:
+   : s = 'print("s = " + repr(s) + "; eval(s)")'; eval(s)
+
+   #+begin_src python :results output
+     _='_=%r;print _(%%)_';print (_%_) 
+   #+end_src 
+
+   #+RESULTS:
+   : _='_=%r;print _(%%)_';print _(%)_
+
 * HW02: Higher Order Functions
 ** Q1: Make Adder with a Lambda
 
@@ -261,8 +276,7 @@
     1. 关于Loop方法，这两种思维上有何不同？是否用 ~compose1~ 加深了一层抽象？比较而言各适用于什么场景？
     2. 关于Recursive方法，第3种中所有 ~term(i)~ 为什么都等于 ~f~ ？在 ~accumulate~ 中 ~combiner~ 中的操作数可以互换，这里由于 ~compose1~ 的定义应该考虑 ~(lambda k: f, lambda x: x)~ 才对，为何实际两者仍然可以互换？这3种方法思维上有何根本不同？各适用于什么场景？
     3. 以上分析能否改进？（补充或精简统一）
-       
-** Q5: Church numerals
+** Q5: Church numerals                                          :OUTSTANDING:
 
    #+begin_src python :results output
      def zero(f):
@@ -334,5 +348,6 @@
    1. f
    2. 
 
-*** Question:
+*** Question:                                                     :QUESTIONS:
     1. 怎么理解这种思路？这种问题与这种问题的解法的特点？与high order func联系起来，是否能从多级order或者说多层抽象来思考？
+jdifjeiji
