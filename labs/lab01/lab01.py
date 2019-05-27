@@ -29,4 +29,3 @@ def sum_digits(n):
         n = (n - r) // 10
         s += r
     return s + n % 10
-

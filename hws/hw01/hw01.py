@@ -47,10 +47,9 @@ def largest_factor(n):
     i = n-1;
     while i > 1:
         if (n % i == 0):
-            break
+            return i
         else:
             i = i - 1
-    return i
 
 # Q4
 def if_function(condition, true_result, false_result):
@@ -101,12 +100,10 @@ def c():
 def t():
     "*** YOUR CODE HERE ***"
     print(1)
-    return None
 
 def f():
     "*** YOUR CODE HERE ***"
     print(2)
-    return None
 
 # Q5
 def hailstone(n):

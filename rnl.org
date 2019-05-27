@@ -1,398 +1,6 @@
-#+SEQ_TODO: NEXT(n) TODO(t) LATER(l) IFTIME(i) | DONE(d) CANCELLED(c) FAIL(f) WASTE(w) UNFINISHED(u)
-* Funcs
-** Lecture 1
-*** Expressions
-**** Types of expressions
-     An expression describes a computation and evaluates to a value
-***** Primitive expressions
-      ~2 + 1~
-***** Call expressions
-      ~max(2,3)~
-**** Call Expressions in Python
-     All expressions can use func call notation
-     ~max(2,3)~
-**** Anatomy of a Call Expression
-     Evaluation procedure for call expressions:
-     ~add(2, 3)~ 
-     Operators and operands are also expressions, so they evaluate to values.
-***** Evaluate the operator and then the operand subexpressions
+#+TAGS: OUTSTANDING(o) QUESTIONS(q)
 
-     | operator | add |
-     | operand1 |   2 |
-     | operand2 |   3 |
-
-***** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
-
-     | func  | value of add |
-     | arg1 | value of 2   |
-     | arg2 | value of 3   |
-
-**** Evaluating Nested Expressions
-    ~mul(add(4,mul(4, 6)), add(3, 5))~ 
-
-    #+BEGIN_SRC dot :file ./func-1.png :exports results
-      digraph func1 {
-            a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
-            a2 [label="add(4,mul(4,6))"];
-            a3 [label="add(3,5)"];
-            a5 [label="mul(4,6)"];
-            4 [shape=box];
-            6 [shape=box];
-            3 [shape=box];
-            5 [shape=box];
-            a1->a2->4;
-            a2->a5->4;
-            a5->6;
-            a1->a3->3;
-            a3->5;
-      }     
-    #+END_SRC
-
-    #+RESULTS:
-    [[file:./func-1.png]]
-
-*** Funcs, Values, Objects, Interpreters, and Data
-**** Objects
-
-     #+BEGIN_SRC python :session Objects :results output
-       from urllib.request import urlopen
-       shakes = urlopen('http://composingprograms.com/shakespeare.txt')
-       text = shakes.read().split()
-     #+END_SRC 
-
-     #+BEGIN_SRC python :session Objects :results output
-       print(len(text),'\n',text[:25],'\n', text.count(b'the'), '\n', text.count(b','))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 980637 
-     :  [b'A', b"MIDSUMMER-NIGHT'S", b'DREAM', b'Now', b',', b'fair', b'Hippolyta', b',', b'our', b'nuptial', b'hour', b'Draws', b'on', b'apace', b':', b'four', b'happy', b'days', b'bring', b'in', b'Another', b'moon', b';', b'but', b'O'] 
-     :  23272 
-     :  81827
-
-**** Sets 
-
-     #+BEGIN_SRC python :session Objects :results output
-       words = set(text)
-       print(len(words),'\n',max(words))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 33505 
-     :  b'zwaggered'
-
-**** Reversals 
-
-     #+BEGIN_SRC python :session Objects :results output
-       print('draw'[::-1])
-       print({w for w in words if w == w[::-1] and len(w)>4})
-       print({w for w in words if w[::-1] in words and len(w) == 4})
-       print({w for w in words if w[::-1] in words and len(w) > 6})
-     #+END_SRC 
-
-     #+RESULTS:
-     : ward
-     : {b'rever', b'madam', b'level', b'minim', b'redder', b'refer'}
-     : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
-     : set()
-     
-* Names
-** Lecture 2
-*** Env Diagrams
-**** Env Diagrams
-     Env diagrams visualize the interpreter’s process.
-***** Code
-      Statements and expressions
-
-      #+BEGIN_SRC python 
-        from math import pi
-        tau = 2 * pi
-        return pi, tau
-      #+END_SRC 
-
-      #+RESULTS:
-      | 3.141592653589793 | 6.283185307179586 |
-
-***** Frames
-      Each name is bound to a value. Within a frame, a name cannot be repeated
-
-     | Global frame |        |
-     |--------------+--------|
-     | name         |  value |
-     | pi           | 3.1416 |
-     | tau          | 6.2832 |
-
-**** Assignment Statements
-***** Execution rule for assignment statements:
-      - Evaluate all expressions to the right of = from left to right.
-      - Bind all names to the left of = to those resulting values in the current frame.
-       
-      #+BEGIN_SRC python :results output
-        a = 1
-        b = 2
-        b, a = a + b, b
-        print(a,b)
-      #+END_SRC
-
-      #+RESULTS:
-      : 2 3
-
-*** Defining Funcs
-**** Defining Funcs
-     Assignment is a simple means of abstraction: binds names to values
-     Func def is a more powerful means of abstraction: binds names to expressions
-    
-     #+BEGIN_SRC python
-       def <name>(<formal parameters>): 
-           return <return expression>
-     #+END_SRC
-
-***** Execution procedure for def statements:
-      1. Create a func with signature ~<name>(<formal parameters>)~, func signature indicates how many args a func takes, it has all the
- information needed to create a local frame.
-      2. Set the body of that func to be everything indented after the first line, func body defines the computation performed when the func is applied
-      3. Bind ~<name>~ to that func in the current frame
-**** Calling User-Defined Funcs
-***** Procedure for calling/applying user-defined funcs
-      1. Add a local frame, forming a new env
-      2. Bind the func's formal parameters to its args in that frame
-      3. Execute the body of the func in that new env
-**** Looking Up Names In Env
-     Every expression is evaluated in the context of an env. So far, the current env is either: 
-     - The global frame alone, or
-     - A local frame, followed by the global frame. 
-***** Most important two things:
-      1. An env is a sequence of frames. 
-      2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
-* Control
-** Lecture 3
-*** Print and None
-**** None Indicates that Nothing is Returned
-    - The special value ~None~ represents nothing in Python
-    - A func that does not explicitly return a value will return ~None~
-    - Careful: ~None~ is not displayed by the interpreter as the value of an expression
-     
-     #+begin_src python 
-       def does_not_return_square(a):
-           a*a
-       x = does_not_return_square(4) + 3 
-       return x
-     #+end_src
-
-**** Pure Funcs & Non-Pure Funcs
-***** Pure Funcs
-      just return *values*: ~abs()~   
-     
-      #+begin_src python 
-        return abs(-2)
-      #+end_src
-
-      #+RESULTS:
-      : 2
-
-***** Non-Pure Funcs     
-      return *values(None)* and have *side effects*: ~print()~
-
-      #+begin_src python :results output
-        a = print(2)
-        print(a)
-      #+end_src
-
-      #+RESULTS:
-      : 2
-      : None
-
-**** Nested Expressions with Print
-    
-     #+begin_src python :results output
-       a = print(print(1), print(2))
-       print(a)
-     #+end_src
-
-     #+RESULTS:
-     : 1
-     : 2
-     : None None
-     : None
-    
-*** Multiple Envs
-**** Life Cycle of a User-Defined Func 
-***** Def statement:
-
-      #+begin_src python
-        def square(x):
-            return mul(x, x)
-      #+end_src
-    
-      - A new func is created!
-      - Name bound to that func in the current frame 
-***** Call expression: 
-      ~square(2+2)~ 
-      - Operator & operands evaluated
-      - Func (value of operator) called on args (values of operands):
-***** Calling/Applying: 
-      - A new frame is created!
-      - Body is executed in that new env
-**** Multiple Envs in One Diagram!
-    
-     #+BEGIN_SRC python :results output
-       from operator import mul
-       def square(x):
-           return mul(x, x);
-       print(square(square(3)))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 81
-
-     An env is a sequence of frames.
-     - The global frame alone
-     - A local, then the global frame
-     *One env per frame here* 
-***** ENV1 
-
-      | Frames | Global      |
-      | funcs  | mul, square |
-
-***** ENV2
-
-      | Frames       | f2: square [parent=Global |
-      | x            |                         3 |
-      | return value |                         9 |
-
-***** ENV3
-
-      | Frames       | f3: square [parent=Global |
-      | x            |                         9 |
-      | return value |                        81 |
-
-**** Names Have No Meaning Without Envs
-     - Every expression is evaluated in the context of an env.
-     - A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
-**** Names Have Different Meanings in Different Envs
-    
-     #+BEGIN_SRC python :results output
-       from operator import mul
-       def square(square):
-           return mul(square, square)
-       print(square(4))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 16
-
-     *A call expression and the body of the func being called are evaluated in different envs*
-
-     | call of square(4) | ENV1:Global                |
-     | body of square(4) | ENV2:f1 followed by Global |
-
-*** Miscellaneous Python Features
-**** Operators
-***** Addition 
-
-      #+BEGIN_SRC python :results output
-        print(2+3*4+5,'\n',(2+3)*(4+5))
-      #+END_SRC 
-
-      #+RESULTS:
-      : 19 
-      :  45
-
-***** Division
-
-      #+BEGIN_SRC python :results output
-        print(618 / 10, 618 // 10, 618 % 10)
-        from operator import truediv, floordiv, mod
-        print(truediv(618, 10), floordiv(618, 10), mod(618, 10))
-      #+END_SRC 
-
-      #+RESULTS:
-      : 61.8 61 8
-      : 61.8 61 8
-
-**** Multiple Return Values 
-
-     #+BEGIN_SRC python :results output
-       def divide_exact(n, d):
-           return n // d, n % d
-       quotient, remainder = divide_exact(618, 10)
-       print(quotient, remainder)
-     #+END_SRC 
-
-     #+RESULTS:
-     : 61 8
-
-**** Docstrings, doctests, & default args
-     use *python3 -m doctest test.py* to doctest. 
-
-     #+BEGIN_SRC python :results output
-       def divide_exact(n, d=10):
-           """Return the quotient and remainder of dividing N by D.
-
-           >>> quotient, remainder = divide_exact(618, 10)
-           >>> quotient
-           61
-           >>> remainder
-           8
-           """
-           return floordiv(n, d), mod(n, d)
-     #+END_SRC 
-
-**** Conditional Statements
-***** Statements
-      A *statement* is executed by the *interpreter* to perform an action
-
-***** Compound statements 
-
-      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
-      [[file:Control/screenshot_2019-03-05_16-46-10.png]]
- 
-      The first header determins a *statement's type*: ~def~ ~if~ ~while~...
- 
-***** Conditional Statements
-
-      #+begin_src python :results output
-        def absolute_value(x):
-            if x < 0:
-                return -x
-            elif x == 0:
-                return0
-            else:
-                return x
-      #+end_src 
-      
-      1 statement, 3 clauses, 3 headers, 3 suites.
-
-***** Boolean Contexts
-      In python
-
-      | False | False, 0, '', None, [], ... |
-      | True  | Not false                   |
-
-**** Iteration
-***** While Statements
-      
-      #+begin_src python :results output
-        i,total = 0, 0
-        while i < 3:
-            i = i + 1
-            total = total + 1
-      #+end_src 
-
-***** Example: The Fibonacci Sequence
-      
-      #+begin_src python :results output
-        def fib(n):
-            """Compute the nth Fibonacci number"""
-            pred, curr = 0, 1 #--> pred, curr = 1, 0
-            k = 1             #--> k = 0
-            while k < n:
-                pred, curr = curr, pred + curr
-                k = k + 1
-            return curr
-      #+end_src 
-      
-* Higher-Order Func
+* Chapter 1: Building Abstractions with Functions
 ** 1.6 Higher-Order Funcs
    Funcs that *manipulate funcs* are called *higher-order funcs*
 *** 1.6.1 Funcs as Args
@@ -789,13 +397,6 @@
      The decorator symbol @ may also be followed by a call expression. The expression following @ is evaluated first (just as the name trace was evaluated above), the def statement second, and finally the result of evaluating the decorator expression is applied to the newly defined function, and the result is bound to the name in the def statement.
 **** Question:                                                    :QUESTIONS:
      1. Extra for experts的理解？decorator用在什么地方？用内存去追踪程序吗？
-** Lecture 4
-* Envs
-** 1.6 
-** Lecture 5
-* Iteration
-** Lecture 6
-* Recursion
 ** 1.7 Recursive Funcs
    A function is called *recursive* if the *body of the function calls the function itself*, either *directly or indirectly*. 
 
@@ -917,10 +518,482 @@
                 print(n)
                 cascade(n//10)
                 print(n)
+            """simplify"""
+            print(n)
+            if n >= 10:
+                cascade(n//10)
+                print(n)
       #+end_src 
 
+***** Example: multual recursion for two-player game
+
+      #+begin_src python :results output
+        def play_alice(n):
+            if n == 0:
+                print("Bob wins!")
+            else:
+                play_bob(n-1)
+    
+        def play_bob(n):
+            if n == 0:
+                print("Alice wins!")
+            elif is_even(n):
+                play_alice(n-2)
+            else:
+                play_alice(n-1)
+      #+end_src 
+
+      - A natural *decomposition*: *encapsulating* each strategy in its own func
+        - Modifying one strategy *without affecting* the other, maintaining the *abstraction barrier* between the two.
+      - Turn-by-turn: these two funcs call each other at the end of each turn.
 *** 1.7.4 Tree Recursion
+    *Tree Recursive*: A func with *multiple* recursive calls
+
+    #+begin_src python :results output
+      def fib(n):
+          if n == 1:
+              return 0
+          if n == 2:
+              return 1
+          else:
+              return fib(n-2) + fib(n-1)
+
+      result = fib(6)
+    #+end_src 
+
+    - As for Fibonacci, *iterative* is more *efficient* than *recursive*.
 *** 1.7.5 Example: Partitions
+    The *number of partitions* of a positive integer /n/, using parts *up to* size /m/, is the number of ways in which /n/ can be expressed as the *sum* of positive integer parts up to /m/ in *increasing order*.
+    - Strategy: the number of ways to partition /n/ using integers up to /m/ equals
+      1. the number of ways to partition /n-m/ using integers up to /m/, and
+      2. the number of ways to partition /n/ using integers up to /m-1/
+     
+    #+begin_src python :results output
+      def count_partitions(n, m):
+          """Count the ways to partition n using parts up to m."""
+          if n == 0:
+              return 1
+          elif n < 0:
+              return 0
+          elif m == 0:
+              return 0
+          else:
+              return count_partitions(n-m, m) + count_partitions(n, m-1)
+    #+end_src 
+
+    - *Recursively reducing* the problem of partitioning /n/ using integers up to /m/ into *two simpler problems*:
+      1. partition a *smaller number* /n-m/
+      2. partition with *smaller components* up to /m-1/
+    - *Base cases*:
+      1. There is one way to partition 0: include no parts.
+      2. There are 0 ways to partition a negative n.
+      3. There are 0 ways to partition any n greater than 0 using parts of size 0 or less.
+    - Thinking of a *tree-recursive* func as *exploring different possibilities*: using a part of size m and not m in this case
+**** Question:                                                    :QUESTIONS:
+     1. 从数学上怎么解决上面的拆数问题？递归&非递归思路？
+     2. 怎么理解上面的递归思路？包括base cases的确定？
+     3. 怎么用非递归方法实现代码?
+
+
+
+* Chapter 2: Building Abstractions with Data
+** 2.1 Introduction
+
+
+* Funcs
+** Expressions
+*** Types of expressions
+    An expression describes a computation and evaluates to a value
+**** Primitive expressions
+     ~2 + 1~
+**** Call expressions
+     ~max(2,3)~
+*** Call Expressions in Python
+    All expressions can use func call notation
+    ~max(2,3)~
+*** Anatomy of a Call Expression
+    Evaluation procedure for call expressions:
+    ~add(2, 3)~ 
+    Operators and operands are also expressions, so they evaluate to values.
+**** Evaluate the operator and then the operand subexpressions
+
+    | operator | add |
+    | operand1 |   2 |
+    | operand2 |   3 |
+
+**** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
+
+    | func  | value of add |
+    | arg1 | value of 2   |
+    | arg2 | value of 3   |
+
+*** Evaluating Nested Expressions
+   ~mul(add(4,mul(4, 6)), add(3, 5))~ 
+
+   #+BEGIN_SRC dot :file ./func-1.png :exports results
+     digraph func1 {
+           a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
+           a2 [label="add(4,mul(4,6))"];
+           a3 [label="add(3,5)"];
+           a5 [label="mul(4,6)"];
+           4 [shape=box];
+           6 [shape=box];
+           3 [shape=box];
+           5 [shape=box];
+           a1->a2->4;
+           a2->a5->4;
+           a5->6;
+           a1->a3->3;
+           a3->5;
+     }     
+   #+END_SRC
+
+   #+RESULTS:
+   [[file:./func-1.png]]
+
+** Funcs, Values, Objects, Interpreters, and Data
+*** Objects
+
+    #+BEGIN_SRC python :session Objects :results output
+      from urllib.request import urlopen
+      shakes = urlopen('http://composingprograms.com/shakespeare.txt')
+      text = shakes.read().split()
+    #+END_SRC 
+
+    #+BEGIN_SRC python :session Objects :results output
+      print(len(text),'\n',text[:25],'\n', text.count(b'the'), '\n', text.count(b','))
+    #+END_SRC 
+
+    #+RESULTS:
+    : 980637 
+    :  [b'A', b"MIDSUMMER-NIGHT'S", b'DREAM', b'Now', b',', b'fair', b'Hippolyta', b',', b'our', b'nuptial', b'hour', b'Draws', b'on', b'apace', b':', b'four', b'happy', b'days', b'bring', b'in', b'Another', b'moon', b';', b'but', b'O'] 
+    :  23272 
+    :  81827
+
+*** Sets 
+
+    #+BEGIN_SRC python :session Objects :results output
+      words = set(text)
+      print(len(words),'\n',max(words))
+    #+END_SRC 
+
+    #+RESULTS:
+    : 33505 
+    :  b'zwaggered'
+
+*** Reversals 
+
+    #+BEGIN_SRC python :session Objects :results output
+      print('draw'[::-1])
+      print({w for w in words if w == w[::-1] and len(w)>4})
+      print({w for w in words if w[::-1] in words and len(w) == 4})
+      print({w for w in words if w[::-1] in words and len(w) > 6})
+    #+END_SRC 
+
+    #+RESULTS:
+    : ward
+    : {b'rever', b'madam', b'level', b'minim', b'redder', b'refer'}
+    : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
+    : set()
+     
+* Names
+** Env Diagrams
+*** Env Diagrams
+    Env diagrams visualize the interpreter’s process.
+**** Code
+     Statements and expressions
+
+     #+BEGIN_SRC python 
+       from math import pi
+       tau = 2 * pi
+       return pi, tau
+     #+END_SRC 
+
+     #+RESULTS:
+     | 3.141592653589793 | 6.283185307179586 |
+
+**** Frames
+     Each name is bound to a value. Within a frame, a name cannot be repeated
+
+    | Global frame |        |
+    |--------------+--------|
+    | name         |  value |
+    | pi           | 3.1416 |
+    | tau          | 6.2832 |
+
+*** Assignment Statements
+**** Execution rule for assignment statements:
+     - Evaluate all expressions to the right of = from left to right.
+     - Bind all names to the left of = to those resulting values in the current frame.
+       
+     #+BEGIN_SRC python :results output
+       a = 1
+       b = 2
+       b, a = a + b, b
+       print(a,b)
+     #+END_SRC
+
+     #+RESULTS:
+     : 2 3
+
+** Defining Funcs
+*** Defining Funcs
+    Assignment is a simple means of abstraction: binds names to values
+    Func def is a more powerful means of abstraction: binds names to expressions
+    
+    #+BEGIN_SRC python
+      def <name>(<formal parameters>): 
+          return <return expression>
+    #+END_SRC
+
+**** Execution procedure for def statements:
+     1. Create a func with signature ~<name>(<formal parameters>)~, func signature indicates how many args a func takes, it has all the
+information needed to create a local frame.
+     2. Set the body of that func to be everything indented after the first line, func body defines the computation performed when the func is applied
+     3. Bind ~<name>~ to that func in the current frame
+*** Calling User-Defined Funcs
+**** Procedure for calling/applying user-defined funcs
+     1. Add a local frame, forming a new env
+     2. Bind the func's formal parameters to its args in that frame
+     3. Execute the body of the func in that new env
+*** Looking Up Names In Env
+    Every expression is evaluated in the context of an env. So far, the current env is either: 
+    - The global frame alone, or
+    - A local frame, followed by the global frame. 
+**** Most important two things:
+     1. An env is a sequence of frames. 
+     2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+* Control
+** Print and None
+*** None Indicates that Nothing is Returned
+   - The special value ~None~ represents nothing in Python
+   - A func that does not explicitly return a value will return ~None~
+   - Careful: ~None~ is not displayed by the interpreter as the value of an expression
+     
+    #+begin_src python 
+      def does_not_return_square(a):
+          a*a
+      x = does_not_return_square(4) + 3 
+      return x
+    #+end_src
+
+*** Pure Funcs & Non-Pure Funcs
+**** Pure Funcs
+     just return *values*: ~abs()~   
+     
+     #+begin_src python 
+       return abs(-2)
+     #+end_src
+
+     #+RESULTS:
+     : 2
+
+**** Non-Pure Funcs     
+     return *values(None)* and have *side effects*: ~print()~
+
+     #+begin_src python :results output
+       a = print(2)
+       print(a)
+     #+end_src
+
+     #+RESULTS:
+     : 2
+     : None
+
+*** Nested Expressions with Print
+    
+    #+begin_src python :results output
+      a = print(print(1), print(2))
+      print(a)
+    #+end_src
+
+    #+RESULTS:
+    : 1
+    : 2
+    : None None
+    : None
+    
+** Multiple Envs
+*** Life Cycle of a User-Defined Func 
+**** Def statement:
+
+     #+begin_src python
+       def square(x):
+           return mul(x, x)
+     #+end_src
+    
+     - A new func is created!
+     - Name bound to that func in the current frame 
+**** Call expression: 
+     ~square(2+2)~ 
+     - Operator & operands evaluated
+     - Func (value of operator) called on args (values of operands):
+**** Calling/Applying: 
+     - A new frame is created!
+     - Body is executed in that new env
+*** Multiple Envs in One Diagram!
+    
+    #+BEGIN_SRC python :results output
+      from operator import mul
+      def square(x):
+          return mul(x, x);
+      print(square(square(3)))
+    #+END_SRC 
+
+    #+RESULTS:
+    : 81
+
+    An env is a sequence of frames.
+    - The global frame alone
+    - A local, then the global frame
+    *One env per frame here* 
+**** ENV1 
+
+     | Frames | Global      |
+     | funcs  | mul, square |
+
+**** ENV2
+
+     | Frames       | f2: square [parent=Global |
+     | x            |                         3 |
+     | return value |                         9 |
+
+**** ENV3
+
+     | Frames       | f3: square [parent=Global |
+     | x            |                         9 |
+     | return value |                        81 |
+
+*** Names Have No Meaning Without Envs
+    - Every expression is evaluated in the context of an env.
+    - A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+*** Names Have Different Meanings in Different Envs
+    
+    #+BEGIN_SRC python :results output
+      from operator import mul
+      def square(square):
+          return mul(square, square)
+      print(square(4))
+    #+END_SRC 
+
+    #+RESULTS:
+    : 16
+
+    *A call expression and the body of the func being called are evaluated in different envs*
+
+    | call of square(4) | ENV1:Global                |
+    | body of square(4) | ENV2:f1 followed by Global |
+
+** Miscellaneous Python Features
+*** Operators
+**** Addition 
+
+     #+BEGIN_SRC python :results output
+       print(2+3*4+5,'\n',(2+3)*(4+5))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 19 
+     :  45
+
+**** Division
+
+     #+BEGIN_SRC python :results output
+       print(618 / 10, 618 // 10, 618 % 10)
+       from operator import truediv, floordiv, mod
+       print(truediv(618, 10), floordiv(618, 10), mod(618, 10))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 61.8 61 8
+     : 61.8 61 8
+
+*** Multiple Return Values 
+
+    #+BEGIN_SRC python :results output
+      def divide_exact(n, d):
+          return n // d, n % d
+      quotient, remainder = divide_exact(618, 10)
+      print(quotient, remainder)
+    #+END_SRC 
+
+    #+RESULTS:
+    : 61 8
+
+*** Docstrings, doctests, & default args
+    use *python3 -m doctest test.py* to doctest. 
+
+    #+BEGIN_SRC python :results output
+      def divide_exact(n, d=10):
+          """Return the quotient and remainder of dividing N by D.
+
+          >>> quotient, remainder = divide_exact(618, 10)
+          >>> quotient
+          61
+          >>> remainder
+          8
+          """
+          return floordiv(n, d), mod(n, d)
+    #+END_SRC 
+
+*** Conditional Statements
+**** Statements
+     A *statement* is executed by the *interpreter* to perform an action
+
+**** Compound statements 
+
+     #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
+     [[file:Control/screenshot_2019-03-05_16-46-10.png]]
+ 
+     The first header determins a *statement's type*: ~def~ ~if~ ~while~...
+ 
+**** Conditional Statements
+
+     #+begin_src python :results output
+       def absolute_value(x):
+           if x < 0:
+               return -x
+           elif x == 0:
+               return0
+           else:
+               return x
+     #+end_src 
+      
+     1 statement, 3 clauses, 3 headers, 3 suites.
+
+**** Boolean Contexts
+     In python
+
+     | False | False, 0, '', None, [], ... |
+     | True  | Not false                   |
+
+*** Iteration
+**** While Statements
+      
+     #+begin_src python :results output
+       i,total = 0, 0
+       while i < 3:
+           i = i + 1
+           total = total + 1
+     #+end_src 
+
+**** Example: The Fibonacci Sequence
+      
+     #+begin_src python :results output
+       def fib(n):
+           """Compute the nth Fibonacci number"""
+           pred, curr = 0, 1 #--> pred, curr = 1, 0
+           k = 1             #--> k = 0
+           while k < n:
+               pred, curr = curr, pred + curr
+               k = k + 1
+           return curr
+     #+end_src 
+      
+* Higher-Order Func
+* Envs
+* Iteration
+* Recursion
 * Func Examples
 * Tree Recursion
 * Data Abstraction
@@ -933,3 +1006,4 @@
 * Inheritance
 * Representation
 * Growth
+
