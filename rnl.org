@@ -1,6 +1,396 @@
 #+TAGS: OUTSTANDING(o) QUESTIONS(q)
 
 * Chapter 1: Building Abstractions with Functions
+** Funcs
+*** Expressions
+**** Types of expressions
+     An expression describes a computation and evaluates to a value
+***** Primitive expressions
+      ~2 + 1~
+***** Call expressions
+      ~max(2,3)~
+**** Call Expressions in Python
+     All expressions can use func call notation
+     ~max(2,3)~
+**** Anatomy of a Call Expression
+     Evaluation procedure for call expressions:
+     ~add(2, 3)~ 
+     Operators and operands are also expressions, so they evaluate to values.
+***** Evaluate the operator and then the operand subexpressions
+
+     | operator | add |
+     | operand1 |   2 |
+     | operand2 |   3 |
+
+***** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
+
+     | func  | value of add |
+     | arg1 | value of 2   |
+     | arg2 | value of 3   |
+
+**** Evaluating Nested Expressions
+    ~mul(add(4,mul(4, 6)), add(3, 5))~ 
+
+    #+BEGIN_SRC dot :file ./func-1.png :exports results
+      digraph func1 {
+            a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
+            a2 [label="add(4,mul(4,6))"];
+            a3 [label="add(3,5)"];
+            a5 [label="mul(4,6)"];
+            4 [shape=box];
+            6 [shape=box];
+            3 [shape=box];
+            5 [shape=box];
+            a1->a2->4;
+            a2->a5->4;
+            a5->6;
+            a1->a3->3;
+            a3->5;
+      }     
+    #+END_SRC
+
+    #+RESULTS:
+    [[file:./func-1.png]]
+
+*** Funcs, Values, Objects, Interpreters, and Data
+**** Objects
+
+     #+BEGIN_SRC python :session Objects :results output
+       from urllib.request import urlopen
+       shakes = urlopen('http://composingprograms.com/shakespeare.txt')
+       text = shakes.read().split()
+     #+END_SRC 
+
+     #+BEGIN_SRC python :session Objects :results output
+       print(len(text),'\n',text[:25],'\n', text.count(b'the'), '\n', text.count(b','))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 980637 
+     :  [b'A', b"MIDSUMMER-NIGHT'S", b'DREAM', b'Now', b',', b'fair', b'Hippolyta', b',', b'our', b'nuptial', b'hour', b'Draws', b'on', b'apace', b':', b'four', b'happy', b'days', b'bring', b'in', b'Another', b'moon', b';', b'but', b'O'] 
+     :  23272 
+     :  81827
+
+**** Sets 
+
+     #+BEGIN_SRC python :session Objects :results output
+       words = set(text)
+       print(len(words),'\n',max(words))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 33505 
+     :  b'zwaggered'
+
+**** Reversals 
+
+     #+BEGIN_SRC python :session Objects :results output
+       print('draw'[::-1])
+       print({w for w in words if w == w[::-1] and len(w)>4})
+       print({w for w in words if w[::-1] in words and len(w) == 4})
+       print({w for w in words if w[::-1] in words and len(w) > 6})
+     #+END_SRC 
+
+     #+RESULTS:
+     : ward
+     : {b'rever', b'madam', b'level', b'minim', b'redder', b'refer'}
+     : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
+     : set()
+     
+** Names
+*** Env Diagrams
+**** Env Diagrams
+     Env diagrams visualize the interpreter’s process.
+***** Code
+      Statements and expressions
+
+      #+BEGIN_SRC python 
+        from math import pi
+        tau = 2 * pi
+        return pi, tau
+      #+END_SRC 
+
+      #+RESULTS:
+      | 3.141592653589793 | 6.283185307179586 |
+
+***** Frames
+      Each name is bound to a value. Within a frame, a name cannot be repeated
+
+     | Global frame |        |
+     |--------------+--------|
+     | name         |  value |
+     | pi           | 3.1416 |
+     | tau          | 6.2832 |
+
+**** Assignment Statements
+***** Execution rule for assignment statements:
+      - Evaluate all expressions to the right of = from left to right.
+      - Bind all names to the left of = to those resulting values in the current frame.
+       
+      #+BEGIN_SRC python :results output
+        a = 1
+        b = 2
+        b, a = a + b, b
+        print(a,b)
+      #+END_SRC
+
+      #+RESULTS:
+      : 2 3
+
+*** Defining Funcs
+**** Defining Funcs
+     Assignment is a simple means of abstraction: binds names to values
+     Func def is a more powerful means of abstraction: binds names to expressions
+    
+     #+BEGIN_SRC python
+       def <name>(<formal parameters>): 
+           return <return expression>
+     #+END_SRC
+
+***** Execution procedure for def statements:
+      1. Create a func with signature ~<name>(<formal parameters>)~, func signature indicates how many args a func takes, it has all the
+ information needed to create a local frame.
+      2. Set the body of that func to be everything indented after the first line, func body defines the computation performed when the func is applied
+      3. Bind ~<name>~ to that func in the current frame
+**** Calling User-Defined Funcs
+***** Procedure for calling/applying user-defined funcs
+      1. Add a local frame, forming a new env
+      2. Bind the func's formal parameters to its args in that frame
+      3. Execute the body of the func in that new env
+**** Looking Up Names In Env
+     Every expression is evaluated in the context of an env. So far, the current env is either: 
+     - The global frame alone, or
+     - A local frame, followed by the global frame. 
+***** Most important two things:
+      1. An env is a sequence of frames. 
+      2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+** Control
+*** Print and None
+**** None Indicates that Nothing is Returned
+    - The special value ~None~ represents nothing in Python
+    - A func that does not explicitly return a value will return ~None~
+    - Careful: ~None~ is not displayed by the interpreter as the value of an expression
+     
+     #+begin_src python 
+       def does_not_return_square(a):
+           a*a
+       x = does_not_return_square(4) + 3 
+       return x
+     #+end_src
+
+**** Pure Funcs & Non-Pure Funcs
+***** Pure Funcs
+      just return *values*: ~abs()~   
+     
+      #+begin_src python 
+        return abs(-2)
+      #+end_src
+
+      #+RESULTS:
+      : 2
+
+***** Non-Pure Funcs     
+      return *values(None)* and have *side effects*: ~print()~
+
+      #+begin_src python :results output
+        a = print(2)
+        print(a)
+      #+end_src
+
+      #+RESULTS:
+      : 2
+      : None
+
+**** Nested Expressions with Print
+    
+     #+begin_src python :results output
+       a = print(print(1), print(2))
+       print(a)
+     #+end_src
+
+     #+RESULTS:
+     : 1
+     : 2
+     : None None
+     : None
+    
+*** Multiple Envs
+**** Life Cycle of a User-Defined Func 
+***** Def statement:
+
+      #+begin_src python
+        def square(x):
+            return mul(x, x)
+      #+end_src
+    
+      - A new func is created!
+      - Name bound to that func in the current frame 
+***** Call expression: 
+      ~square(2+2)~ 
+      - Operator & operands evaluated
+      - Func (value of operator) called on args (values of operands):
+***** Calling/Applying: 
+      - A new frame is created!
+      - Body is executed in that new env
+**** Multiple Envs in One Diagram!
+    
+     #+BEGIN_SRC python :results output
+       from operator import mul
+       def square(x):
+           return mul(x, x);
+       print(square(square(3)))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 81
+
+     An env is a sequence of frames.
+     - The global frame alone
+     - A local, then the global frame
+     *One env per frame here* 
+***** ENV1 
+
+      | Frames | Global      |
+      | funcs  | mul, square |
+
+***** ENV2
+
+      | Frames       | f2: square [parent=Global |
+      | x            |                         3 |
+      | return value |                         9 |
+
+***** ENV3
+
+      | Frames       | f3: square [parent=Global |
+      | x            |                         9 |
+      | return value |                        81 |
+
+**** Names Have No Meaning Without Envs
+     - Every expression is evaluated in the context of an env.
+     - A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
+**** Names Have Different Meanings in Different Envs
+    
+     #+BEGIN_SRC python :results output
+       from operator import mul
+       def square(square):
+           return mul(square, square)
+       print(square(4))
+     #+END_SRC 
+
+     #+RESULTS:
+     : 16
+
+     *A call expression and the body of the func being called are evaluated in different envs*
+
+     | call of square(4) | ENV1:Global                |
+     | body of square(4) | ENV2:f1 followed by Global |
+
+*** Miscellaneous Python Features
+**** Operators
+***** Addition 
+
+      #+BEGIN_SRC python :results output
+        print(2+3*4+5,'\n',(2+3)*(4+5))
+      #+END_SRC 
+
+      #+RESULTS:
+      : 19 
+      :  45
+
+***** Division
+
+      #+BEGIN_SRC python :results output
+        print(618 / 10, 618 // 10, 618 % 10)
+        from operator import truediv, floordiv, mod
+        print(truediv(618, 10), floordiv(618, 10), mod(618, 10))
+      #+END_SRC 
+
+      #+RESULTS:
+      : 61.8 61 8
+      : 61.8 61 8
+
+**** Multiple Return Values 
+
+     #+BEGIN_SRC python :results output
+       def divide_exact(n, d):
+           return n // d, n % d
+       quotient, remainder = divide_exact(618, 10)
+       print(quotient, remainder)
+     #+END_SRC 
+
+     #+RESULTS:
+     : 61 8
+
+**** Docstrings, doctests, & default args
+     use *python3 -m doctest test.py* to doctest. 
+
+     #+BEGIN_SRC python :results output
+       def divide_exact(n, d=10):
+           """Return the quotient and remainder of dividing N by D.
+
+           >>> quotient, remainder = divide_exact(618, 10)
+           >>> quotient
+           61
+           >>> remainder
+           8
+           """
+           return floordiv(n, d), mod(n, d)
+     #+END_SRC 
+
+**** Conditional Statements
+***** Statements
+      A *statement* is executed by the *interpreter* to perform an action
+
+***** Compound statements 
+
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
+      [[file:Control/screenshot_2019-03-05_16-46-10.png]]
+ 
+      The first header determins a *statement's type*: ~def~ ~if~ ~while~...
+ 
+***** Conditional Statements
+
+      #+begin_src python :results output
+        def absolute_value(x):
+            if x < 0:
+                return -x
+            elif x == 0:
+                return0
+            else:
+                return x
+      #+end_src 
+      
+      1 statement, 3 clauses, 3 headers, 3 suites.
+
+***** Boolean Contexts
+      In python
+
+      | False | False, 0, '', None, [], ... |
+      | True  | Not false                   |
+
+**** Iteration
+***** While Statements
+      
+      #+begin_src python :results output
+        i,total = 0, 0
+        while i < 3:
+            i = i + 1
+            total = total + 1
+      #+end_src 
+
+***** Example: The Fibonacci Sequence
+      
+      #+begin_src python :results output
+        def fib(n):
+            """Compute the nth Fibonacci number"""
+            pred, curr = 0, 1 #--> pred, curr = 1, 0
+            k = 1             #--> k = 0
+            while k < n:
+                pred, curr = curr, pred + curr
+                k = k + 1
+            return curr
+      #+end_src 
+      
 ** 1.6 Higher-Order Funcs
    Funcs that *manipulate funcs* are called *higher-order funcs*
 *** 1.6.1 Funcs as Args
@@ -594,10 +984,333 @@
      2. 怎么理解上面的递归思路？包括base cases的确定？
      3. 怎么用非递归方法实现代码?
 
-
-
 * Chapter 2: Building Abstractions with Data
 ** 2.1 Introduction
+*** 2.1.1 Native Data Types
+**** Native data types' properties: 
+       1. There are *expressions* that evaluate to *values* of native types, called *literals*.
+       2. There are *built-in functions and operators* to manipulate *values* of native types.
+**** Native numeric types:
+       1. ~int~ for integers
+       2. ~float~ for real numbers (approximation)
+          1. there are *minimum* and *maximum* values
+          2. only a *finite* amount of *precision*
+          3. dividing one ~int~ by another yields a ~float~ value
+          4. combining ~float~ values can lead to *approximation errors*: ~7 / 3 * 3~ => ~7.0~; ~1 / 3 * 7 * 3~ => ~6.999999999999999~
+          5. Problems with this *approximation* appear when conducting equality tests: ~1/3 == 0.333333333333333312345~ => ~True~  
+       3. ~complex~ for complex numbers 
+
+**** Non-numeric types
+     Values can represent many other types of data, such as sounds, images, locations, web addresses, network connections, and more.
+     - *A few* are represented by *native data types*, such as the ~bool~ class for values ~True~ and ~False~
+     - The type for *most* values must be defined by programmers using the means of *combination and abstraction*
+** 2.2 Data Abstraction
+   1. The general technique of *isolating*
+      - the parts of a program that deal with how *data are represented* from
+      - the parts that deal with how *data are manipulated* 
+   2. func vs data abstraction
+      - func abstraction: make an abstraction that separates the way the function *is used* from the details of how the function *is implemented*
+      - data abstraction: make an abstraction that isolates how a *compound data* value *is used* from the details of how it *is constructed*
+   3. basic idea of data abstraction: structure programs as *two parts* which are *connected* by a small set of *funcs that implement abstract data in terms of the concrete representation* 
+      1. the part that *operates on abstract data*
+      2. the part that *defines a concrete representation*
+*** 2.2.1 Example: Rational Numbers
+    Rational numbers: ~<numerator>/<denominator>~ 
+**** wishful thinking assumptions before defining:
+     - ~rational(n, d)~ returns the rational number with numerator ~n~ and denominator ~d~.
+     - ~numer(x)~ returns the numerator of the rational number ~x~.
+     - ~denom(x)~ returns the denominator of the rational number ~x~.
+     - operations on rational nums:
+       #+begin_src python :results output
+         def add_rationals(x, y):
+             nx, dx = numer(x), denom(x)
+             ny, dy = numer(y), denom(y)
+             return rational(nx * dy + ny * dx, dx * dy)
+
+         def mul_rationals(x, y):
+             return rational(numer(x) * numer(y), denom(x) * denom(y))
+
+         def print_rational(x):
+             print(numer(x), '/', denom(x))
+
+         def rationals_are_equal(x, y):
+             return numer(x) * denom(y) == numer(y) * denom(x)
+       #+end_src 
+
+*** 2.2.2 Pairs
+**** Compound structure ~list~ 
+     #+begin_src python :results output
+       def rational(n, d):
+           return [n, d]
+
+       def numer(x):
+           return x[0]
+
+       def denom(x):
+           return x[1]
+     #+end_src 
+**** Reduce rational nums constructed above to lowest terms
+     changing the *constructor* ~rational()~  without changing any of the functions that implement the actual arithmetic *operations*
+
+     #+begin_src python :results output
+       from fractions import gcd
+       def rational(n, d):
+           g = gcd(n, d)
+           return (n//g, d//g)
+     #+end_src 
+
+*** 2.2.3 Abstraction Barriers
+    - General underlying idea of data abstraction:
+      1. identify a *basic set of operations* in terms of which *all manipulations* of values of some kind will be *expressed*
+      2. then to use *only those operations* in manipulating the data
+      By restricting the use of operations in this way, it is much easier to *change the representation* of abstract data *without changing the behavior of a program*.
+    - An *abstraction barrier* is a rule that funcs should be *called by a higher level* and *implemented using a lower level* of abstraction *instead of called directly by a lower level* of abstraction *when possible*.
+      - Abstraction barrier *violation* example: computing the square of a rational num
+        - Implemented by ~mul_rational~
+        
+          #+begin_src python :results output
+            def square_rational(x):
+                return mul_rational(x, x)
+          #+end_src
+
+        - Referring directly to numerators and denominators would violate *one abstraction barrier*
+
+          #+begin_src python :results output
+            def square_rational_violating_once(x):
+                return rational(numer(x) * numer(x), denom(x) * denom(x))
+          #+end_src
+
+        - Assuming that rationals are represented as two-element lists would violate *two abstraction barriers*
+
+          #+begin_src python :results output
+            def square_rational_violating_twice(x):
+                return [x[0] * x[0], x[1] * x[1]]
+          #+end_src 
+      - Abstraction barriers make programs easier to *maintain and to modify*
+        The *fewer* functions that *depend on a particular representation*, the *fewer* changes are required when one wants to *change* that representation
+        - ~square_rational~ doesn't require updating even if the representation of rational nums changed
+        - ~square_rational_violating_once~ require updating whenever the *selector or constructor signatures* changed
+        - ~square_rational_violating_twice~ require updating whenever the *implementation* of rational numbers changed 
+
+
+
+
+*** 2.2.4 The Properties of Data
+    As long as *behavior conditions* are met (no matter how *implementation* details below an abstraction barrier changes) $\Rightarrow$ *selectors and constructors* can constitute and remain a *valid representation* of abstract data
+    - Example: *functional* representation for rational nums
+      - *"pair" behavior condition*: If a pair ~p~ was constructed from values ~x~ and ~y~, then ~select(p, 0)~ returns ~x~, and ~select(p, 1)~ returns ~y~
+      - implement two functions ~pair~ and ~select~ that *met behavior condition* above
+       
+        #+begin_src python :results output
+          def pair(x, y):
+              """Return a function that represents a pair."""
+              def get(index):
+                  if index == 0:
+                      return x
+                  elif index == 1:
+                      return y
+              return get
+
+          def select(p, i):
+              """Return the element at index i of pair p."""
+              return p(i)
+        #+end_src
+       
+      - Functional representations are *sufficient but obscure* to represent *compound data* ("pair" here) 
+    - The practice of data abstraction allows *switching among representations* easily.
+
+** 2.3 Sequences
+   A sequence is an *ordered collection* of values. Sequences are *instances of a collection of behaviors* that are *shared among several different types of data*. In particular,
+   - Length - A sequence has a *finite* length. An empty sequence has length 0.
+   - Element selection - A sequence has an *element corresponding to any non-negative integer index* less than its length, starting at *0 for the first element*
+*** 2.3.1 Lists
+    - ~len~ and element seletion
+      #+begin_src python :results output
+        digits = [1, 8, 2, 8]
+        len(digits)
+        4
+        digits[3]
+        8
+      #+end_src
+    - Addition and multiplication
+      #+begin_src python :results output
+        [2, 7] + digits * 2
+        [2, 7, 1, 8, 2, 8, 1, 8, 2, 8]
+      #+end_src
+    - Lists can be included in a list
+      #+begin_src python :results output
+        pairs = [[10, 20], [30, 40]]
+        pairs[1]
+        [30, 40]
+        pairs[1][0]
+        30
+      #+end_src
+*** 2.3.2 Sequence Iteration
+    - ~for~ statement 
+      #+begin_src python :results output
+        for <name> in <expression>:
+            <suite>
+      #+end_src
+      - ~<expression>~ refers to ~iterable values~. Lists are a type of *sequence*, and *sequences* are ~iterable values~
+      - The ~for~ loop introduces yet another way in which the *environment* can be updated by a *statement*
+    - Sequence unpacking
+      A ~for~ statement may include *multiple names* in its header to *"unpack"* each element sequence into its respective elements
+      #+begin_src python :results output
+        pairs = [[1, 2], [2, 2], [2, 3], [4, 4]]
+        same_count = 0
+        for x, y in pairs:
+                if x == y:
+                    same_count = same_count + 1
+
+        same_count
+        2
+      #+end_src
+    - Ranges
+      A ~range~ is another built-in type of sequence in Python, which represents a *range of integers*
+      #+begin_src python :results output
+        list(range(5, 8))
+        [5, 6, 7]
+        list(range(4))
+        [0, 1, 2, 3]
+      #+end_src
+      - ~Ranges~ commonly appear as the *expression* in a ~for~ header to specify the number of times that the *suite* should be executed
+        #+begin_src python :results output
+          for _ in range(3):
+              print('Go Bears!')
+
+          Go Bears!
+          Go Bears!
+          Go Bears!
+        #+end_src
+        - A common convention among programmers: using ~_~ for the name in the ~for~ header if the name is *unused* in the suite
+*** 2.3.3 Sequence Processing
+    - Common patterns in sequence processing
+      - List Comprehensions: Evaluating a fixed expression for *each element* in a sequence and collecting the resulting values in a *result sequence*
+        #+begin_src python :results output
+          odds = [1, 3, 5, 7, 9]
+          [x+1 for x in odds]
+          [2, 4, 6, 8, 10]
+        #+end_src     
+      - Selecting a subset of values that *satisfy some condition*
+        #+begin_src python :results output
+          [x for x in odds if 25 % x == 0]
+          [1, 5]
+        #+end_src
+        - General form ~[<map expression> for <name> in <sequence expression> if <filter expression>]~
+          - ~<sequence expression>~ must return an *iterable* value
+          - Values of the ~map expression~ are collected into a *list*         
+      - Aggregation: aggregating *all values* in a sequence into a *single value* 
+        - Divisors
+          #+begin_src python :results output
+            def divisors(n):
+                return [1] + [x for x in range(2, n) if n % x == 0]
+             divisors(4)
+            [1, 2]
+             divisors(12)
+            [1, 2, 3, 4, 6]
+          #+end_src
+        - Perfect numbers
+          #+begin_src python :results output
+            [n for n in range(1, 1000) if sum(divisors(n)) == n]
+            [6, 28, 496]
+          #+end_src    
+        - Given a rectangle's area, finding the minimum premeter of it with integer side lengths
+          #+begin_src python :results output
+            def width(area, height):
+                assert area % height == 0
+                return area // height
+             def perimeter(width, height):
+                return 2 * width + 2 * height
+             def minimum_perimeter(area):
+                heights = divisors(area)
+                perimeters = [perimeter(width(area, h), h) for h in heights]
+                return min(perimeters)
+             area = 80
+            width(area, 5)
+            16
+            perimeter(16, 5)
+            42
+            perimeter(10, 8)
+            36
+            minimum_perimeter(area)
+            36
+            [minimum_perimeter(n) for n in range(1, 10)]
+            [4, 6, 8, 8, 12, 10, 16, 12, 12]
+          #+end_src
+          - ~heights = divisors(area)~ and ~perimeters = [perimeter(width(area, h), h) for h in heights]~ return lists
+    - Using Higher-Order Function
+      - Evaluating an expression for each element (List Comprehensions)
+        #+begin_src python :results output
+          def apply_to_all(map_fn, s):
+              return [map_fn(x) for x in s]
+        #+end_src
+      - Selecting only elements for which some expression is true
+        #+begin_src python :results output
+          def keep_if(filter_fn, s):
+              return [x for x in s if filter_fn(x)]
+        #+end_src
+      - Repeatedly applying a *two-argument function* to the ~reduced~ value so far and each element (Aggregation)
+        #+begin_src python :results output
+          def reduce(reduce_fn, s, initial):
+              reduced = initial
+              for x in s:
+                  reduced = reduce_fn(reduced, x)
+              return reduced
+        #+end_src
+        - Multiplying together all elements of a sequence
+          #+begin_src python :results output
+            reduce(mul, [2, 4, 8], 1)
+            64
+          #+end_src
+        - Perfect num
+          #+begin_src python :results output
+            def divisors_of(n):
+                divides_n = lambda x: n % x == 0
+                return [1] + keep_if(divides_n, range(2, n))
+
+            divisors_of(12)
+            [1, 2, 3, 4, 6]
+
+            from operator import add
+            def sum_of_divisors(n):
+                return reduce(add, divisors_of(n), 0)
+
+            def perfect(n):
+                return sum_of_divisors(n) == n
+
+            keep_if(perfect, range(1, 1000))
+            [1, 6, 28, 496]
+          #+end_src 
+    - Conventional Names
+      - ~map~ for ~apply_to_all~ and ~filter~ for ~keep_if~
+        In Python, the *built-in* ~map~ and ~filter~ are generalizations of these functions that *do not return lists*.
+        #+begin_src python :results output
+          apply_to_all = lambda map_fn, s: list(map(map_fn, s))
+          keep_if = lambda filter_fn, s: list(filter(filter_fn, s))
+        #+end_src
+      - The ~reduce~ function is built into the ~functools~ module of the Python standard library
+        #+begin_src python :results output
+          from functools import reduce
+          from operator import mul
+          def product(s):
+              return reduce(mul, s)
+
+          product([1, 2, 3, 4, 5])
+          120
+        #+end_src 
+*** 2.3.4 Sequence Abstraction
+    Two *native data types* that satisfy the *sequence abstraction*: ~lists~ and ~ranges~
+    - Length and element selection: ~length~ and ~[]~  
+    - Membership
+    - Slicing
+*** 2.3.5 Strings
+
+*** 2.3.6 Trees
+
+*** 2.3.7 Linked Lists
+
+** 2.4 Mutable Data 
+
 
 
 * Funcs
