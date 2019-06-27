@@ -807,7 +807,7 @@
    Env analysis:
    #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 14:04:32
    [[file:Recursion/screenshot_2019-03-18_14-04-32.png]]
-
+   
 *** 1.7.1 The Anatomy of Recursive Functions
     *Base cases* + *recursive calls*: to express computation by *simplifying problems incrementally*.
 **** Example: *Recursion* vs *Iteration* 
@@ -855,7 +855,6 @@
      - a number is *even* if it is *one more than* an *odd* number
      - a number is odd if it is *one more than* an *even* number
      - 0 is even
-      
      #+begin_src python :results output
        def is_even(n):
            if n == 0:
@@ -871,7 +870,6 @@
 
        result = is_even(4)
      #+end_src 
-
 ***** Env analysis
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 23:20:17
@@ -879,7 +877,6 @@
  
 ***** Multually recursive to single recursive
       *Mutually* recursive functions can be turned into a *single* recursive function by *breaking the abstraction boundary* between the two functions. 
-
       #+begin_src python :results output
         def is_even(n):
             if n == 0:
@@ -890,7 +887,6 @@
                 else:
                     return is_even((n-1)-1)
       #+end_src 
-
       - *put base cases together* and pass *next updated para* to the *remaining func*.
       - *mutual* recursion provides a *mechanism* for *maintaining abstraction* within a *complicated(single)* recursive program.
 ****** Question:                                                  :QUESTIONS:
@@ -1301,18 +1297,1133 @@
 *** 2.3.4 Sequence Abstraction
     Two *native data types* that satisfy the *sequence abstraction*: ~lists~ and ~ranges~
     - Length and element selection: ~length~ and ~[]~  
-    - Membership
-    - Slicing
+    - Membership: ~in~ and ~not in~
+      #+begin_src python :results output
+        digits
+        [1, 8, 2, 8]
+        2 in digits
+        True
+        1828 not in digits
+        True
+      #+end_src 
+    - Slicing: ~[:]~ 
+      #+begin_src python :results output
+        digits[0:2]
+        [1, 8]
+        digits[1:]
+        [8, 2, 8]
+        digits[:2]
+        [1,8]
+      #+end_src
 *** 2.3.5 Strings
-
+    - Length and element selection
+      #+begin_src python :results output
+        city = 'Berkeley'
+        len(city)
+        8
+        city[3]
+        'k'
+      #+end_src
+      - Python does not have a separate character type
+    - Addition and multiplication
+      #+begin_src python :results output
+        'Berkeley' + ', CA'
+        'Berkeley, CA'
+        'Shabu ' * 2
+        'Shabu Shabu '
+      #+end_src 
+    - Membership
+      #+begin_src python :results output
+        'here' in "Where's Waldo?"
+        True
+      #+end_src
+      - The string abstraction does not conform to the full sequence abstraction that we described for lists and ranges, ~in~ in ~String~ matches *substrings* rather than elements  
+    - Multiline Literals
+      #+begin_src python :results output
+        """The Zen of Python
+        claims, Readability counts.
+        Read more: import this."""
+        'The Zen of Python\nclaims, "Readability counts."\nRead more: import this.'
+      #+end_src
+      - ~\n~ is a *single element* that represents a *new line*, ~len('\n')=1~ and ~'\n'[0]='\n'~
+    - String Coercion
+      A string can be created from *any object* in Python by calling the ~str~ constructor function with an *object value* as its argument
+      #+begin_src python :results output
+        str(2) + ' is an element of ' + str(digits)
+        '2 is an element of [1, 8, 2, 8]'
+      #+end_src 
 *** 2.3.6 Trees
+    *Closure* property of a method: result of a combination method can itself be combined using the same method -> hierarchical structure
+    #+begin_src python :results output
+      one_two = [1, 2]
+      nested = [[1, 2], [],
+                [[3, False, None],
+                 [4, lambda: 5]]]
+    #+end_src 
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-14 17:21:51
+    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-14_17-21-51.png]]
+    Nesting lists within lists can introduce complexity -> ~tree~  
+    The ~tree~ is a fundamental data abstraction that imposes *regularity* on how hierarchical values are *structured* and *manipulated*, it consists of the *constructor* ~tree~ and the *selectors* ~label~ and *branches*
+    #+begin_src python :results output
+      def tree(root_label, branches=[]):
+          for branch in branches:
+              assert is_tree(branch), 'branches must be trees'
+          return [root_label] + list(branches)
 
+      def label(tree):
+          return tree[0]
+
+      def branches(tree):
+          return tree[1:]
+
+      def is_tree(tree):
+          if type(tree) != list or len(tree) < 1:
+              return False
+          for branch in branches(tree):
+              if not is_tree(branch):
+                  return False
+          return True
+
+      def is_leaf(tree):
+          return not branches(tree)
+
+      t = tree(3, [tree(1), tree(2, [tree(1), tree(1)])])
+      t
+      [3, [1], [2, [1], [1]]]
+      label(t)
+      3
+      branches(t)
+      [[1], [2, [1], [1]]]
+      label(branches(t)[1])
+      2
+      is_leaf(t)
+      False
+      is_leaf(branches(t)[0])
+      True
+    #+end_src
+    - Tree-recursive func
+      - Constructing trees
+        #+begin_src python :results output
+          def fib_tree(n):
+                  if n == 0 or n == 1:
+                      return tree(n)
+                  else:
+                      left, right = fib_tree(n-2), fib_tree(n-1)
+                      fib_n = label(left) + label(right)
+                      return tree(fib_n, [left, right])
+          fib_tree(5)
+          [5, [2, [1], [1, [0], [1]]], [3, [1, [0], [1]], [2, [1], [1, [0], [1]]]]]
+        #+end_src
+        - ~fib_tree(n)~ illustrates the tree-recursive computation of a Fibonacci number
+      - Processing trees
+        #+begin_src python :results output
+          def count_leaves(tree):
+                if is_leaf(tree):
+                    return 1
+                else:
+                    branch_counts = [count_leaves(b) for b in branches(tree)]
+                    return branch_counts
+                    # return sum(branch_counts)
+          count_leaves(fib_tree(5))
+          8
+        #+end_src 
+        - ~branch_counts~ for ~fib_tree(5)~ = ~[[1, [1, 1]], [[1, 1], [1, [1, 1]]]]~
+      - Partition trees
+        A partition tree for ~n~ using *parts up to* size ~m~ is a *binary (two branch) tree* that represents the *choices* taken during computation. 
+        - Representing the partitions of an *integer*
+          #+begin_src python :results output
+            def partition_tree(n, m):
+                    """Return a partition tree of n using parts of up to m."""
+                    if n == 0:
+                        return tree(True)
+                    elif n < 0 or m == 0:
+                        return tree(False)
+                    else:
+                        left = partition_tree(n-m, m)
+                        right = partition_tree(n, m-1)
+                        return tree(m, [left, right])
+
+            partition_tree(2, 2)
+            [2, [True], [1, [1, [True], [False]], [False]]]
+         #+end_src                                   
+          - Non-leaf partition tree:
+            - the left (index 0) branch contains all ways of partitioning ~n~ using *at least one* ~m~: ~left = partition_tree(n-m, m)~ 
+            - the right (index 1) branch contains partitions using *parts up to* ~m-1~: ~right = partition_tree(n, m-1)~ 
+            - the *root label* is ~m~
+          - The *labels at the leaves* of a partition tree express whether the path *from the root of the tree to the leaf* represents a *successful* partition of ~n~
+        - Printing the partitions from a partition
+          Another tree-recursive process that *traverses* the tree, constructing *each partition as a list*. Whenever a ~True~ leaf is reached, the partition is printed.
+          #+begin_src python :results output
+            def print_parts(tree, partition=[]):
+                    if is_leaf(tree):
+                        if label(tree):
+                            print(' + '.join(partition))
+                    else:
+                        left, right = branches(tree)
+                        m = str(label(tree))
+                        print_parts(left, partition + [m])
+                        print_parts(right, partition)
+
+            print_parts(partition_tree(6, 4))
+            4 + 2
+            4 + 1 + 1
+            3 + 3
+            3 + 2 + 1
+            3 + 1 + 1 + 1
+            2 + 2 + 2
+            2 + 2 + 1 + 1
+            2 + 1 + 1 + 1 + 1
+            1 + 1 + 1 + 1 + 1 + 1
+          #+end_src
+          - ~str.join(sequence)~: ~'+'.join[1,2,3,4]~ returns ~1+2+3+4~
+      - Slicing on branches
+        A common *tree transformation* called /binarization/ finds a *binarized* tree with the *same labels* as an original tree by *grouping together branches*.
+        #+begin_src python :results output
+          def right_binarize(t):
+              """Construct a right-branching binary tree."""
+              return tree(label(t), binarize_branches(branches(t)))
+
+          def binarize_branches(bs):
+              """Binarize a list of branches."""
+              if len(bs) > 2:
+                  first, rest = bs[0], bs[1:]
+                  return [right_binarize(first), binarize_branches(rest)]
+              else:
+                  return [right_binarize(b) for b in bs]
+
+          right_binarize(tree(0, [tree(x) for x in [1, 2, 3, 4, 5, 6, 7]]))
+          [0, [1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]]
+        #+end_src
+        - ~right_binarize~ to construct a *right-branching* binary tree
+        - ~binarize_branches~ to *binarize a list of branches* 
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. 进一步理解Tree-recursive func (*link*) 的后三点代码，特别是最后两点，对树结构递归的深刻理解？补充代码解释
 *** 2.3.7 Linked Lists
+    A /linked list/ is a *pair* containing the *first* element of the *sequence* and the *rest* of the *sequence*. The *second* element is *also a linked list*
+    - *Recursive* structure for linked lists: the rest of a linked list is a *linked list or 'empty'*
+      #+begin_src python :results output
+        empty = 'empty'
+        def is_link(s):
+            """s is a linked list if it is empty or a (first, rest) pair."""
+            return s == empty or (len(s) == 2 and is_link(s[1]))
+  
+        def link(first, rest):
+            """Construct a linked list from its first element and the rest."""
+            assert is_link(rest), "rest must be a linked list."
+            return [first, rest]
+  
+        def first(s):
+            """Return the first element of a linked list s."""
+            assert is_link(s), "first only applies to linked lists."
+            assert s != empty, "empty linked list has no first element."
+            return s[0]
+  
+        def rest(s):
+            """Return the rest of the elements of a linked list s."""
+            assert is_link(s), "rest only applies to linked lists."
+            assert s != empty, "empty linked list has no rest."
+            return s[1]
+  
+        four = link(1, link(2, link(3, link(4, empty))))
+        first(four)
+        1
+        rest(four)
+        [2, [3, [4, 'empty']]]
+      #+end_src
+      - Implementation of abstract data above uses *pairs* that are two-element ~list~ values
+      - Pairs can also be implemented using ~function~ -> ~function~ can also implement linked list *alone*  
+    - Iterative length and element selections
+      #+begin_src python :results output
+        def len_link(s):
+            """Return the length of linked list s."""
+            length = 0
+            while s != empty:
+                s, length = rest(s), length + 1
+            return length
 
-** 2.4 Mutable Data 
+        def getitem_link(s, i):
+            """Return the element at index i of linked list s."""
+            while i > 0:
+                s, i = rest(s), i - 1
+            return first(s)
+
+        four = [1, [2, [3, [4, 'empty']]]]
+        len_link(four)
+        4
+        getitem_link(four, 1)
+        2
+      #+end_src 
+      #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-17 14:19:47
+      [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-17_14-19-47.png]]
+    - Recursive manipulation
+      - Length and element selections
+        #+begin_src python :results output
+          def len_link_recursive(s):
+              """Return the length of a linked list s."""
+              if s == empty:
+                  return 0
+              return 1 + len_link_recursive(rest(s))
+  
+          def getitem_link_recursive(s, i):
+              """Return the element at index i of linked list s."""
+              if i == 0:
+                  return first(s)
+              return getitem_link_recursive(rest(s), i - 1)
+  
+          len_link_recursive(four)
+          4
+          getitem_link_recursive(four, 1)
+          2
+        #+end_src
+        - Methods above can *manipulate a linked list as a sequence* (still can not use the built-in ~len~ function, element selection syntax, or ~for~ statement)
+        - *Incremental* methods above for take *some time* to compute, unlike built-in length and selection methods for Python *sequences*, which *does not have a large cost* for computing
+      - Transforming and combining linked lists
+        #+begin_src python :results output
+          def apply_to_all_link(f, s):
+              """Apply f to each element of s."""
+              assert is_link(s)
+              if s == empty:
+                  return s
+              else:
+                  return link(f(first(s)), apply_to_all_link(f, rest(s)))
+
+          apply_to_all_link(lambda x: x*x, four)
+          [1, [4, [9, [16, 'empty']]]]
+
+          def keep_if_link(f, s):
+              """Return a list with elements of s for which f(e) is true."""
+              assert is_link(s)
+              if s == empty:
+                  return s
+              else:
+                  kept = keep_if_link(f, rest(s))
+                  if f(first(s)):
+                      return link(first(s), kept)
+                  else:
+                      return kept
+
+          keep_if_link(lambda x: x%2 == 0, four)
+          [2, [4, 'empty']]
+
+          def join_link(s, separator):
+              """Return a string of all elements in s separated by separator."""
+              if s == empty:
+                  return ""
+              elif rest(s) == empty:
+                  return str(first(s))
+              else:
+                  return str(first(s)) + separator + join_link(rest(s), separator)
+
+          join_link(four, ", ")
+          '1, 2, 3, 4'
+        #+end_src
+      - Construction
+        #+begin_src python :results output
+          def partitions(n, m):
+              """Return a linked list of partitions of n using parts of up to m.
+              Each partition is represented as a linked list.
+              """
+              if n == 0:
+                  return link(empty, empty) # A list containing the empty partition
+              elif n < 0 or m == 0:
+                  return empty
+              else:
+                  using_m = partitions(n-m, m)
+                  with_m = apply_to_all_link(lambda s: link(m, s), using_m)
+                  without_m = partitions(n, m-1)
+                  return extend_link(with_m, without_m)
+
+          def print_partitions(n, m):
+              lists = partitions(n, m)
+              strings = apply_to_all_link(lambda s: join_link(s, " + "), lists)
+              print(join_link(strings, "\n"))
+
+          print_partitions(6, 4)
+          4 + 2
+          4 + 1 + 1
+          3 + 3
+          3 + 2 + 1
+          3 + 1 + 1 + 1
+          2 + 2 + 2
+          2 + 2 + 1 + 1
+          2 + 1 + 1 + 1 + 1
+          1 + 1 + 1 + 1 + 1 + 1
+        #+end_src 
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. linked list与sequence的有区别吗？为什么一直强调linked list不能用sequence的内置函数？linked list不还是个list，不还是属于sequence吗？
+     2. Recursive manipulation后两点的代码理解，特别是Construction (*link*) ，构造了什么sequence？为什么要构造成这样？联系之前的tree partition比较异同？
+ 
+** 2.4 Mutable Data
+*** 2.4.1 The Object Metaphor
+    *All values* in Python are *objects*, they all have *behavior and attibutes*
+    #+begin_src python :results output
+      from datetime import date
+      tues = date(2014, 5, 13)
+      print(date(2014, 5, 19) - tues)
+      6 days, 0:00:00
+
+      tues.year
+      2014
+
+      tues.strftime('%A, %B %d')
+      'Tuesday, May 13'
+
+      '1234'.isnumeric()
+      True
+      'rOBERT dE nIRO'.swapcase()
+      'Robert De Niro'
+      'eyes'.upper().endswith('YES')
+      True
+    #+end_src 
+
+*** 2.4.2 Sequence Objects
+    *Imutable* objects are used to represent values that themselves *cannot change* over the *course of program execution*. Instances of *primitive built-in values* such as ~numbers~ are *immutable*. 
+    *Mutable* objects are used to represent values that *change over time* due to *mutating operations*. ~Lists~ are *mutable*
+    - Sharing and Identity
+      - Changing rather than creating
+        #+begin_src python :results output
+         chinese = ['coin', 'string', 'myriad']  # A list literal
+         suits = chinese                         # Two names refer to the same list
+         suits.pop()             # Remove and return the final element
+         'myriad'
+         suits.remove('string')  # Remove the first element that equals the argument
+         suits.append('cup')              # Add an element to the end
+         suits.extend(['sword', 'club'])  # Add all elements of a sequence to the end
+         suits[2] = 'spade'  # Replace an element
+         suits
+         ['coin', 'cup', 'spade', 'club']
+         suits[0:2] = ['heart', 'diamond']  # Replace a slice
+         suits
+         ['heart', 'diamond', 'spade', 'club']
+         chinese  # This name co-refers with "suits" to the same changing list
+         ['heart', 'diamond', 'spade', 'club']
+       #+end_src                
+        #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:23:10
+        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-23-10.png]]
+        - ~=~ do not create a new list 
+      - Changes to one list *do not affect another*, unless they *share structure*
+        #+begin_src python :results output
+          nest = list(suits)  # Bind "nest" to a second list with the same elements
+          nest[0] = suits     # Create a nested list
+          suits.insert(2, 'Joker')  # Insert an element at index 2, shifting the rest
+          nest
+          [['heart', 'diamond', 'Joker', 'spade', 'club'], 'diamond', 'spade', 'club']
+          joke = nest[0].pop(2)
+          joke
+          'Joker'
+          suits
+          ['heart', 'diamond', 'spade', 'club']
+        #+end_src 
+        #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:32:33
+        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-32-33.png]]
+        - ~list~ constructor func to create a *new list*
+        - Two different lists can affect each other if they *shares structur*
+      - ~is~, ~is not~ and ~==~
+        #+begin_src python :results output
+          suits is nest[0]
+          True
+          suits is ['heart', 'diamond', 'spade', 'club']
+          False
+          suits == ['heart', 'diamond', 'spade', 'club']
+          True
+        #+end_src
+        - ~is~ and ~is not~ check for *identity*
+        - ~==~ checks for the *equality of contents* 
+    - List Manipulation
+      - Slicing
+        - Slicing a list *creates a new list* and leaves the *original list unchanged*
+          #+begin_src python :results output
+            a = [11, 12, 13]
+            b = a[1:]
+            b[1] = 15
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:49:57
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-49-57.png]]
+        - Mutating *a list within a sliced list* will affect the *original list*
+          #+begin_src python :results output
+            a = [11, [12, 13], 14]
+            b = a[:]
+            b[1][1] = 15
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:51:35
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-51-35.png]]
+          - Slice copies *the contents of a list* but not *the values contained within the list*. Instead, a new list is constructed that contains a *subset* of the same values as the sliced list. 
+          - The built-in ~list~ function *creates a new list* that contains *the values of its argument*, which must be an *iterable value* such as a sequence. Again, the *values* placed in this list are *not copied*. ~list(s)~ = ~s[:]~ for a list ~s~
+      - ~+~, ~append~, ~extend~
+        - ~+~
+          Adding two lists together *creates a new list* that contains the *values* of the first list, followed by the *values* in the second list
+          #+begin_src python :results output
+            a = [[11], 12]
+            b = [13, 14]
+            c = a + b
+            d = b + a
+            a[0][0] = 15
+            b[0] = 16
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:26:44
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-26-44.png]]
+          - In lists, ~a + b~ != ~b + a~  
+        - ~append~
+          The ~append~ method of a list takes *one value* as an argument and adds it *as a whole item* to the end of the list
+          #+begin_src python :results output
+            a = [1, [2, 3]]
+            b = [4, [5, 6]]
+            c = 7
+            a.append(b)
+            a.append(c)
+            b.append(c)
+            d = a.append(a)
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:27:37
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-27-37.png]]
+          - Argument can be any value
+          - Always returns ~None~
+          - Mutating the list by *increasing its length by one*
+        - ~extend~
+          The ~extend~ method of a *list* takes an *iterable value* as an argument and adds *each of its elements* to the end of the list
+          #+begin_src python :results output
+            a = [1, 2]
+            b = [1, 2]
+            c = [1, 2]
+            d = [3, [4]]
+            a.extend(d)
+            b += d
+            c.append(d)
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:28:30
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-28-30.png]]
+          - Mutating the list by increasing its length by *the length of the iterable argument*
+          - ~x += y~ for a *list* ~x~ and *iterable* ~y~ = ~x.extend(y)~
+          - ~TypeError~ if not *iterable*
+          - Not return anything
+      - ~pop~, ~remove~, ~index~, ~insert~, ~count~
+        - ~pop~
+          #+begin_src python :results output
+            a = [0, 1, [2, 3], 4]
+            b = a.pop(2)
+            c = a.pop()
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:47:05
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-05.png]]
+          - Mutating the list by reducing its length by one
+          - ~IndexError~ for an empty list  
+        - ~remove~
+          The ~remove~ method takes one argument that must be *equal* to a value in the list.
+          #+begin_src python :results output
+            a = [10, 11, 10, 12, [13, 14]]
+            a.remove([13, 14])
+            a.remove(10)
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:47:55
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-55.png]]
+          - Removes the *first* equal item
+          - ~ValueError~ for no equal items
+        - ~index~
+          The ~index~ method takes one argument that must be *equal* to a value in the list
+          #+begin_src python :results output
+            >>> a = [13, 14, 13, 12, [13, 14], 15]
+            >>> a.index([13, 14])
+            4
+            >>> a.index(13)
+            0
+          #+end_src
+          - Returns the index for the *first* equal item
+          - ~ValueError~ for no equal items 
+        - ~insert~
+          The ~insert~ method takes two arguments: an index and a value to be inserted
+          #+begin_src python :results output
+            a = [0, 1, 2]
+            a.insert(0, [3, 4])
+            a.insert(2, 5)
+            a.insert(5, 6)
+          #+end_src
+          #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:49:47
+          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-49-47.png]]
+          - Mutating by increasing size by one
+          - Returns ~None~
+        - ~count~
+          The ~count~ method of a list takes in an item as an argument and returns how many times an equal item apears in the list.
+          #+begin_src python :results output
+            a = [1, [2, 3], 1, [4, 5]]
+            a.count([2, 3])
+            1
+            a.count(1)
+            2
+            a.count(5)
+            0
+          #+end_src
+          - Returns ~0~ for no equal items
+    - List comprehensions
+      A list comprehension always *creates a new list*
+      #+begin_src python :results output
+        from unicodedata import lookup
+        [lookup('WHITE ' + s.upper() + ' SUIT') for s in suits]
+        ['♡', '♢', '♤', '♧']
+      #+end_src
+      - Not share structure with ~suits~ -> list comprehension evaluation won't modify the ~suits~ 
+    - Tuples
+      A tuple, an instance of the built-in ~tuple~ type, is an *immutable sequence*.
+      #+begin_src python :results output
+        1, 2 + 3
+        (1, 5)
+        ("the", 1, ("and", "only"))
+        ('the', 1, ('and', 'only'))
+        type( (10, 20) )
+        <class 'tuple'>
+
+        ()    # 0 elements
+        ()
+        (10,) # 1 element
+        (10,)
+
+        code = ("up", "up", "down", "down") + ("left", "right") * 2
+        len(code)
+        8
+        code[3]
+        'down'
+        code.count("down")
+        2
+        code.index("left")
+        4
+
+        nest = (10, 20, [30, 40])
+        nest[2].pop()
+      #+end_src
+      - *Any objects* can be placed within tuples.
+      - *Empty* and *one-element* tuples have special literal syntax: ~()~, ~(a,)~
+      - Mutating operations are not available
+      - Not possible to change which *elements are in a tuple* while possible to change *the value of a mutable element* contained within a tuple
+        #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 18:59:06
+        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_18-59-06.png]]
+      - Tuples are used *implicitly* in *multiple assignment* (~a,b = 1,2~) . An assignment of *two values to two names* creates a *two-element tuple* and then *unpacks* it.
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. Mutating *a list within a sliced list* will affect the *original list* (*link*) 中 关于 ~slice~ 和 ~list~ ，啥叫list is copied but the values are not？？？contens 和 values有毛区别？上面关于values are not copied在扯犊子？
+*** 2.4.3 Dictionaries
+    A dictionary contains *key-value pairs*, where both the keys and values are *objects*. The purpose of a dictionary is to *provide an abstraction* for storing and retrieving values that are *indexed not by consecutive integers*, but *by descriptive keys*.
+    - Since Python 3.6, dicts' contents will be ordered by insertion
+      #+begin_src python :results output
+        numerals = {'I': 1.0, 'V': 5, 'X': 10}
+        numerals['X']
+        10
+
+        numerals['I'] = 1
+        numerals['L'] = 50
+        numerals
+        {'I': 1, 'X': 10, 'V': 5, 'L': 50}
+      #+end_src 
+    - The dictionary type also supports various methods of *iterating over the contents* of the dictionary as a whole. The methods ~keys~, ~values~, and ~items~ all return *iterable* values.
+      #+begin_src python :results output
+        numerals.keys()
+        dict_keys(['I', 'X', 'V', 'L'])
+        numerals.values()
+        dict_values([1, 10, 5, 50])
+        sum(numerals.values())
+        66
+        numerals.items()
+        dict_items([('I', 1), ('X', 10), ('V', 5), ('L', 50)])
+      #+end_src 
+    - A *list of key-value pairs* can be converted into a *dictionary* by calling ~dict~
+      #+begin_src python :results output
+        dict([(3, 9), (4, 16), (5, 25)])
+        {3: 9, 4: 16, 5: 25}
+      #+end_src 
+    - Two restrictions of dictionaries
+      - A *key* of a dictionary *cannot be or contain a mutable* value.
+      - There can be at most one value for a given key.
+    - The arguments to ~get~ are the *key* and the *default value*
+      #+begin_src python :results output
+        numerals.get('A', 0)
+        0
+        numerals.get('V', 0)
+        5
+      #+end_src 
+    - Dictionaries have a *comprehension syntax* analogous to those of lists
+      #+begin_src python :results output
+        {x: x*x for x in range(3,6)}
+        {3: 9, 4: 16, 5: 25}
+      #+end_src 
+
+*** 2.4.4 Local State
+    Lists and dictionaries have *local state*: they are changing values that have some particular contents at any point in the execution of a program.
+    Functions can also have *local state*.
+    #+begin_src python :results output
+      def make_withdraw(balance):
+          """Return a withdraw function that draws down balance with each call."""
+          def withdraw(amount):
+              nonlocal balance                 # Declare the name "balance" nonlocal
+              if amount > balance:
+                  return 'Insufficient funds'
+              balance = balance - amount       # Re-bind the existing balance name
+              return balance
+          return withdraw
+
+      wd = make_withdraw(20)
+      wd(5)
+      wd(3)
+    #+end_src
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 09:05:11
+    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_09-05-11.png]]
+    - ~withdraw~ is *non-pure*.
+    - The name ~balance~ is bound in the parent frame of ~f2~ - ~f1~
+    - Without ~nonlocal~ statement, an assignment statement would always bind a name in the *first frame of the current environment* 
+    - The ~nonlocal~ statement indicates that the name appears somewhere in the environment other than the *first (local) frame* or the *last (global) frame*.
+    - Python Particulars 
+      - *non-local assignment*: No ~nonlocal~ statement is required to *access* a non-local name, but need ~nonlocal~ for *assignment* statements to *change* in funcs (*non-local assignment* is often the default behavior of assignment statements for most other languages)
+      - Lookup of names: within the body of a function, all instances of a name must *refer to the same frame*
+        #+begin_src python :results output
+          def make_withdraw(balance):
+              """Return a withdraw function that draws down balance with each call."""
+              def withdraw(amount):
+                  if amount > balance:
+                      return 'Insufficient funds'
+                  balance = balance - amount       # Re-bind the existing balance name
+                  return balance
+              return withdraw
+        #+end_src
+        - This restriction allows Python to *pre-compute* which frame contains each name *before executing* the body of a function
+        - Python cannot look up the value of a name in a non-local frame, *then bind that same name* in the *local frame*
+        - ~UnboundLocalError: local variable 'balance' referenced before assignment~: *pre-compute* in line 3 and line 6 finds ~balance~ in *different frames* 
+          - ~balance~ in line 4 belongs to *non-local*
+          - ~balance - amount~ in line 6 belongs to *non-local*
+          - ~balance =~ in line 6 assigned *locally* 
+    - Error for ~nonlocal~ if not previously been bound
+    - *Dual* role of *assignment statements*: either *creat* new bindings or *re-bound* existing names
+*** 2.4.5 The Benefits of Non-Local Assignment
+    Non-local assignment has given us the ability to maintain some state that is local to a function, but evolves over successive calls to that function
+    #+begin_src python :results output
+      def make_withdraw(balance):
+          def withdraw(amount):
+              nonlocal balance
+              if amount > balance:
+                  return 'Insufficient funds'
+              balance = balance - amount
+              return balance
+          return withdraw
+
+      wd = make_withdraw(20)
+      wd2 = make_withdraw(7)
+      wd2(6)
+      wd(8)
+    #+end_src 
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 10:29:04
+    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_10-29-04.png]]
+*** 2.4.6 The Cost of Non-Local Assignment
+    - Only function calls can *introduce new frames*. 
+    - Assignment statements always change bindings in *existing frames*
+    - Previously, values did not change; only names and bindings changed, while *funcs with state* do not behave this way
+    - An expression that contains *only pure function calls* is *referentially transparent*; its value does not change if we substitute one of its subexpression with the value of that subexpression
+    - *Re-binding* operations violate the conditions of referential transparency because they do more than return a value; they *change the environment*
+    - ... reference the book
+**** Question:                                                    :QUESTIONS:
+     1. 这节讲了写啥。。。
+*** 2.4.7 Iterators
+    An /iterator/ is an *object* that provides *sequential access to values*, one by one.
+    - Two components of iterator abstraction
+      - A mechanism for *retrieving* the next element in the sequence being processed
+      - A mechanism for *signaling* that the end of the sequence has been reached and no further elements remain
+    - ~iter~ to obtain an iterator and ~next~ to access the contents of the iterator for any *container* (~list~ or ~range~) or *iterator*
+      #+begin_src python :results output
+        primes = [2, 3, 5, 7]
+        type(primes)
+        <class 'list'>
+        iterator = iter(primes)
+        type(iterator)
+        <class 'list_iterator'>
+        next(iterator)
+        2
+        next(iterator)
+        3
+        next(iterator)
+        5
+        next(iterator)
+        7
+        next(iterator)
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        StopIteration
+      #+end_src
+      - ~StopIteration~ can be handled using a ~try~ statement
+    - An iterator maintains *local state* to represent its position in a sequence
+      #+begin_src python :results output
+        r = range(3, 13)
+        s = iter(r)  # 1st iterator over r
+        next(s)
+        3
+        next(s)
+        4
+        t = iter(r)  # 2nd iterator over r
+        next(t)
+        3
+        next(t)
+        4
+        u = t        # Alternate name for the 2nd iterator
+        next(u)
+        5
+        next(u)
+        6
+        next(s)
+        5
+        next(t)
+        7
+
+        v = iter(t)  # Another alterante name for the 2nd iterator
+        next(v)
+        8
+        next(u)
+        9
+        next(t)
+        10
+      #+end_src
+      - Calling ~iter~ on an *iterator* will return that *iterator, not a copy*: ~v = iter(t)~ = ~v = t~, ~v~ is just an *alterante name* of iterator ~t~, not a *copy*  
+    - Usefulness of iterators
+      - Allowing for *lazy generation* of a much broader class of *underlying sequential datasets*, from *existing to next*
+      - Underlying series of data for an iterator may not be represented explicitly in *memory* (all do not need to be stored simultaneously)
+*** 2.4.8 Iterables
+    Any *value* that can produce *iterators* is called an /iterable/ value. 
+    In Python, an iterable value is *anything* that can be passed to the built-in ~iter~ function: *sequence values* such as ~strings~ and ~tuples~, other *containers* such as ~sets~ and ~dictionaries~, ~iterators~
+    #+begin_src python :results output
+      d = {'one': 1, 'two': 2, 'three': 3}
+      d
+      {'one': 1, 'three': 3, 'two': 2}
+      k = iter(d)
+      next(k)
+      'one'
+      next(k)
+      'three'
+      v = iter(d.values())
+      next(v)
+      1
+      next(v)
+      3
+
+      d.pop('two')
+      2
+      next(k)
+      Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+      RuntimeError: dictionary changed size during iteration
+
+      r = range(3, 6)
+      s = iter(r)
+      next(s)
+      3
+      for x in s:
+          print(x)
+      4
+      5
+      list(s)
+      []
+      for x in r:
+          print(x)
+      3
+      4
+      5
+    #+end_src 
+    - Python guarantees the order of *iterators from dictionaries*
+    - Changing the *structure* like *adding or removing a key* will *invalidate* all iterators, while changing the *value* of an existing key *does not* invalidate iterators or change the order of their contents.
+    - ~for~ can iterate over the contents of any *iterable or iterator*. 
+*** 2.4.9 Built-in Iterators
+    Several built-in functions take as arguments *iterable values* and return *iterators*, extensively used for *lazy sequence processing*
+    - ~map~ is lazy
+      #+begin_src python :results output
+        def double_and_print(x):
+            print('***', x, '=>', 2*x, '***')
+            return 2*x
+        s = range(3, 7)
+        doubled = map(double_and_print, s)  # double_and_print not yet called
+        next(doubled)                       # double_and_print called once
+        *** 3 => 6 ***
+        6
+        next(doubled)                       # double_and_print called again
+        *** 4 => 8 ***
+        8
+        list(doubled)                       # double_and_print called twice more
+        *** 5 => 10 ***
+        *** 6 => 12 ***
+        [10, 12]
+      #+end_src
+    - ~filter~ returns an iterator over a *subset of the values* in another iterable
+    - ~zip~ returns an iterator over *tuples of values* that combine *one value* from *each of multiple* iterables. 
+*** 2.4.10 Generators
+    A /generator/ is an *iterator* returned by a special class of function called a /generator/ function.
+    #+begin_src python :results output
+      def letters_generator():
+          current = 'a'
+          while current <= 'd':
+              yield current
+              current = chr(ord(current)+1)
+
+      for letter in letters_generator():
+          print(letter)
+      a
+      b
+      c
+      d
+
+      letters = letters_generator()
+      type(letters)
+      <class 'generator'>
+      next(letters)
+      'a'
+      next(letters)
+      'b'
+      next(letters)
+      'c'
+      next(letters)
+      'd'
+      next(letters)
+      Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+      StopIteration
+    #+end_src 
+    - ~yield~ indicates *generator func*
+    - The *generator* does not start executing any of the *body statements of its generator function* until the *first time* ~next~ is called
+    - *Generators* do not use attributes of an object to track their progress through a series. Instead, they control the *execution* of the *generator function*, which runs until the next ~yield~ statement is executed each time ~next~ is called on the *generator*.
+    - Calling ~next~ on the *generator* continues execution of the *generator function* from wherever it left off previously until another ~yield~ statement is executed.
+    - ~yield~ statements *do not destroy* the newly created environment, the values of current and of any other bound names in the *scope* of ~letters_generator~ are *preserved across subsequent* calls to ~next~
+    - The *generator* raises a ~StopIteration~ exception whenever its *generator function returns*.
+**** Question:                                                    :QUESTIONS:
+     1. 以上能不能简化，不就是一个在 *generator* 上每次调用 ~next~ 就执行一次 *generator func* 中的 ~yield~ 语句吗
+     2. *generator function* 什么时候return啊？里面不是没有return吗？那 ~StopIteration~ 什么抛出呢？ 
+*** 2.4.11 Implementing Lists and Dictionaries
+    - Representing a *mutable linked list* by a *function* that has a *linked list* as its *local state*
+      #+begin_src python :results output
+        def mutable_link():
+           """Return a functional implementation of a mutable linked list."""
+           contents = empty
+           def dispatch(message, value=None):
+               nonlocal contents
+               if message == 'len':
+                   return len_link(contents)
+               elif message == 'getitem':
+                   return getitem_link(contents, value)
+               elif message == 'push_first':
+                   contents = link(value, contents)
+               elif message == 'pop_first':
+                   f = first(contents)
+                   contents = rest(contents)
+                   return f
+               elif message == 'str':
+                   return join_link(contents, ", ")
+           return dispatch
+  
+        def to_mutable_link(source):
+            """Return a functional list with the same contents as source."""
+            s = mutable_link()
+            for element in reversed(source):
+                s('push_first', element)
+            return s
+  
+        s = to_mutable_link(suits)
+        type(s)
+        <class 'function'>
+        print(s('str'))
+        heart, diamond, spade, club
+  
+        s('pop_first')
+        'heart'
+        print(s('str'))
+        diamond, spade, club
+      #+end_src 
+      - Lists need to have an *identity*, ~None~ can't be used for empty mutable list, as ~None~ ~is~ ~None~ while two *empty lists or funcs* are not *identical*
+      - Message passing: encapsulates the logic for all operations on a *data value* within *one function* (~dispatch~) that responds to *different messages*
+      - A general pattern in programming: the function is a *dispatch function* and its arguments are *first a message*, followed by *additional arguments to parameterize that method*
+      - ~to_mutable_link~ a convenience function to construct a *functionally implemented linked list* from any *built-in sequence* by *adding* each element in *reverse order*
+      - ~reversed~ takes and returns an *iterable value*
+      - The linked list ~s~ itself is a func ~<class 'function'>~  
+    - Implementing Dictionaries
+      Using a *list* of key-value pairs to store the contents of the dictionary
+      #+begin_src python :results output
+        def dictionary():
+            """Return a functional implementation of a dictionary."""
+            records = []
+            def getitem(key):
+                matches = [r for r in records if r[0] == key]
+                if len(matches) == 1:
+                    key, value = matches[0]
+                    return value
+            def setitem(key, value):
+                nonlocal records
+                non_matches = [r for r in records if r[0] != key]
+                records = non_matches + [[key, value]]
+            def dispatch(message, key=None, value=None):
+                if message == 'getitem':
+                    return getitem(key)
+                elif message == 'setitem':
+                    setitem(key, value)
+            return dispatch
+  
+        d = dictionary()
+        d('setitem', 3, 9)
+        d('setitem', 4, 16)
+        d('getitem', 3)
+        9
+        d('getitem', 4)
+        16
+      #+end_src
+      - This implementation is *not optimized* for fast record lookup, the built-in dictionary type is considerably more efficient
+*** 2.4.12 Dispatch Dictionaries
+    Instead of using *conditionals*, use *dictionaries with string keys* to *implement dispatching*
+    #+begin_src python :results output
+      def account(initial_balance):
+          def deposit(amount):
+              dispatch['balance'] += amount
+              return dispatch['balance']
+          def withdraw(amount):
+              if amount > dispatch['balance']:
+                  return 'Insufficient funds'
+              dispatch['balance'] -= amount
+              return dispatch['balance']
+          dispatch = {'deposit':   deposit,
+                      'withdraw':  withdraw,
+                      'balance':   initial_balance}
+          return dispatch
+
+      def withdraw(account, amount):
+          return account['withdraw'](amount)
+      def deposit(account, amount):
+          return account['deposit'](amount)
+      def check_balance(account):
+          return account['balance']
+
+      a = account(20)
+      deposit(a, 5)
+      withdraw(a, 17)
+      check_balance(a)
+    #+end_src 
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 23:27:34
+    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_23-27-34.png]]
+    - The *local state* (*balance*) of the account is stored in the dictionary *alongside the functions* that implement its behavior.
+      - ~withdraw~ and ~deposit~ defined in ~account~ have access to the ~dispatch~ dictionary to *read and change* the balance (*local state*) as dictionary is *mutable*
+      - ~withdraw~, ~deposit~ and ~check_balance~ are just *helper* funcs
+      - Storing the *balance* in the *dispatch dictionary* (dictionary is *mutable*) rather than in the ~account~ frame directly to avoid the need for ~nonlocal~ statements in ~deposit~ and ~withdraw~
+**** Question:                                                    :QUESTIONS:
+     1. 以上分析有何简化or补充的地方？关于 "dictionary is mutable 所以把 local state 以及操作它的 funcs 存放到 dictionary 里，因为这样可以缺省 ~nonlocal~ statement 而直接通过 funcs 访问改变 local state"的想法or说法对吗？更简化梳理清晰些？
+     2. ~local state~ 具体指什么？mutable data type 都有 ~local state~ ？不同的 mutable date type 的 ~local state~ 有何异同？（比如 lists dictionaries funcs） 
+*** 2.4.13 Propagating Constraints
+    constraint-based system, declarative programming, one-directional, general model of relationships, a means of combination, connectors, constraints network, computation
+    - Using the Constraint System
+      - Linking connectors into a network that mirrors the figure above
+        #+begin_src python :results output
+          celsius = connector('Celsius')
+          fahrenheit = connector('Fahrenheit')
+  
+          def converter(c, f):
+              """Connect c to f with constraints to convert from Celsius to Fahrenheit."""
+              u, v, w, x, y = [connector() for _ in range(5)]
+              multiplier(c, w, u)
+              multiplier(v, x, u)
+              adder(v, y, f)
+              constant(w, 9)
+              constant(x, 5)
+              constant(y, 32)
+  
+          converter(celsius, fahrenheit)
+        #+end_src
+        - Calling ~connector~ constructor to create ~celsius~ and ~fahrenheit~ connectors
+        - ~converter~ *assembles* the various *connectors and constraints* in the network 
+      - Using a *message passing system* to *coordinate constraints and connectors*
+        - *Constraints* are *dictionaries* that do not hold *local states themselves*. Their responses to messages are *non-pure* functions that *change the connectors that they constrain*.
+        - *Connectors* are *dictionaries* that hold *a current value* and respond to messages that *manipulate that value* (map *message names* to *function* and *data values*)
+        - *Constraints* will change the *value of connectors* by *sending messages* (instead of *changing directly*), so that the *connector* can notify *other constraints* in response to the change
+        - A connector represents *a number*, but also *encapsulates connector behavior*
+        #+begin_src python :results output
+          celsius['set_val']('user', 25)
+          Celsius = 25
+          Fahrenheit = 77.0
+
+          fahrenheit['set_val']('user', 212)
+          Contradiction detected: 77.0 vs 212
+
+          celsius['forget']('user')
+          Celsius is forgotten
+          Fahrenheit is forgotten
+
+          fahrenheit['set_val']('user', 212)
+          Fahrenheit = 212
+          Celsius = 100.0
+        #+end_src 
+        - ~celsius~ changed <--> propagating through the network <--> ~fahrenheit~ changed: This *non-directionality* of computation is the distinguishing feature of *constraint-based* systems. 
+    - Implementing the Constraint System
+      - Three constraints
+        #+begin_src python :results output
+          from operator import add, sub
+          from operator import mul, truediv
+
+          def adder(a, b, c):
+              """The constraint that a + b = c."""
+              return make_ternary_constraint(a, b, c, add, sub, sub)
+
+          def multiplier(a, b, c):
+              """The constraint that a * b = c."""
+              return make_ternary_constraint(a, b, c, mul, truediv, truediv)
+
+          def constant(connector, value):
+              """The constraint that connector = value."""
+              constraint = {}
+              connector['set_val'](constraint, value)
+              return constraint
+        #+end_src
+      - Generic ternary (three-way) constraint
+        #+begin_src python :results output
+          def make_ternary_constraint(a, b, c, ab, ca, cb):
+              """The constraint that ab(a,b)=c and ca(c,a)=b and cb(c,b) = a."""
+              def new_value():
+                  av, bv, cv = [connector['has_val']() for connector in (a, b, c)]
+                  if av and bv:
+                      c['set_val'](constraint, ab(a['val'], b['val']))
+                  elif av and cv:
+                      b['set_val'](constraint, ca(c['val'], a['val']))
+                  elif bv and cv:
+                      a['set_val'](constraint, cb(c['val'], b['val']))
+              def forget_value():
+                  for connector in (a, b, c):
+                      connector['forget'](constraint)
+              constraint = {'new_val': new_value, 'forget': forget_value}
+              for connector in (a, b, c):
+                  connector['connect'](constraint)
+              return constraint
+        #+end_src 
+    - Representing connectors
+      #+begin_src python :results output
+        def connector(name=None):
+            """A connector between constraints."""
+            informant = None
+            constraints = []
+            def set_value(source, value):
+                nonlocal informant
+                val = connector['val']
+                if val is None:
+                    informant, connector['val'] = source, value
+                    if name is not None:
+                        print(name, '=', value)
+                    inform_all_except(source, 'new_val', constraints)
+                else:
+                    if val != value:
+                        print('Contradiction detected:', val, 'vs', value)
+            def forget_value(source):
+                nonlocal informant
+                if informant == source:
+                    informant, connector['val'] = None, None
+                    if name is not None:
+                        print(name, 'is forgotten')
+                    inform_all_except(source, 'forget', constraints)
+            connector = {'val': None,
+                         'set_val': set_value,
+                         'forget': forget_value,
+                         'has_val': lambda: connector['val'] is not None,
+                         'connect': lambda source: constraints.append(source)}
+            return connector
+      #+end_src 
 
 
 
+        
+
+
+**** Question:                                                    :QUESTIONS:
+     1. "*connector* can notify *other constraints* in response to the change"怎么理解？是 "connector 通知其他 constraints 来响应变化" 还是 "connector 响应变化并通知其他 constraints"？
+     2. 
 * Funcs
 ** Expressions
 *** Types of expressions
