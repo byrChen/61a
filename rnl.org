@@ -1090,7 +1090,6 @@
 
 
 
-
 *** 2.2.4 The Properties of Data
     As long as *behavior conditions* are met (no matter how *implementation* details below an abstraction barrier changes) $\Rightarrow$ *selectors and constructors* can constitute and remain a *valid representation* of abstract data
     - Example: *functional* representation for rational nums
@@ -2301,7 +2300,17 @@
      1. 以上分析有何简化or补充的地方？关于 "dictionary is mutable 所以把 local state 以及操作它的 funcs 存放到 dictionary 里，因为这样可以缺省 ~nonlocal~ statement 而直接通过 funcs 访问改变 local state"的想法or说法对吗？更简化梳理清晰些？
      2. ~local state~ 具体指什么？mutable data type 都有 ~local state~ ？不同的 mutable date type 的 ~local state~ 有何异同？（比如 lists dictionaries funcs） 
 *** 2.4.13 Propagating Constraints
-    constraint-based system, declarative programming, one-directional, general model of relationships, a means of combination, connectors, constraints network, computation
+    - Intro
+      - Expressing programs as *constraints* is a type of /declarative programming/, in which a programmer *declares* the *structure* of a problem to be solved, but *abstracts* away the details of exactly how the solution to the problem is computed.
+      - Computer programs are traditionally organized as one-directional computations
+      - A *general* model of *linear relationships* (not one-directional computations): defining *primitive constraints* that *hold between quantities*
+      - Defining a means of *combination*, so that *primitive constraints* can be *combined* to express more *complex relations*
+        - *Constraints* are combined by *constructing a network* in which *constraints* are joined by *connectors*
+        - A *connector* is an *object* that "holds" a *value* and may *participate* in one or more *constraints*.
+      - Example
+        #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-29 14:59:35
+        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-29_14-59-35.png]]
+        - Computation: set a value for a *connector* (by the *user* or by a *constraint box* to which it is linked) --> *awakening* all of its associated *constraints* --> Each *awakened constraint* box then *polls its connectors* and trys to *set values* for *new connectors* --> awakening all of new setted connectors' *constraints*, and so on
     - Using the Constraint System
       - Linking connectors into a network that mirrors the figure above
         #+begin_src python :results output
@@ -2343,9 +2352,10 @@
           Fahrenheit = 212
           Celsius = 100.0
         #+end_src 
-        - ~celsius~ changed <--> propagating through the network <--> ~fahrenheit~ changed: This *non-directionality* of computation is the distinguishing feature of *constraint-based* systems. 
+        - ~celsius~ changed <--> propagating through the network <--> ~fahrenheit~ changed: This *non-directionality* of computation is the distinguishing feature of *constraint-based* systems.
+        - ~'user'~ means we  
     - Implementing the Constraint System
-      - Three constraints
+      - Three constraints: ~adder~, ~multiplier~, ~constant~   
         #+begin_src python :results output
           from operator import add, sub
           from operator import mul, truediv
@@ -2365,6 +2375,7 @@
               return constraint
         #+end_src
       - Generic ternary (three-way) constraint
+        Using the three *connectors* (~a, b ,c~) and three *constraints* (~ab, ca, cb~) to create a *generic ternary constraint* that accepts ~new_val~ and ~forget~  
         #+begin_src python :results output
           def make_ternary_constraint(a, b, c, ab, ca, cb):
               """The constraint that ab(a,b)=c and ca(c,a)=b and cb(c,b) = a."""
@@ -2383,8 +2394,11 @@
               for connector in (a, b, c):
                   connector['connect'](constraint)
               return constraint
-        #+end_src 
+        #+end_src
+        - Dictionariy ~constraint~ is a *dispatch* dictionary but also the *constraint object* itself
+        - *Constraint* ~constraint~ passes itself as the ~source~ argument in calls to its *connectors*
     - Representing connectors
+      A *connector* is represented as a *dictionary* that contains a value, but also has response functions with *local state*. The *connector* must *track* the ~informant~ that gave it its current value, and a list of ~constraints~ in which it participates.
       #+begin_src python :results output
         def connector(name=None):
             """A connector between constraints."""
@@ -2414,16 +2428,621 @@
                          'has_val': lambda: connector['val'] is not None,
                          'connect': lambda source: constraints.append(source)}
             return connector
+
+        def inform_all_except(source, message, constraints):
+            """Inform all constraints of the message, except source."""
+            for c in constraints:
+                if c != source:
+                    c[message]()
+      #+end_src
+      - A *connector* is a *dispatch dictionary* for the five messages *used by constraints* to *communicate with connectors*
+      - Only if ~informants == source~ (forget request is coming from the *same constraint* that set the value originally) will the connector *forget its value* and reset the ~informant~
+      - *Constraints* and *connectors* are both *abstractions* that are manipulated through *messages*.
+      - When the *value of a connector* is changed, it is changed via a *message* that not only *changes the value*, but *validates it* (checking the *source*) and *propagates* its effects (*informing* other *constraints*)
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. "*connector* can notify *other constraints* in response to the change" (*link*) 怎么理解？是 "connector 通知其他 constraints 来响应变化" 还是 "connector 响应变化并通知其他 constraints"？
+     2. 对2.4.13 Propagating Constraints (*link*) 的进一步&全局理解并补充or简化笔记：
+        1. 整体上connector、constrant、message具体是什么，共同工作通信机制？
+        2. 什么是声明式编程的思想？用声明式编程的思想,使用dictionary dispatch、nonlocal、high-order func、func and data abstraction等来设计以上程序的思想？
+** 2.5 Object-Oriented Programming
+*** 2.5.1 Objects and Classes
+    - Instantiating a class ~a = Account('Kirk')~
+    - Instance attibutes ~.~ (fields, properties, or instance variables)
+      #+begin_src python :results output
+        a.holder
+        'Kirk'
+        a.balance
+        0
+      #+end_src
+    - Methods
+      #+begin_src python :results output
+        a.deposit(15)
+        15
+        a.withdraw(10)  # The withdraw method returns the balance after withdrawal
+        5
+        a.balance       # The balance attribute has changed
+        5
+        a.withdraw(10)
+        'Insufficient funds'
+      #+end_src 
+*** 2.5.2 Defining Classes
+     A class statement defines the *class name*, then includes a *suite of statements* to define the attributes of the class
+     #+begin_src python :results output
+       class <name>:
+           <suite>
+     #+end_src 
+    - Constructor for class ~__init__~ 
+      #+begin_src python :results output
+        class Account:
+            def __init__(self, account_holder):
+                self.balance = 0
+                self.holder = account_holder
+      #+end_src
+      - ~self~ is bound to the newly created object
+    - Identity
+      #+begin_src python :results output
+        b = Account('Spock')
+        b.balance = 200
+        [acc.balance for acc in (a, b)]
+        [0, 200]
+
+        a is a
+        True
+        a is not b
+        True
+
+        c = a
+        c is a
+        True
+      #+end_src
+      - Object identity is compared using the ~is~ and ~is not~ operators.
+      - Binding an object to a new name using assignment *does not* create a *new object*.
+      - *New objects* that have user-defined classes are only created when the *constructor* of this class is called
+    - Methods
+      #+begin_src python :results output
+        class Account:
+            def __init__(self, account_holder):
+                self.balance = 0
+                self.holder = account_holder
+            def deposit(self, amount):
+                self.balance = self.balance + amount
+                return self.balance
+            def withdraw(self, amount):
+                if amount > self.balance:
+                    return 'Insufficient funds'
+                self.balance = self.balance - amount
+                return self.balance
+
+        spock_account = Account('Spock')
+        spock_account.deposit(100)
+        100
+        spock_account.withdraw(90)
+        10
+        spock_account.withdraw(90)
+        'Insufficient funds'
+        spock_account.holder
+        'Spock'
+      #+end_src
+      - Methods are invoked via ~.~ 
+      - *Each* method definition includes a *special first* parameter ~self~
+*** 2.5.3 Message Passing and Dot Expressions
+    *Methods and instance attributes* replicate much of the behavior of a *dispatch dictionary* in a *message passing* implementation of a data value, *objects* take *messages* using ~.~ 
+    Central idea in message passing: data values should have behavior by responding to messages that are relevant to the abstract type they represent
+    - Dot expressions
+      #+begin_src python :results output
+        spock_account.balance
+        10
+        getattr(spock_account, 'balance')
+        10
+        hasattr(spock_account, 'deposit')
+        True
+      #+end_src
+      - ~spock_account.balance~ = built-in ~getattr(spock_account, 'balance')~   
+    - Methods and functions
+      #+begin_src python :results output
+        type(Account.deposit)
+        <class 'function'>
+        type(spock_account.deposit)
+        <class 'method'>
+
+        Account.deposit(spock_account, 1001)  # The deposit function takes 2 arguments
+        1011
+        spock_account.deposit(1000)           # The deposit method takes 1 argument
+        2011
+      #+end_src
+      - ~deposit~ as a *plain func*, must supply ~self~ explicitly: ~Account.deposit~ = ~getattr(Account, 'deposit')~ = ~<class 'function'>~
+      - ~deposit~ as a *bound method*, ~self~ is bound automatically: ~spock_account.deposit~ = ~getattr(spock_account, 'deposit')~ = ~<class 'method'>~     
+    - Naming Conventions
+      - CapWords for class names
+      - Lowercased words separated by underscores for funcs
+      - ~_~ attibutes can only be accessed *within methods* of the class itself (~object.method(_, ...)~) , *rather than by users* of the class (~object._~) 
+**** Question:                                                    :QUESTIONS:
+     1. 本节前两段主要讲什么？Message passing, dot expression, dispatch dictionary的关系？dot expression相比dispatch dictionary的优势？全面优势吗？各自适合怎样的情形？
+*** 2.5.4 Class Attributes
+    *Class attributes* (class variables or static variables) are created by assignment statements in the *suite* of a class statement, *outside* of any *method definition*
+    #+begin_src python :results output
+      class Account:
+          interest = 0.02            # A class attribute
+          def __init__(self, account_holder):
+              self.balance = 0
+              self.holder = account_holder
+          # Additional methods would be defined here
+
+      spock_account = Account('Spock')
+      kirk_account = Account('Kirk')
+      spock_account.interest
+      0.02
+      kirk_account.interest
+      0.02
+
+      Account.interest = 0.04
+      spock_account.interest
+      0.04
+      kirk_account.interest
+      0.04
+    #+end_src 
+    - Attribute names
+      To evaluate a dot expression ~<expression> . <name>~
+      - ~<expression>~ yield the *object*
+      - ~<name>~ matches from *instance attributes* to *class attribute*, just as *local names* have priority over *global* in an *environment*
+    - Attribute assignment
+      Assignment to an attribute of an *object* cannot affect the attributes of its *class*
+      #+begin_src python :results output
+        kirk_account.interest = 0.08  # creating a new instance attribute interest
+        kirk_account.interest
+        0.08
+        spock_account.interest
+        0.04
+        Account.interest = 0.05  # changing the class attribute
+        spock_account.interest     # changes instances without like-named instance attributes
+        0.05
+        kirk_account.interest     # but the existing instance attribute is unaffected
+        0.08
+      #+end_src
+      - ~kirk_account.interest~ finds ~interest~ as *instance attribute* while ~spock_account.interest~ finds it as *class attribute* 
+*** 2.5.5 Inheritance
+    - Base class (parent class or superclass) and child class (subclass)
+    - /is-a/ for *inheritance* and /has-a/ for *instance attribute*
+*** 2.5.6 Using Inheritance
+    #+begin_src python :results output
+      class Account:
+          """A bank account that has a non-negative balance."""
+          interest = 0.02
+          def __init__(self, account_holder):
+              self.balance = 0
+              self.holder = account_holder
+          def deposit(self, amount):
+              """Increase the account balance by amount and return the new balance."""
+              self.balance = self.balance + amount
+              return self.balance
+          def withdraw(self, amount):
+              """Decrease the account balance by amount and return the new balance."""
+              if amount > self.balance:
+                  return 'Insufficient funds'
+              self.balance = self.balance - amount
+              return self.balance
+
+      class CheckingAccount(Account):
+          """A bank account that charges for withdrawals."""
+          withdraw_charge = 1
+          interest = 0.01
+          def withdraw(self, amount):
+              return Account.withdraw(self, amount + self.withdraw_charge)
+
+
+      checking = CheckingAccount('Sam')
+      checking.deposit(10)
+      10
+      checking.withdraw(5)
+      4
+      checking.interest
+      0.01
+    #+end_src 
+    - To look up a name in a class: instance attributes --> class attributes --> parent class attributes
+    - The class of an object stays *constant throughout*
+    - Calling ancestors: Attributes that have been overridden are still accessible via *class objects* in *child class* ~Account.withdraw(self, amount + self.withdraw_charge)~ 
+    - Interfaces: An *object interface* is a collection of *attributes* and *conditions* on those attributes
+    - The parts of program that *use* the object abstraction, rather than assuming anything about its *implementation* are more robust to future changes
+      #+begin_src python :results output
+        def deposit_all(winners, amount=5):
+            for account in winners:
+                account.deposit(amount)
+
+        def deposit_all(winners, amount=5):
+            for account in winners:
+                Account.deposit(account, amount)
+      #+end_src
+      - ~account.deposit~ assumes each ~account~ satisfies the *account object abstraction* and will work with any other *account classes*  
+      - ~Account.deposit~ violates the *abstraction barrier* of the *account object abstraction*, and will not necessarily work with *new kinds* of accounts 
+*** 2.5.7 Multiple Inheritance
+    /Multiple inheritance/: a subclass inheriting attributes from *multiple base classes*
+    #+begin_src python :results output
+      class SavingsAccount(Account):
+          deposit_charge = 2
+          def deposit(self, amount):
+              return Account.deposit(self, amount - self.deposit_charge)
+
+      class AsSeenOnTVAccount(CheckingAccount, SavingsAccount):
+          def __init__(self, account_holder):
+              self.holder = account_holder
+              self.balance = 1           # A free dollar!
+
+      such_a_deal = AsSeenOnTVAccount("John")
+      such_a_deal.balance
+      1
+      such_a_deal.deposit(20)            # $2 fee from SavingsAccount.deposit
+      19
+      such_a_deal.withdraw(5)            # $1 fee from CheckingAccount.withdraw
+      13
+
+      such_a_deal.deposit_charge
+      2
+      such_a_deal.withdraw_charge
+      1
+    #+end_src 
+    #+DOWNLOADED: http://composingprograms.com/img/multiple_inheritance.png @ 2019-07-01 08:59:29
+    [[file:Chapter_2:_Building_Abstractions_with_Data/multiple_inheritance_2019-07-01_08-59-29.png]]
+    - Python resolves names from *left to right*, then *upwards*: ~AsSeenOnTVAccount, CheckingAccount, SavingsAccount, Account, object~
+    - No correct order, but need to select some ordering in a consistent way
+    - C3 Method Resolution Ordering: ~class.mro~ 
+      #+begin_src python :results output
+        [c.__name__ for c in AsSeenOnTVAccount.mro()]
+        ['AsSeenOnTVAccount', 'CheckingAccount', 'SavingsAccount', 'Account', 'object']
       #+end_src 
 
-
-
-        
-
-
+*** 2.5.8 The Role of Objects
+    The Python *object system* is designed to make *data abstraction* and *message passing* both convenient and flexible
 **** Question:                                                    :QUESTIONS:
-     1. "*connector* can notify *other constraints* in response to the change"怎么理解？是 "connector 通知其他 constraints 来响应变化" 还是 "connector 响应变化并通知其他 constraints"？
-     2. 
+     1. 这小节整体上主要讲了什么？
+** 2.7 Object Abstraction
+   A central concept in *object abstraction* is a /generic function/, which is a function that can accept values of multiple different types
+   Three different techniques for implementing generic functions: shared interfaces, type dispatching, and type coercion
+*** 2.7.1 String Conversion
+    Python stipulates that all objects should produce two different string representations: 
+    1. Human-interpretable text: constructor func for strings ~str~ 
+    2. Python-interpretable expression: ~repr~ returns the *canonical string representation* of the *object* (where possible)
+    #+begin_src python :results output
+      Return the canonical string representation of the object.
+      For most object types, eval(repr(object)) == object.
+
+      12e12
+      12000000000000.0
+      print(repr(12e12))
+      12000000000000.0
+
+      repr(min)
+      '<built-in function min>'
+
+      from datetime import date
+      tues = date(2011, 9, 12)
+      repr(tues)
+      'datetime.date(2011, 9, 12)'
+      str(tues)
+      '2011-09-12'
+
+      tues.__repr__()
+      'datetime.date(2011, 9, 12)'
+
+      tues.__str__()
+      '2011-09-12'
+    #+end_src 
+    - ~repr(object) -> string~, For most ~object~ types, ~eval(repr(object))~ = ~object~
+    - ~a~ = ~print(repr(a))~ in an interactive session
+    - *Polymorphic func* ~__repr__()~ and ~__str__()~: ~repr(tues)~ = ~tue.__repr__()~ and ~str(tues)~ = ~tue.__str__()~
+    - ~.~ provides a mechanism for extending the *domain of existing functions* to *new object types*.
+    - *Certain functions* should apply to *multiple data types*. One way to create such a function is to use a *shared attribute name* with a *different definition* in each class (like ~__repr__()~ and ~__str__()~)  
+*** 2.7.2 Special Methods
+    Certain /special names/ are invoked by the Python interpreter in special circumstances: ~__init__~ for objects construction; ~__str__~ for printing; ~__repr__~ for interactively displaying values   
+    - True and false values
+      All *objects* (of built-in and user-defined classes) in Python have a *truth* value, while ~__bool__~ *method* can be used to override in user-defined classes
+      #+begin_src python :results output
+        Account.__bool__ = lambda self: self.balance != 0
+
+        bool(Account('Jack'))
+        False
+        if not Account('Jack'):
+            print('Jack has nothing')
+        Jack has nothing
+      #+end_src
+    - Sequence operations
+      #+begin_src python :results output
+        len('Go Bears!')
+        9
+        'Go Bears!'.__len__()
+        9
+
+        bool('')
+        False
+        bool([])
+        False
+        bool('Go Bears!')
+        True
+
+        'Go Bears!'[3]
+        'B'
+        'Go Bears!'.__getitem__(3)
+        'B'
+      #+end_src
+      - ~len~ invokes ~__len__~ method of its argument. All built-in *sequence types* implement this method.
+      - Python uses a sequence's *length* to determine its truth value
+      - ~__getitem__~ method is invoked by the element selection operator ~[]~ 
+    - Callable objects
+      In Python, functions are *first-class objects*, so they can be passed around as data and have attributes like any other object. A *class* which includes a ~__call__~ method can behave like a *higher-order function*.
+      #+begin_src python :results output
+        def make_adder(n):
+            def adder(k):
+                return n + k
+            return adder
+
+        add_three = make_adder(3)
+        add_three(4)
+        7
+
+        class Adder(object):
+            def __init__(self, n):
+                self.n = n
+            def __call__(self, k):
+                return self.n + k
+
+        add_three_obj = Adder(3)
+        add_three_obj(4)
+        7
+      #+end_src
+      - *Objects* can be *"called"* with ~__call__~ method defined
+    - Arithmetic
+      Special methods can also define the behavior of *built-in operators* applied to *user-defined objects*.
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. "functions are *first-class objects*, so they can be passed around as data and have attributes like any other object" (*link*) 中 first-class 和 have attributes like any... 怎么理解？
+     2. Callable object 有什么意义？怎么理解 further blurred the line between data and functions ？
+*** 2.7.3 Multiple Representations
+    *Abstraction barriers* can *separate* the *use and representation* of data. Needing not only the *data abstraction barriers* that isolate *representation* from *use* but also *abstraction barriers* that isolate *different design choices* from *each other* and permit different choices to *coexist* in a single program.
+    - Superclass ~Number~ 
+      #+begin_src python :results output
+        class Number:
+            def __add__(self, other):
+                return self.add(other)
+            def __mul__(self, other):
+                return self.mul(other)
+      #+end_src
+      - No ~__init__~ method -> Not instantiated directly but served as a *superclass* of other number classes
+      - ~add~ and ~mul~ not defined
+    - ~Complex~ class inherits from ~Number~ class  
+      #+begin_src python :results output
+        class Complex(Number):
+            def add(self, other):
+                return ComplexRI(self.real + other.real, self.imag + other.imag)
+            def mul(self, other):
+                magnitude = self.magnitude * other.magnitude
+                return ComplexMA(magnitude, self.angle + other.angle)
+      #+end_src
+      - Adding: ~ComplexRI~ constructs a complex number from real and imaginary parts.
+      - Multiplying: ~ComplexMA~ constructs a complex number from a magnitude and angle.
+      - ~add~ and ~mul~ are *generic* func as both ~ComplexRI~ and ~ComplexMA~ *share an interface*    
+    - Interfaces
+      An *interface* is a *set of shared attribute names* (here are ~real~, ~imag~, ~magnitude~, and ~angle~), along with a specification of their *behavior*. 
+      - *Object attributes*, which are a form of *message passing*, allows *different data types* to respond to the *same message* in *different ways*
+      - A shared set of *messages* that elicit *similar behavior* from *different classes* is a powerful method of *abstraction* 
+      - The ~Complex~ class *implicitly defines* this *interface* by determining how these *attributes* are used to ~add~ and ~mul~ complex numbers.
+    - Properties
+      #+begin_src python :results output
+        from math import atan2
+        class ComplexRI(Complex):
+            def __init__(self, real, imag):
+                self.real = real
+                self.imag = imag
+            @property
+            def magnitude(self):
+                return (self.real ** 2 + self.imag ** 2) ** 0.5
+            @property
+            def angle(self):
+                return atan2(self.imag, self.real)
+            def __repr__(self):
+                return 'ComplexRI({0:g}, {1:g})'.format(self.real, self.imag)
+
+        ri = ComplexRI(5, 12)
+        ri.real
+        5
+        ri.magnitude
+        13.0
+        ri.real = 9
+        ri.real
+        9
+        ri.magnitude
+        15.0
+
+        from math import sin, cos, pi
+        class ComplexMA(Complex):
+            def __init__(self, magnitude, angle):
+                self.magnitude = magnitude
+                self.angle = angle
+            @property
+            def real(self):
+                return self.magnitude * cos(self.angle)
+            @property
+            def imag(self):
+                return self.magnitude * sin(self.angle)
+            def __repr__(self):
+                return 'ComplexMA({0:g}, {1:g} * pi)'.format(self.magnitude, self.angle/pi)
+
+
+        ma = ComplexMA(2, pi/2)
+        ma.imag
+        2.0
+        ma.angle = pi
+        ma.real
+        -2.0
+
+        from math import pi
+        ComplexRI(1, 2) + ComplexMA(2, pi/2)
+        ComplexRI(1, 4)
+        ComplexRI(0, 1) * ComplexRI(0, 1)
+        ComplexMA(1, 1 * pi)
+      #+end_src
+      - ~@property~ decorator allows functions to be called *without call expression syntax* ~()~: ~ri.magnitude~, ~ma.imag~, ~ma.real~
+      - ~+~ in ~ComplexRI(1, 2) + ComplexMA(2, pi/2)~ is *overridden* by ~__add__~ in class ~Number~ (~*~ overridden by ~__mul__~ also)
+      - ~add~ in ~__add__~ and ~mul~ in ~__mul__~ are both defined in ~complex~
+      - Objects can find methods and attributes its *class and superclass*
+    - The *interface* approach to *encoding multiple representations* has appealing properties
+      - The *class* for each *representation* can be developed separately; they must only agree on the names of the *attributes they share*, as well as any *behavior conditions* for those attributes.
+      - The *interface* is also *additive*: creating another class with the *same attributes* to add a new *representation*
+    - *Multiple representations* of data are closely related to the idea of *data abstraction*
+      - *Data abstraction* can change the *implementation of a data type* without changing the *meaning of the program*
+      - *Interfaces* and *message passing* can have *multiple different representations*
+      In both cases, a set of *names* and *corresponding behavior conditions* define the *abstraction* that enables this flexibility.
+**** Question:                                          :TOLINK:QUESTIONS:
+     1. 为什么父类都没有 ~__init__~ ？为什么 ~__add__~ 和 ~__mul__~ 要写在父类里？ ~+~ in ~ComplexRI(1, 2) + ComplexMA(2, pi/2)~ ...(*link*) 分析对吗？ 
+     2. 结合Interfaces (*link*) 以及最后两点，梳理清楚 attributes, messages, interface 各自的定义以及之间的关系、 data abstraction, multiple representations, message passing 各自的定义以及之间的关系。
+*** 2.7.4 Generic Functions
+    *Generic* functions are methods or functions that apply to arguments of *different types*
+    #+begin_src python :results output
+      from fractions import gcd
+      class Rational(Number):
+          def __init__(self, numer, denom):
+              g = gcd(numer, denom)
+              self.numer = numer // g
+              self.denom = denom // g
+          def __repr__(self):
+              return 'Rational({0}, {1})'.format(self.numer, self.denom)
+          def add(self, other):
+              nx, dx = self.numer, self.denom
+              ny, dy = other.numer, other.denom
+              return Rational(nx * dy + ny * dx, dx * dy)
+          def mul(self, other):
+              numer = self.numer * other.numer
+              denom = self.denom * other.denom
+              return Rational(numer, denom)
+
+      Rational(2, 5) + Rational(1, 10)
+      Rational(1, 2)
+      Rational(1, 4) * Rational(2, 3)
+      Rational(1, 6)
+    #+end_src 
+    A tension between implementing a generic ~__add__~ that can add all numeric types and separating the concerns of different numeric types to maintain a modular program 
+    - Type dispatching
+      Selecting behavior based on the types of the arguments to a function or method to implement cross-type operations at appropriate times
+      #+begin_src python :results output
+        c = ComplexRI(1, 1)
+        isinstance(c, ComplexRI)
+        True
+        isinstance(c, Complex)
+        True
+        isinstance(c, ComplexMA)
+        False
+
+        def is_real(c):
+            """Return whether c is a real number with no imaginary part."""
+            if isinstance(c, ComplexRI):
+                return c.imag == 0
+            elif isinstance(c, ComplexMA):
+                return c.angle % pi == 0
+
+        is_real(ComplexRI(1, 1))
+        False
+        is_real(ComplexMA(2, pi))
+        True
+
+        Rational.type_tag = 'rat'
+        Complex.type_tag = 'com'
+        Rational(2, 5).type_tag == Rational(1, 2).type_tag
+        True
+        ComplexRI(1, 1).type_tag == ComplexMA(2, pi/2).type_tag
+        True
+        Rational(2, 5).type_tag == ComplexRI(1, 1).type_tag
+        False
+
+        def add_complex_and_rational(c, r):
+            return ComplexRI(c.real + r.numer/r.denom, c.imag)
+
+        def mul_complex_and_rational(c, r):
+            r_magnitude, r_angle = r.numer/r.denom, 0
+            if r_magnitude < 0:
+                r_magnitude, r_angle = -r_magnitude, pi
+            return ComplexMA(c.magnitude * r_magnitude, c.angle + r_angle)
+
+        def add_rational_and_complex(r, c):
+            return add_complex_and_rational(c, r)
+
+        def mul_rational_and_complex(r, c):
+            return mul_complex_and_rational(c, r)
+
+        class Number:
+            def __add__(self, other):
+                if self.type_tag == other.type_tag:
+                    return self.add(other)
+                elif (self.type_tag, other.type_tag) in self.adders:
+                    return self.cross_apply(other, self.adders)
+            def __mul__(self, other):
+                if self.type_tag == other.type_tag:
+                    return self.mul(other)
+                elif (self.type_tag, other.type_tag) in self.multipliers:
+                    return self.cross_apply(other, self.multipliers)
+            def cross_apply(self, other, cross_fns):
+                cross_fn = cross_fns[(self.type_tag, other.type_tag)]
+                return cross_fn(self, other)
+            adders = {("com", "rat"): add_complex_and_rational,
+                      ("rat", "com"): add_rational_and_complex}
+            multipliers = {("com", "rat"): mul_complex_and_rational,
+                           ("rat", "com"): mul_rational_and_complex}
+
+        ComplexRI(1.5, 0) + Rational(3, 2)
+        ComplexRI(3, 0)
+        Rational(-1, 2) * ComplexMA(4, pi/2)
+        ComplexMA(2, 1.5 * pi)
+      #+end_src
+      - ~isinstance(object, class)~ returns true if the object has a class that either is or inherits from the given class
+      - Both addition and multiplication are *commutative*: (~add_complex_and_rational~, ~add_rational_and_complex~) and mul also
+      - Using type tags illustrates that type dispatching is not necessarily linked to the Python object system, but instead a general technique for creating generic functions over heterogeneous domains.
+    - Coercion
+      General situation of completely unrelated operations acting on completely unrelated types need explicit corss-type operations
+      Coercion: Changing objects of one type to another type if different data types are not completely independent 
+      #+begin_src python :results output
+        def rational_to_complex(r):
+            return ComplexRI(r.numer/r.denom, 0)
+
+        class Number:
+            def __add__(self, other):
+                x, y = self.coerce(other)
+                return x.add(y)
+            def __mul__(self, other):
+                x, y = self.coerce(other)
+                return x.mul(y)
+            def coerce(self, other):
+                if self.type_tag == other.type_tag:
+                    return self, other
+                elif (self.type_tag, other.type_tag) in self.coercions:
+                    return (self.coerce_to(other.type_tag), other)
+                elif (other.type_tag, self.type_tag) in self.coercions:
+                    return (self, other.coerce_to(self.type_tag))
+            def coerce_to(self, other_tag):
+                coercion_fn = self.coercions[(self.type_tag, other_tag)]
+                return coercion_fn(self)
+            coercions = {('rat', 'com'): rational_to_complex}
+      #+end_src
+      - Advs n disadvs
+        - Writing only one function for each pair of types rather than a different function for each set of types and each generic operation
+        - Extending coercion
+          - Coercing several different types each into another common type
+          - Iterative coercion: one data type is coerced into another via *intermediate* types to reduce the total number of coercion functions
+        - ~ Losing information when coercing
+      - Particular operators apply coercion to their arguments as needed
+**** Question:                                             :TOLINK:QUESTIONS:
+     1. Using type tags illustrates that type... (*link*) 这句话怎么理解？ 
+
+** 2.8 Efficiency
+   Computational resources used by a representation or process
+*** 2.8.1 Measuring Efficiency
+*** 2.8.2 Memoization
+*** 2.8.3 Orders of Growth
+*** 2.8.4 Example: Exponentiation
+*** 2.8.5 Growth Categories
+
+
+
+
+
+
+
+
 * Funcs
 ** Expressions
 *** Types of expressions
@@ -2817,7 +3436,7 @@ information needed to create a local frame.
 * Higher-Order Func
 * Envs
 * Iteration
-* Recursion
+* Recursion 
 * Func Examples
 * Tree Recursion
 * Data Abstraction

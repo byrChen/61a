@@ -740,3 +740,94 @@
 **** Question                                                     :QUESTIONS:
      1. 关于Connect N整个程序的函数和数据抽象思想进一步思考
 
+* Lab 5 Python Lists, Trees 
+** Required Questions
+*** Q1: Acorn Finder
+    #+begin_src python :results output
+      def acorn_finder(t):
+          """Returns True if t contains a node with the value 'acorn' and
+          False otherwise.
+
+          >>> scrat = tree('acorn')
+          >>> acorn_finder(scrat)
+          True
+          >>> sproul = tree('roots', [tree('branch1', [tree('leaf'), tree('acorn')]), tree('branch2')])
+          >>> acorn_finder(sproul)
+          True
+          >>> numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
+          >>> acorn_finder(numbers)
+          False
+          """
+          "*** YOUR CODE HERE ***"
+          if is_leaf(t):
+              return label(t) == 'acorn'
+          if label(t) == 'acorn':
+              return True
+          else:
+              if len(branches(t)) == 1:
+                  return acorn_finder(branches(t))
+              else:
+                  return acorn_finder(branches(t)[0]) or acorn_finder(branches(t)[1])
+    #+end_src 
+    - ~is_leaf(t)~ to av 
+
+*** Q2: Pruning Leaves
+    #+begin_src python :results output
+      def print_tree(t, indent=0):
+          """Print a representation of this tree in which each node is
+          indented by two spaces times its depth from the root.
+
+          >>> print_tree(tree(1))
+          1
+          >>> print_tree(tree(1, [tree(2)]))
+          1
+            2
+          >>> numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
+          >>> print_tree(numbers)
+          1
+            2
+            3
+              4
+              5
+            6
+              7
+          """
+          print('  ' * indent + str(label(t)))
+          for b in branches(t):
+              print_tree(b, indent + 1)
+
+      def prune_leaves(t, vals):
+          """Return a modified copy of t with all leaves that have a label
+          that appears in vals removed.  Return None if the entire tree is
+          pruned away.
+
+          >>> t = tree(2)
+          >>> print(prune_leaves(t, (1, 2)))
+          None
+          >>> numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
+          >>> print_tree(numbers)
+          1
+            2
+            3
+              4
+              5
+            6
+              7
+          >>> print_tree(prune_leaves(numbers, (3, 4, 6, 7)))
+          1
+            2
+            3
+              5
+            6
+          """
+          "*** YOUR CODE HERE ***"
+          prune_t = [label(t)]
+          if is_leaf(t):
+              return None if label(t) in vals else t
+          else:
+              for i in branches(t):
+                  if prune_leaves(i, vals):
+                      prune_t += [prune_leaves(i, vals)]
+              return prune_t
+    #+end_src 
+
