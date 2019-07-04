@@ -58,7 +58,8 @@ def prune_leaves(t, vals):
     else:
         for i in branches(t):
             if prune_leaves(i, vals):
-                prune_t += [prune_leaves(i, vals)]
+                prune_t.append(prune_leaves(i, vals))
+                # or prune_t += [prune_leaves(i, vals)]
         return prune_t
 
 
@@ -78,6 +79,11 @@ def memory(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    def f(g):
+        nonlocal n
+        n = g(n)
+        return n
+    return f
 
 # Tree ADT
 def tree(label, branches=[]):
@@ -86,6 +92,10 @@ def tree(label, branches=[]):
         assert is_tree(branch), 'branches must be trees'
     return [label] + list(branches)
 
+def tree(label, branches=[]):
+    for branch in branches:
+        assert is_tree(branch), "branches must be trees"
+    return [label] + list(branches)
 def label(tree):
     """Return the label value of a tree."""
     return tree[0]
@@ -102,13 +112,11 @@ def is_tree(tree):
         if not is_tree(branch):
             return False
     return True
-
 def is_leaf(tree):
     """Returns True if the given tree's list of branches is empty, and False
     otherwise.
     """
     return not branches(tree)
-
 def print_tree(t, indent=0):
     """Print a representation of this tree in which each node is
     indented by two spaces times its depth from the root.

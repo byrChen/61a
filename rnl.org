@@ -1497,6 +1497,7 @@
         - ~binarize_branches~ to *binarize a list of branches* 
 **** Question:                                             :TOLINK:QUESTIONS:
      1. 进一步理解Tree-recursive func (*link*) 的后三点代码，特别是最后两点，对树结构递归的深刻理解？补充代码解释
+     2. ~is_tree~ 中 ~len(tree) < 1~ 能否用 ~not tree~ 替换？即均指 ~tree~ 为空    
 *** 2.3.7 Linked Lists
     A /linked list/ is a *pair* containing the *first* element of the *sequence* and the *rest* of the *sequence*. The *second* element is *also a linked list*
     - *Recursive* structure for linked lists: the rest of a linked list is a *linked list or 'empty'*
@@ -1727,7 +1728,7 @@
           True
         #+end_src
         - ~is~ and ~is not~ check for *identity*
-        - ~==~ checks for the *equality of contents* 
+        - ~==~ checks for the *equality of contents* not *identity* 
     - List Manipulation
       - Slicing
         - Slicing a list *creates a new list* and leaves the *original list unchanged*
@@ -1941,7 +1942,6 @@
         {x: x*x for x in range(3,6)}
         {3: 9, 4: 16, 5: 25}
       #+end_src 
-
 *** 2.4.4 Local State
     Lists and dictionaries have *local state*: they are changing values that have some particular contents at any point in the execution of a program.
     Functions can also have *local state*.
@@ -3035,14 +3035,10 @@
 *** 2.8.3 Orders of Growth
 *** 2.8.4 Example: Exponentiation
 *** 2.8.5 Growth Categories
-
-
-
-
-
-
-
-
+** 2.9 Recursive Objects
+*** 2.9.1 Linked List Class
+*** 2.9.2 Tree Class
+*** 2.9.3 Sets
 * Funcs
 ** Expressions
 *** Types of expressions

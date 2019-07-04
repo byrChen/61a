@@ -742,6 +742,71 @@
 
 * Lab 5 Python Lists, Trees 
 ** Required Questions
+   #+begin_src python :results output
+     # Tree ADT
+     def tree(label, branches=[]):
+         """Construct a tree with the given label value and a list of branches."""
+         for branch in branches:
+             assert is_tree(branch), 'branches must be trees'
+         return [label] + list(branches)
+
+     def label(tree):
+         """Return the label value of a tree."""
+         return tree[0]
+
+     def branches(tree):
+         """Return the list of branches of the given tree."""
+         return tree[1:]
+
+     def is_tree(tree):
+         """Returns True if the given tree is a tree, and False otherwise."""
+         if type(tree) != list or len(tree) < 1:
+             return False
+         for branch in branches(tree):
+             if not is_tree(branch):
+                 return False
+         return True
+
+     def is_leaf(tree):
+         """Returns True if the given tree's list of branches is empty, and False
+         otherwise.
+         """
+         return not branches(tree)
+
+     def print_tree(t, indent=0):
+         """Print a representation of this tree in which each node is
+         indented by two spaces times its depth from the root.
+
+         >>> print_tree(tree(1))
+         1
+         >>> print_tree(tree(1, [tree(2)]))
+         1
+           2
+         >>> numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
+         >>> print_tree(numbers)
+         1
+           2
+           3
+             4
+             5
+           6
+             7
+         """
+         print('  ' * indent + str(label(t)))
+         for b in branches(t):
+             print_tree(b, indent + 1)
+
+     def copy_tree(t):
+         """Returns a copy of t. Only for testing purposes.
+
+         >>> t = tree(5)
+         >>> copy = copy_tree(t)
+         >>> t = tree(6)
+         >>> print_tree(copy)
+         5
+         """
+         return tree(label(t), [copy_tree(b) for b in branches(t)])
+   #+end_src 
 *** Q1: Acorn Finder
     #+begin_src python :results output
       def acorn_finder(t):
@@ -770,32 +835,8 @@
                   return acorn_finder(branches(t)[0]) or acorn_finder(branches(t)[1])
     #+end_src 
     - ~is_leaf(t)~ to av 
-
 *** Q2: Pruning Leaves
     #+begin_src python :results output
-      def print_tree(t, indent=0):
-          """Print a representation of this tree in which each node is
-          indented by two spaces times its depth from the root.
-
-          >>> print_tree(tree(1))
-          1
-          >>> print_tree(tree(1, [tree(2)]))
-          1
-            2
-          >>> numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
-          >>> print_tree(numbers)
-          1
-            2
-            3
-              4
-              5
-            6
-              7
-          """
-          print('  ' * indent + str(label(t)))
-          for b in branches(t):
-              print_tree(b, indent + 1)
-
       def prune_leaves(t, vals):
           """Return a modified copy of t with all leaves that have a label
           that appears in vals removed.  Return None if the entire tree is
@@ -827,7 +868,76 @@
           else:
               for i in branches(t):
                   if prune_leaves(i, vals):
-                      prune_t += [prune_leaves(i, vals)]
+                      prune_t.append(prune_leaves(i, vals))
+                      # or prune_t += [prune_leaves(i, vals)]
               return prune_t
     #+end_src 
+    - 
+*** Q3: Memory
+    #+begin_src python :results output
+      def memory(n):
+          """
+          >>> f = memory(10)
+          >>> f(lambda x: x * 2)
+          20
+          >>> f(lambda x: x - 7)
+          13
+          >>> f(lambda x: x > 5)
+          True
+          """
+          "*** YOUR CODE HERE ***"
+          def f(g):
+              nonlocal n
+              n = g(n)
+              return n
+          return f
+    #+end_src 
+** Optional Questions
+*** Q4: Successor Tables
+    #+begin_src python :results output
+      def build_successors_table(tokens):
+          """Return a dictionary: keys are words; values are lists of successors.
 
+          >>> text = ['We', 'came', 'to', 'investigate', ',', 'catch', 'bad', 'guys', 'and', 'to', 'eat', 'pie', '.']
+          >>> table = build_successors_table(text)
+          >>> sorted(table)
+          [',', '.', 'We', 'and', 'bad', 'came', 'catch', 'eat', 'guys', 'investigate', 'pie', 'to']
+          >>> table['to']
+          ['investigate', 'eat']
+          >>> table['pie']
+          ['.']
+          >>> table['.']
+          ['We']
+          """
+          table = {}
+          prev = '.'
+          for word in tokens:
+              if prev not in table:
+                  "*** YOUR CODE HERE ***"
+                  table[prev] = [word]
+              else:
+                  table[prev].append(word)
+              "*** YOUR CODE HERE ***"
+              prev = word
+          return table
+    #+end_src 
+*** Q5: Construct the Sentence
+    #+begin_src python :results output
+      def construct_sent(word, table):
+          """Prints a random sentence starting with word, sampling from
+          table.
+
+          >>> table = {'Wow': ['!'], 'Sentences': ['are'], 'are': ['cool'], 'cool': ['.']}
+          >>> construct_sent('Wow', table)
+          'Wow!'
+          >>> construct_sent('Sentences', table)
+          'Sentences are cool.'
+          """
+          import random
+          result = ''
+          while word not in ['.', '!', '?']:
+              "*** YOUR CODE HERE ***"
+              result = result + word + ' '
+              word = random.choice(table[word])
+          return result.strip() + word
+    #+end_src 
