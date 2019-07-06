@@ -16,15 +16,17 @@ def acorn_finder(t):
     False
     """
     "*** YOUR CODE HERE ***"
+    result = False
     if is_leaf(t):
         return label(t) == 'acorn'
     elif label(t) == 'acorn':
         return True
     else:
-        if len(branches(t)) == 1:
-            return acorn_finder(branches(t))
-        else:
-            return acorn_finder(branches(t)[0]) or acorn_finder(branches(t)[1])
+        for branch in branches(t):
+            result = result or acorn_finder(branch)
+            if result:
+                return True
+        return result
 
 # Q2
 def prune_leaves(t, vals):

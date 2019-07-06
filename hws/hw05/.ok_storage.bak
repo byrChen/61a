@@ -1,0 +1,6 @@
+'replace_leaf-correct', (0, 70)
+'total_weight-correct', (512, 70)
+'balanced-correct', (1024, 70)
+'totals_tree-correct', (1536, 70)
+'make_counter-correct', (2048, 70)
+'make_fib-correct', (2560, 70)

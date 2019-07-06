@@ -735,11 +735,9 @@
      - ~''.join(['a','b'])~ = ~''.join(('a','b'))~ = ~'ab'~
      - ~list(zip(*[[1,2],[3,4]]))~ = ~[(1,3), (2,4)]~,    
      - ~num_connect * player in ''.join(board[row])~ and ~num_connect * player in ''.join(list(zip(*board))[col])~ 
-     
-
 **** Question                                                     :QUESTIONS:
      1. 关于Connect N整个程序的函数和数据抽象思想进一步思考
-
+        
 * Lab 5 Python Lists, Trees 
 ** Required Questions
    #+begin_src python :results output
@@ -824,17 +822,20 @@
           False
           """
           "*** YOUR CODE HERE ***"
+          result = False
           if is_leaf(t):
               return label(t) == 'acorn'
           if label(t) == 'acorn':
               return True
           else:
-              if len(branches(t)) == 1:
-                  return acorn_finder(branches(t))
-              else:
-                  return acorn_finder(branches(t)[0]) or acorn_finder(branches(t)[1])
+              for branch in branches(t):
+                  result = result or acorn_finder(branch)
+                  if result:
+                      return True
+              return result
     #+end_src 
-    - ~is_leaf(t)~ to av 
+    - ~result = False~ and ~result = result or acorn_finder(branch)~
+    - Recursion in iteration
 *** Q2: Pruning Leaves
     #+begin_src python :results output
       def prune_leaves(t, vals):
@@ -872,7 +873,9 @@
                       # or prune_t += [prune_leaves(i, vals)]
               return prune_t
     #+end_src 
-    - 
+    - ~prune_t = [label(t)]~ 
+    - ~prune_t.append(prune_leaves(i, vals))~ if ~prune_leaves(i, vals)~ is not ~None~
+    - ~list += [...] = ~list.append(...)~ = ~list.extend([...])~ (while ~append~ and ~extend~ are mutable operations, ~+~ creates a new list)
 *** Q3: Memory
     #+begin_src python :results output
       def memory(n):
@@ -892,52 +895,187 @@
               return n
           return f
     #+end_src 
+    - ~nonlocal n~ and ~n = g(n)~ 
+*** Question:                                                     :QUESTIONS:
+    1. 关于 recursion in iteration，这么写规范吗？能否用纯 iteration 或 recursion 改写？能不能有什么本质原因？（什么样的问题必须用 recursion in iteration才能比较好的解决？）
+    2. 有没有 iteration in recursion？同1疑问
 ** Optional Questions
-*** Q4: Successor Tables
-    #+begin_src python :results output
-      def build_successors_table(tokens):
-          """Return a dictionary: keys are words; values are lists of successors.
+*** Shakespeare and Dictionaries
+**** Q4: Successor Tables
+     #+begin_src python :results output
+       def build_successors_table(tokens):
+           """Return a dictionary: keys are words; values are lists of successors.
 
-          >>> text = ['We', 'came', 'to', 'investigate', ',', 'catch', 'bad', 'guys', 'and', 'to', 'eat', 'pie', '.']
-          >>> table = build_successors_table(text)
-          >>> sorted(table)
-          [',', '.', 'We', 'and', 'bad', 'came', 'catch', 'eat', 'guys', 'investigate', 'pie', 'to']
-          >>> table['to']
-          ['investigate', 'eat']
-          >>> table['pie']
-          ['.']
-          >>> table['.']
-          ['We']
-          """
-          table = {}
-          prev = '.'
-          for word in tokens:
-              if prev not in table:
-                  "*** YOUR CODE HERE ***"
-                  table[prev] = [word]
-              else:
-                  table[prev].append(word)
-              "*** YOUR CODE HERE ***"
-              prev = word
-          return table
-    #+end_src 
-*** Q5: Construct the Sentence
-    #+begin_src python :results output
-      def construct_sent(word, table):
-          """Prints a random sentence starting with word, sampling from
-          table.
+           >>> text = ['We', 'came', 'to', 'investigate', ',', 'catch', 'bad', 'guys', 'and', 'to', 'eat', 'pie', '.']
+           >>> table = build_successors_table(text)
+           >>> sorted(table)
+           [',', '.', 'We', 'and', 'bad', 'came', 'catch', 'eat', 'guys', 'investigate', 'pie', 'to']
+           >>> table['to']
+           ['investigate', 'eat']
+           >>> table['pie']
+           ['.']
+           >>> table['.']
+           ['We']
+           """
+           table = {}
+           prev = '.'
+           for word in tokens:
+               if prev not in table:
+                   "*** YOUR CODE HERE ***"
+                   table[prev] = [word]
+               else:
+                   table[prev].append(word)
+               "*** YOUR CODE HERE ***"
+               prev = word
+           return table
+     #+end_src 
+     - ~prev = '.'~ with ~for word in tokens~ or ~prev = tokens[0]~ with ~for word in tokens.append(tokens[0])~, then ~prev = word~ in the *final* of each iteration to get *two adjacent elements* in ~tokens~ as ~[prev, word]~
+     - ~table[prev] = [word]~ and ~table[prev].append(word)~ 
+**** Q5: Construct the Sentence
+     #+begin_src python :results output
+       def construct_sent(word, table):
+           """Prints a random sentence starting with word, sampling from
+           table.
 
-          >>> table = {'Wow': ['!'], 'Sentences': ['are'], 'are': ['cool'], 'cool': ['.']}
-          >>> construct_sent('Wow', table)
-          'Wow!'
-          >>> construct_sent('Sentences', table)
-          'Sentences are cool.'
-          """
-          import random
-          result = ''
-          while word not in ['.', '!', '?']:
-              "*** YOUR CODE HERE ***"
-              result = result + word + ' '
-              word = random.choice(table[word])
-          return result.strip() + word
-    #+end_src 
+           >>> table = {'Wow': ['!'], 'Sentences': ['are'], 'are': ['cool'], 'cool': ['.']}
+           >>> construct_sent('Wow', table)
+           'Wow!'
+           >>> construct_sent('Sentences', table)
+           'Sentences are cool.'
+           """
+           import random
+           result = ''
+           while word not in ['.', '!', '?']:
+               "*** YOUR CODE HERE ***"
+               result = result + word + ' '
+               word = random.choice(table[word])
+           return result.strip() + word
+     #+end_src 
+     - ~while word not in ['.', '!', '?']~
+     - ~result = result + word + ' '~ and ~word = random.choice(table[word])~
+     - ~' a b c '.strip()~ = ~'a b c'~ 
+     Putting it all together
+     #+begin_src python :results output
+       def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com/shakespeare.txt'):
+           """Return the words of Shakespeare's plays as a list."""
+           import os
+           from urllib.request import urlopen
+           if os.path.exists(path):
+               return open('shakespeare.txt', encoding='ascii').read().split()
+           else:
+               shakespeare = urlopen(url)
+               return shakespeare.read().decode(encoding='ascii').split()
+
+       # Uncomment the following two lines
+       tokens = shakespeare_tokens()
+       table = build_successors_table(tokens)
+
+       def random_sent():
+           import random
+           return construct_sent(random.choice(table['.']), table)
+     #+end_src 
+**** Question:                                                   :QUESTIONS:
+     1. Q4中如果要取满足某种条件的3个相邻元素呢？有何一般方法？
+*** More Trees Practice
+**** Q6: Sprout leaves
+     #+begin_src python :results output
+       def sprout_leaves(t, vals):
+           """Sprout new leaves containing the data in vals at each leaf in
+           the original tree t and return the resulting tree.
+
+           >>> t1 = tree(1, [tree(2), tree(3)])
+           >>> print_tree(t1)
+           1
+             2
+             3
+           >>> new1 = sprout_leaves(t1, [4, 5])
+           >>> print_tree(new1)
+           1
+             2
+               4
+               5
+             3
+               4
+               5
+
+           >>> t2 = tree(1, [tree(2, [tree(3)])])
+           >>> print_tree(t2)
+           1
+             2
+               3
+           >>> new2 = sprout_leaves(t2, [6, 1, 2])
+           >>> print_tree(new2)
+           1
+             2
+               3
+                 6
+                 1
+                 2
+           """
+           "*** YOUR CODE HERE ***"
+           if is_leaf(t):
+               for i in vals:
+                   t.append([i])
+               return t
+           sprout_t = [label(t)]
+           for branch in branches(t):
+               sprout_t.append(sprout_leaves(branch, vals))
+           return sprout_t
+     #+end_src 
+     - ~sprout_t = [label(t)]~ and ~sprout_t.append(sprout_leaves(branch, vals))~ 
+**** Q7: Add trees
+     #+begin_src python :results output
+       def add_trees(t1, t2):
+           """
+           >>> numbers = tree(1,
+           ...                [tree(2,
+           ...                      [tree(3),
+           ...                       tree(4)]),
+           ...                 tree(5,
+           ...                      [tree(6,
+           ...                            [tree(7)]),
+           ...                       tree(8)])])
+           >>> print_tree(add_trees(numbers, numbers))
+           2
+             4
+               6
+               8
+             10
+               12
+                 14
+               16
+           >>> print_tree(add_trees(tree(2), tree(3, [tree(4), tree(5)])))
+           5
+             4
+             5
+           >>> print_tree(add_trees(tree(2, [tree(3)]), tree(2, [tree(3), tree(4)])))
+           4
+             6
+             4
+           >>> print_tree(add_trees(tree(2, [tree(3, [tree(4), tree(5)])]), \
+           tree(2, [tree(3, [tree(4)]), tree(5)])))
+           4
+             6
+               8
+               5
+             5
+           """
+           "*** YOUR CODE HERE ***" 
+           if len(t1) > len(t2):
+               t2 += (len(t1) - len(t2)) * [[0]]
+           else:
+               t1 += (len(t2) - len(t1)) * [[0]]
+           add_t = [label(t1) + label(t2)]
+           if is_leaf(t1):
+               return add_t
+           else:
+               for branch1, branch2 in zip(branches(t1), branches(t2)):
+                   add_t.append(add_trees(list(branch1), list(branch2)))
+               return add_t
+     #+end_src 
+     - ~t2 += (len(t1) - len(t2)) * [[0]]~ and ~t1 += (len(t2) - len(t1)) * [[0]]~ -> ~add_t = [label(t1) + label(t2)]~
+     - ~x, y = zip([1, 2], [3, 4])~ -> 2 *tuples* ~x = (1, 3)~ and ~y = (2, 4)~
+     - ~for branch1, branch2 in zip(branches(t1), branches(t2)):~ and ~add_t.append(add_trees(list(branch1), list(branch2)))~
+     - In tree "recursive in iterative" func, base condition is usually ~is_leaf(t)~, recursive func usually invokes on ~branches(t)~, and final return value usually combines ~label(t)~ and *recursive result*.
+**** Question:                                                    :QUESTIONS:
+     1. Q7有没有更优的办法？比如不需要消耗内存补0的方法

@@ -99,6 +99,12 @@ def replace_leaf(t, old, new):
     True
     """
     "*** YOUR CODE HERE ***"
+    replace_t = [label(t)]
+    if is_leaf(t):
+        return [new] if label(t) == old else [label(t)]
+    for branch in branches(t):
+        replace_t.append(replace_leaf(branch, old, new))
+    return replace_t
 
 # Mobiles
 
@@ -145,11 +151,13 @@ def weight(size):
     """Construct a weight of some size."""
     assert size > 0
     "*** YOUR CODE HERE ***"
+    return ['weight', size]
 
 def size(w):
     """Select the size of a weight."""
     assert is_weight(w), 'must call size on a weight'
     "*** YOUR CODE HERE ***"
+    return w[1]
 
 def is_weight(w):
     """Whether w is a weight."""
@@ -198,6 +206,15 @@ def balanced(m):
     False
     """
     "*** YOUR CODE HERE ***"
+    result = length(left(m)) * total_weight(end(left(m))) == length(right(m)) * total_weight(end(right(m)))
+    if is_mobile(end(left(m))):
+        result = result and balanced(end(left(m)))
+    if is_mobile(end(right(m))):
+        result = result and balanced(end(right(m)))
+    return result
+
+
+
 
 def totals_tree(m):
     """Return a tree representing the mobile with its total weight at the root.
@@ -225,6 +242,12 @@ def totals_tree(m):
           2
     """
     "*** YOUR CODE HERE ***"
+    label_root = [total_weight(m)]
+    if is_weight(m):
+        return label_root
+    label_root.append(totals_tree(end(left(m))))
+    label_root.append(totals_tree(end(right(m))))
+    return label_root
 
 # Mutable functions in Python
 
@@ -249,6 +272,15 @@ def make_counter():
     5
     """
     "*** YOUR CODE HERE ***"
+    table = {}
+    def counter(str):
+        if str not in table:
+            table[str] = 1
+        else:
+            table[str] += 1
+        return table[str]
+    return counter
+
 
 def make_fib():
     """Returns a function that returns the next Fibonacci number
@@ -270,6 +302,12 @@ def make_fib():
     12
     """
     "*** YOUR CODE HERE ***"
+    n1, n2 = -1, 1
+    def next_fib():
+        nonlocal n1, n2
+        n1, n2 = n2, n1 + n2
+        return n2
+    return next_fib
 
 def make_withdraw(balance, password):
     """Return a password-protected withdraw function.

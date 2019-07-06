@@ -57,8 +57,8 @@ def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com
         return shakespeare.read().decode(encoding='ascii').split()
 
 # Uncomment the following two lines
-# tokens = shakespeare_tokens()
-# table = build_successors_table(tokens)
+tokens = shakespeare_tokens()
+table = build_successors_table(tokens)
 
 def random_sent():
     import random
@@ -99,7 +99,14 @@ def sprout_leaves(t, vals):
           2
     """
     "*** YOUR CODE HERE ***"
-
+    if is_leaf(t):
+        for i in vals:
+            t.append([i])
+        return t
+    sprout_t = [label(t)]
+    for branch in branches(t):
+        sprout_t.append(sprout_leaves(branch, vals))
+    return sprout_t
 # Q7
 def add_trees(t1, t2):
     """
@@ -136,4 +143,17 @@ def add_trees(t1, t2):
         5
       5
     """
-    "*** YOUR CODE HERE ***"
+    "*** YOUR CODE HERE ***" 
+    if len(t1) > len(t2):
+        t2 += (len(t1) - len(t2)) * [[0]]
+    else:
+        t1 += (len(t2) - len(t1)) * [[0]]
+    add_t = [label(t1) + label(t2)]
+    if is_leaf(t1):
+        return add_t
+    else:
+        for branch1, branch2 in zip(branches(t1), branches(t2)):
+            add_t.append(add_trees(list(branch1), list(branch2)))
+        return add_t
+    
+

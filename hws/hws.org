@@ -686,3 +686,259 @@
      1. 还能继续简化吗？
 ** Extra                                                              :EXTRA:
 *** Q6: Anonymous factorial                                     :OUTSTANDING:
+* HW05
+** Required questions
+*** Trees
+**** Q1: Replace Leaf
+     #+begin_src python :results output
+       def replace_leaf(t, old, new):
+           """Returns a new tree where every leaf value equal to old has
+           been replaced with new.
+
+           >>> yggdrasil = tree('odin',
+           ...                  [tree('balder',
+           ...                        [tree('thor'),
+           ...                         tree('loki')]),
+           ...                   tree('frigg',
+           ...                        [tree('thor')]),
+           ...                   tree('thor',
+           ...                        [tree('sif'),
+           ...                         tree('thor')]),
+           ...                   tree('thor')])
+           >>> laerad = copy_tree(yggdrasil) # copy yggdrasil for testing purposes
+           >>> print_tree(replace_leaf(yggdrasil, 'thor', 'freya'))
+           odin
+             balder
+               freya
+               loki
+             frigg
+               freya
+             thor
+               sif
+               freya
+             freya
+           >>> laerad == yggdrasil # Make sure original tree is unmodified
+           True
+           """
+           "*** YOUR CODE HERE ***"
+           replace_t = [label(t)]
+           if is_leaf(t):
+               return [new] if label(t) == old else [label(t)]
+           for branch in branches(t):
+               replace_t.append(replace_leaf(branch, old, new))
+           return replace_t
+     #+end_src 
+
+*** Mobiles
+**** Q2: Weights
+     #+begin_src python :results output
+       def mobile(left, right):
+           """Construct a mobile from a left side and a right side."""
+           assert is_side(left), "left must be a side"
+           assert is_side(right), "right must be a side"
+           return ['mobile', left, right]
+
+       def is_mobile(m):
+           """Return whether m is a mobile."""
+           return type(m) == list and len(m) == 3 and m[0] == 'mobile'
+
+       def left(m):
+           """Select the left side of a mobile."""
+           assert is_mobile(m), "must call left on a mobile"
+           return m[1]
+
+       def right(m):
+           """Select the right side of a mobile."""
+           assert is_mobile(m), "must call right on a mobile"
+           return m[2]
+
+       def side(length, mobile_or_weight):
+           """Construct a side: a length of rod with a mobile or weight at the end."""
+           assert is_mobile(mobile_or_weight) or is_weight(mobile_or_weight)
+           return ['side', length, mobile_or_weight]
+
+       def is_side(s):
+           """Return whether s is a side."""
+           return type(s) == list and len(s) == 3 and s[0] == 'side'
+
+       def length(s):
+           """Select the length of a side."""
+           assert is_side(s), "must call length on a side"
+           return s[1]
+
+       def end(s):
+           """Select the mobile or weight hanging at the end of a side."""
+           assert is_side(s), "must call end on a side"
+           return s[2]
+
+       def weight(size):
+           """Construct a weight of some size."""
+           assert size > 0
+           "*** YOUR CODE HERE ***"
+           return ['weight', size]
+
+       def size(w):
+           """Select the size of a weight."""
+           assert is_weight(w), 'must call size on a weight'
+           "*** YOUR CODE HERE ***"
+           return w[1]
+
+       def is_weight(w):
+           """Whether w is a weight."""
+           return type(w) == list and len(w) == 2 and w[0] == 'weight'
+
+       def examples():
+           t = mobile(side(1, weight(2)),
+                      side(2, weight(1)))
+           u = mobile(side(5, weight(1)),
+                      side(1, mobile(side(2, weight(3)),
+                                     side(3, weight(2)))))
+           v = mobile(side(4, t), side(2, u))
+           return (t, u, v)
+
+       def total_weight(m):
+           """Return the total weight of m, a weight or mobile.
+
+           >>> t, u, v = examples()
+           >>> total_weight(t)
+           3
+           >>> total_weight(u)
+           6
+           >>> total_weight(v)
+           9
+           """
+           if is_weight(m):
+               return size(m)
+           else:
+               assert is_mobile(m), "must get total weight of a mobile or a weight"
+               return total_weight(end(left(m))) + total_weight(end(right(m)))
+     #+end_src 
+
+**** Q3: Balanced
+     #+begin_src python :results output
+       def balanced(m):
+           """Return whether m is balanced.
+
+           >>> t, u, v = examples()
+           >>> balanced(t)
+           True
+           >>> balanced(v)
+           True
+           >>> w = mobile(side(3, t), side(2, u))
+           >>> balanced(w)
+           False
+           >>> balanced(mobile(side(1, v), side(1, w)))
+           False
+           >>> balanced(mobile(side(1, w), side(1, v)))
+           False
+           """
+           "*** YOUR CODE HERE ***"
+           result = length(left(m)) * total_weight(end(left(m))) == length(right(m)) * total_weight(end(right(m)))
+           if is_mobile(end(left(m))):
+               result = result and balanced(end(left(m)))
+           if is_mobile(end(right(m))):
+               result = result and balanced(end(right(m)))
+           return result
+
+     #+end_src 
+
+**** Q4: Totals
+     #+begin_src python :results output
+       def totals_tree(m):
+           """Return a tree representing the mobile with its total weight at the root.
+
+           >>> t, u, v = examples()
+           >>> print_tree(totals_tree(t))
+           3
+             2
+             1
+           >>> print_tree(totals_tree(u))
+           6
+             1
+             5
+               3
+               2
+           >>> print_tree(totals_tree(v))
+           9
+             3
+               2
+               1
+             6
+               1
+               5
+                 3
+                 2
+           """
+           "*** YOUR CODE HERE ***"
+           label_root = [total_weight(m)]
+           if is_weight(m):
+               return label_root
+           label_root.append(totals_tree(end(left(m))))
+           label_root.append(totals_tree(end(right(m))))
+           return label_root
+     #+end_src 
+
+*** Mutable functions
+**** Q5: Counter
+     #+begin_src python :results output
+       def make_counter():
+           """Return a counter function.
+
+           >>> c = make_counter()
+           >>> c('a')
+           1
+           >>> c('a')
+           2
+           >>> c('b')
+           1
+           >>> c('a')
+           3
+           >>> c2 = make_counter()
+           >>> c2('b')
+           1
+           >>> c2('b')
+           2
+           >>> c('b') + c2('b')
+           5
+           """
+           "*** YOUR CODE HERE ***"
+           table = {}
+           def counter(str):
+               if str not in table:
+                   table[str] = 1
+               else:
+                   table[str] += 1
+               return table[str]
+           return counter
+     #+end_src 
+
+**** Q6: Next Fibonacci
+     #+begin_src python :results output
+       def make_fib():
+           """Returns a function that returns the next Fibonacci number
+           every time it is called.
+
+           >>> fib = make_fib()
+           >>> fib()
+           0
+           >>> fib()
+           1
+           >>> fib()
+           1
+           >>> fib()
+           2
+           >>> fib()
+           3
+           >>> fib2 = make_fib()
+           >>> fib() + sum([fib2() for _ in range(5)])
+           12
+           """
+           "*** YOUR CODE HERE ***"
+           n1, n2 = -1, 1
+           def next_fib():
+               nonlocal n1, n2
+               n1, n2 = n2, n1 + n2
+               return n2
+           return next_fib
+     #+end_src 
+

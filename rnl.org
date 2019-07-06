@@ -1,5 +1,4 @@
 #+TAGS: OUTSTANDING(o) QUESTIONS(q)
-
 * Chapter 1: Building Abstractions with Functions
 ** Funcs
 *** Expressions
@@ -3039,6 +3038,148 @@
 *** 2.9.1 Linked List Class
 *** 2.9.2 Tree Class
 *** 2.9.3 Sets
+* Chapter 4: Data Processing
+** 4.2 Implicit Sequences
+   A sequence can be represented without each element being stored explicitly in the memory of the computer
+   Lazy computation describes any program that delays the computation of a value until that value is needed
+*** 4.2.1 Iterators
+*** 4.2.2 Iterables
+*** 4.2.3 Built-in Iterators
+*** 4.2.4 For Statements
+    #+begin_src python :results output
+      counts = [1, 2, 3]
+      for item in counts:
+          print(item)
+      1
+      2
+      3
+
+      items = iter(counts)
+      try:
+          while True:
+              item = next(items)
+              print(item)
+      except StopIteration:
+          pass
+      1
+      2
+      3
+    #+end_src 
+    - ~for <name> in <expression>:~: ~iter(expression)~ --> ~<name> = iter(expression).next~ --> ~<name> = iter(expression).next.next~ --> ... --> ~StopIteration~ --> existing ~for~ 
+*** 4.2.5 Generators
+*** 4.2.6 Python Streams
+    /Streams/ offer another way to represent sequential data implicitly. 
+    A ~stream~ is a lazily computed linked list. The ~rest~ of a ~Stream~ is itself a ~Stream~, which is computed lazily
+    #+begin_src python :results output
+      class Stream:
+          """A lazily computed linked list."""
+          class empty:
+              def __repr__(self):
+                  return 'Stream.empty'
+          empty = empty()
+          def __init__(self, first, compute_rest=lambda: empty):
+              assert callable(compute_rest), 'compute_rest must be callable.'
+              self.first = first
+              self._compute_rest = compute_rest
+          @property
+          def rest(self):
+              """Return the rest of the stream, computing it if necessary."""
+              if self._compute_rest is not None:
+                  self._rest = self._compute_rest()
+                  self._compute_rest = None
+              return self._rest
+          def __repr__(self):
+              return 'Stream({0}, <...>)'.format(repr(self.first))
+
+      r = Link(1, Link(2+3, Link(9)))
+      s = Stream(1, lambda: Stream(2+3, lambda: Stream(9)))
+      r.first
+      1
+      s.first
+      1
+      r.rest.first
+      5
+      s.rest.first
+      5
+      r.rest
+      Link(5, Link(9))
+      s.rest
+      Stream(5, <...>)
+    #+end_src 
+    - Example: increasing integers
+      #+begin_src python :results output
+        def integer_stream(first):
+            def compute_rest():
+                return integer_stream(first+1)
+            return Stream(first, compute_rest)
+  
+        positives = integer_stream(1)
+        positives
+        Stream(1, <...>)
+        positives.first
+        1
+  
+        positives.first
+        1
+        positives.rest.first
+        2
+        positives.rest.rest
+        Stream(3, <...>)
+      #+end_src
+    - Example: ~map~ and ~filter~ on stream
+      #+begin_src python :results output
+        def map_stream(fn, s):
+            if s is Stream.empty:
+                return s
+            def compute_rest():
+                return map_stream(fn, s.rest)
+            return Stream(fn(s.first), compute_rest)
+  
+        def filter_stream(fn, s):
+            if s is Stream.empty:
+                return s
+            def compute_rest():
+                return filter_stream(fn, s.rest)
+            if fn(s.first):
+                return Stream(s.first, compute_rest)
+            else:
+                return compute_rest()
+      #+end_src
+    - Example: using ~map_stream~ and ~filter_stream~ 
+      #+begin_src python :results output
+        def first_k_as_list(s, k):
+            first_k = []
+            while s is not Stream.empty and k > 0:
+                first_k.append(s.first)
+                s, k = s.rest, k-1
+            return first_k
+  
+        s = integer_stream(3)
+        s
+        Stream(3, <...>)
+        m = map_stream(lambda x: x*x, s)
+        m
+        Stream(9, <...>)
+        first_k_as_list(m, 5)
+        [9, 16, 25, 36, 49]
+  
+        def primes(pos_stream):
+            def not_divible(x):
+                return x % pos_stream.first != 0
+            def compute_rest():
+                return primes(filter_stream(not_divible, pos_stream.rest))
+            return Stream(pos_stream.first, compute_rest)
+  
+        prime_numbers = primes(integer_stream(2))
+        first_k_as_list(prime_numbers, 7)
+        [2, 3, 5, 7, 11, 13, 17]
+  
+        prime_numbers.first
+        2
+      #+end_src 
+
+
+
 * Funcs
 ** Expressions
 *** Types of expressions
