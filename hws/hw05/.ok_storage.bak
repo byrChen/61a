@@ -4,3 +4,5 @@
 'totals_tree-correct', (1536, 70)
 'make_counter-correct', (2048, 70)
 'make_fib-correct', (2560, 70)
+'make_withdraw-correct', (3072, 70)
+'generate_paths-correct', (3584, 70)

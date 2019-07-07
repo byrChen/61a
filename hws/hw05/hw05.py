@@ -338,6 +338,22 @@ def make_withdraw(balance, password):
     True
     """
     "*** YOUR CODE HERE ***"
+    err_password = []
+    def withdraw(amount, input_password):
+        nonlocal balance, err_password, password
+        if len(err_password) == 3:
+            return "Your account is locked. Attempts: " + str(err_password)
+        if input_password == password:
+            if balance >= amount:
+                balance -= amount
+                return balance
+            else:
+                return 'Insufficient funds'
+        else:
+            err_password.append(input_password)
+            return 'Incorrect password'
+    return withdraw
+
 
 def make_joint(withdraw, old_password, new_password):
     """Return a password-protected withdraw function that has joint access to
@@ -377,7 +393,20 @@ def make_joint(withdraw, old_password, new_password):
     >>> make_joint(w, 'hax0r', 'hello')
     "Your account is locked. Attempts: ['my', 'secret', 'password']"
     """
-    "*** YOUR CODE HERE ***"
+    err_password, corr_password = [], []
+
+    def joint_withdraw(amount, input_password):
+        nonlocal err_password, corr_password, old_password
+        if input_password in corr_password:
+            return withdraw(amount, old_password)
+        err_password.append(input_password)
+        return withdraw(0, input_password)
+
+    if type(withdraw(0, old_password)) == str:
+        return joint_withdraw(0, old_password)
+    corr_password.append(new_password)
+    return joint_withdraw
+
 
 # Generators
 
@@ -416,6 +445,23 @@ def generate_paths(t, x):
     [[0, 2], [0, 2, 1, 2]]
     """
     "*** YOUR CODE HERE ***"
+    if label(t) == x:
+        yield [x]
+    for branch in branches(t):
+        for path in generate_paths(branch, x):
+            yield [label(t)] + path
+    "*** using iter ***"
+    paths = []
+    if label(t) == x:
+        paths.append([x])
+    for branch in branches(t):
+        for path in generate_paths(branch, x):
+            paths.append([label(t)] + path)
+    return iter(paths)
+
+
+
+
 
 ###################
 # Extra Questions #

@@ -1079,3 +1079,4 @@
      - In tree "recursive in iterative" func, base condition is usually ~is_leaf(t)~, recursive func usually invokes on ~branches(t)~, and final return value usually combines ~label(t)~ and *recursive result*.
 **** Question:                                                    :QUESTIONS:
      1. Q7有没有更优的办法？比如不需要消耗内存补0的方法
+        
