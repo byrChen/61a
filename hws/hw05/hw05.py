@@ -485,30 +485,38 @@ def interval(a, b):
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[1]
 
 def mul_interval(x, y):
     """Return the interval that contains the product of any value in x and any
     value in y."""
-    p1 = x[0] * y[0]
-    p2 = x[0] * y[1]
-    p3 = x[1] * y[0]
-    p4 = x[1] * y[1]
-    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
+    p1 = lower_bound(x) * lower_bound(y)
+    p2 = lower_bound(x) * upper_bound(y)
+    p3 = upper_bound(x) * lower_bound(y)
+    p4 = upper_bound(x) * upper_bound(y)
+    return interval(min(p1, p2, p3, p4), max(p1, p2, p3, p4))
 
 def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
+    p1 = lower_bound(x) - lower_bound(y)
+    p2 = lower_bound(x) - upper_bound(y)
+    p3 = upper_bound(x) - lower_bound(y)
+    p4 = upper_bound(x) - upper_bound(y)
+    return interval(min(p1, p2, p3, p4), max(p1, p2, p3, p4))
 
 def div_interval(x, y):
     """Return the interval that contains the quotient of any value in x divided by
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
+    assert (1/upper_bound(y)) * (1/lower_bound(y)) > 0, "dfjie"
     reciprocal_y = interval(1/upper_bound(y), 1/lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -530,8 +538,8 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1) # Replace this line!
-    r2 = interval(1, 1) # Replace this line!
+    r1 = interval(1, 2) # Replace this line!
+    r2 = interval(1, 4) # Replace this line!
     return r1, r2
 
 def multiple_references_explanation():
@@ -546,4 +554,12 @@ def quadratic(x, a, b, c):
     >>> str_interval(quadratic(interval(1, 3), 2, -3, 1))
     '0 to 10'
     """
-    "*** YOUR CODE HERE ***"
+    "*** YOUR  CODE HERE ***"
+    def f(t):
+        nonlocal a, b, c
+        return a * t * t + b * t + c
+    lower, upper, min_or_max = lower_bound(x), upper_bound(x), -b / (2 * a)
+    f_lower, f_upper, f_min_or_max = f(lower), f(upper), f(min_or_max)
+    if min_or_max > upper or min_or_max < lower:
+        return interval(min(f_lower, f_upper), max(f_lower, f_upper))
+    return interval(min(f_lower, f_upper, f_min_or_max), max(f_lower, f_upper, f_min_or_max))

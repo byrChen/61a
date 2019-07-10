@@ -1,4 +1,4 @@
-#+TAGS: OUTSTANDING(o) QUESTIONS(q)
+#+TAGS: OUTSTANDING(o) QUESTIONS(q) TOBEORG(t)
 * Chapter 1: Building Abstractions with Functions
 ** Funcs
 *** Expressions
@@ -3067,7 +3067,7 @@
     #+end_src 
     - ~for <name> in <expression>:~: ~iter(expression)~ --> ~<name> = iter(expression).next~ --> ~<name> = iter(expression).next.next~ --> ... --> ~StopIteration~ --> existing ~for~ 
 *** 4.2.5 Generators
-*** 4.2.6 Python Streams
+*** 4.2.6 Python Streams                                            :TOBEORG:
     /Streams/ offer another way to represent sequential data implicitly. 
     A ~stream~ is a lazily computed linked list. The ~rest~ of a ~Stream~ is itself a ~Stream~, which is computed lazily
     #+begin_src python :results output
@@ -3178,8 +3178,7 @@
         2
       #+end_src 
 
-
-
+      
 * Funcs
 ** Expressions
 *** Types of expressions
