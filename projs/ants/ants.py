@@ -159,6 +159,9 @@ class Bee(Insect):
     damage = 1
     # OVERRIDE CLASS ATTRIBUTES HERE
     is_watersafe = True
+    def __init__(self, armor, place=None):
+        Insect.__init__(self, armor, place=None)
+        self.right_direction = True
 
     def sting(self, ant):
         """Attack an ANT, reducing its armor by 1."""
@@ -186,6 +189,8 @@ class Bee(Insect):
         # Extra credit: Special handling for bee direction
         # BEGIN EC
         "*** YOUR CODE HERE ***"
+        if not self.right_direction and self.place.entrance != hive:
+            destination = self.place.entrance
         # END EC
         if self.blocked():
             self.sting(self.place.ant)
@@ -564,6 +569,10 @@ def make_slow(action, bee):
     """
     # BEGIN Problem EC
     "*** YOUR CODE HERE ***"
+    def slow_action(colony):
+        if colony.time % 2 == 0:
+            bee.action(colony)
+    return slow_action
     # END Problem EC
 
 def make_scare(action, bee):
@@ -573,39 +582,63 @@ def make_scare(action, bee):
     """
     # BEGIN Problem EC
     "*** YOUR CODE HERE ***"
+    bee.right_direction = False
+
+    def scare_action(colony):
+        bee.action(colony)
+    return scare_action
     # END Problem EC
 
 def apply_effect(effect, bee, duration):
     """Apply a status effect to a BEE that lasts for DURATION turns."""
     # BEGIN Problem EC
     "*** YOUR CODE HERE ***"
+    origin_action = bee.action
+    new_action = effect(origin_action, bee)
+    def action(colony):
+        nonlocal duration
+        if duration == 0:
+            print(duration)
+            return origin_action(colony)
+        else:
+            print(duration)
+            duration -= 1
+            return new_action(colony)
+    bee.action = action
     # END Problem EC
 
 
 class SlowThrower(ThrowerAnt):
     """ThrowerAnt that causes Slow on Bees."""
-
     name = 'Slow'
     # BEGIN Problem EC
-    implemented = False   # Change to True to view in the GUI
+    food_cost = 4
+    implemented = True   # Change to True to view in the GUI
+    effected_ants = []
     # END Problem EC
 
     def throw_at(self, target):
+        # if target and target not in self.effected_ants:
         if target:
+            # self.effected_ants.append(target)
             apply_effect(make_slow, target, 3)
-
 
 class ScaryThrower(ThrowerAnt):
     """ThrowerAnt that intimidates Bees, making them back away instead of advancing."""
 
     name = 'Scary'
     # BEGIN Problem EC
+    food_cost = 6
     implemented = False   # Change to True to view in the GUI
+    effected_ants = []
     # END Problem EC
 
     def throw_at(self, target):
         # BEGIN Problem EC
         "*** YOUR CODE HERE ***"
+        if target and target not in self.effected_ants:
+            self.effected_ants.append(target)
+            apply_effect(make_slow, target, 2)
         # END Problem EC
 
 class LaserAnt(ThrowerAnt):
