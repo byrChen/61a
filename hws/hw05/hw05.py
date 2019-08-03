@@ -340,7 +340,7 @@ def make_withdraw(balance, password):
     "*** YOUR CODE HERE ***"
     err_password = []
     def withdraw(amount, input_password):
-        nonlocal balance, err_password, password
+        nonlocal balance, err_password
         if len(err_password) == 3:
             return "Your account is locked. Attempts: " + str(err_password)
         if input_password == password:
@@ -353,7 +353,6 @@ def make_withdraw(balance, password):
             err_password.append(input_password)
             return 'Incorrect password'
     return withdraw
-
 
 def make_joint(withdraw, old_password, new_password):
     """Return a password-protected withdraw function that has joint access to
@@ -393,20 +392,11 @@ def make_joint(withdraw, old_password, new_password):
     >>> make_joint(w, 'hax0r', 'hello')
     "Your account is locked. Attempts: ['my', 'secret', 'password']"
     """
-    err_password, corr_password = [], []
-
-    def joint_withdraw(amount, input_password):
-        nonlocal err_password, corr_password, old_password
-        if input_password in corr_password:
-            return withdraw(amount, old_password)
-        err_password.append(input_password)
-        return withdraw(0, input_password)
-
-    if type(withdraw(0, old_password)) == str:
-        return joint_withdraw(0, old_password)
-    corr_password.append(new_password)
-    return joint_withdraw
-
+    def new_withdraw(amount, input):
+        return withdraw(amount, input) if input != new_password \
+            else withdraw(amount, old_password)
+    check = withdraw(0, old_password)
+    return new_withdraw if type(check) != str else check
 
 # Generators
 

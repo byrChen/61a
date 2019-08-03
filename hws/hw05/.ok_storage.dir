@@ -12,3 +12,4 @@
 'div_interval-correct', (5632, 70)
 'check_par-correct', (6144, 70)
 'quadratic-correct', (6656, 70)
+'make_joint-correct', (7168, 70)

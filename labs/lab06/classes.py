@@ -158,8 +158,9 @@ class TutorCard(Card):
         True
         """
         "*** YOUR CODE HERE ***"
+        original_len = len(opponent.hand)
         opponent.hand = opponent.hand[3:] if len(opponent.hand) > 3 else []
-        for _ in range(3):
+        for _ in range(original_len - len(opponent.hand)):
             opponent.draw()
         #Uncomment the line below when you've finished implementing this method!
         print('{} discarded and re-drew 3 cards!'.format(opponent.name))

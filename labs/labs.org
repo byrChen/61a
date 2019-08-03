@@ -1079,7 +1079,6 @@
      - In tree "recursive in iterative" func, base condition is usually ~is_leaf(t)~, recursive func usually invokes on ~branches(t)~, and final return value usually combines ~label(t)~ and *recursive result*.
 **** Question:                                                    :QUESTIONS:
      1. Q7有没有更优的办法？比如不需要消耗内存补0的方法
-        
 * Lab 6 Object-Oriented Programming                                 :TOBEORG:
   #+begin_src python :results output
     class Deck(object):
@@ -1262,75 +1261,10 @@
        Error
        -- OK! --
      #+end_src 
+     - ~Car.headlights~ vs ~deneros_car.headlights~
+     - ~Car.num_wheels~ vs ~deneros_car.wheels~
+     - ~Car.drive()~ vs ~MonsterTruck.drive()~ vs ~deneros_car.drive()~ 
 *** Magic: The Lambda-ing
-**** Q3: Making Cards
-     #+begin_src python :results output
-       class Card(object):
-           cardtype = 'Staff'
-
-           def __init__(self, name, attack, defense):
-               """
-               Create a Card object with a name, attack,
-               and defense.
-               >>> staff_member = Card('staff', 400, 300)
-               >>> staff_member.name
-               'staff'
-               >>> staff_member.attack
-               400
-               >>> staff_member.defense
-               300
-               >>> other_staff = Card('other', 300, 500)
-               >>> other_staff.attack
-               300
-               >>> other_staff.defense
-               500
-               """
-               "*** YOUR CODE HERE ***"
-               self.name = name
-               self.attack = attack
-               self.defense = defense
-
-           def power(self, other_card):
-               """
-               Calculate power as:
-               (player card's attack) - (opponent card's defense)/2
-               where other_card is the opponent's card.
-               >>> staff_member = Card('staff', 400, 300)
-               >>> other_staff = Card('other', 300, 500)
-               >>> staff_member.power(other_staff)
-               150.0
-               >>> other_staff.power(staff_member)
-               150.0
-               >>> third_card = Card('third', 200, 400)
-               >>> staff_member.power(third_card)
-               200.0
-               >>> third_card.power(staff_member)
-               50.0
-               """
-               "*** YOUR CODE HERE ***"
-               return self.attack - other_card.defense / 2
-
-
-           def effect(self, other_card, player, opponent):
-               """
-               Cards have no default effect.
-               """
-               return
-
-           def __repr__(self):
-               """
-               Returns a string which is a readable version of
-               a card, in the form:
-               <cardname>: <cardtype>, [<attack>, <defense>]
-               """
-               return '{}: {}, [{}, {}]'.format(self.name, self.cardtype, self.attack, self.defense)
-
-           def copy(self):
-               """
-               Returns a copy of this card.
-               """
-               return Card(self.name, self.attack, self.defense)
-     #+end_src 
 **** Q4: Making a Player
      #+begin_src python :results output
        class Player(object):
@@ -1383,7 +1317,6 @@
                "*** YOUR CODE HERE ***"
                return self.hand.pop(card_index)
 
-
            def display_hand(self):
                """
                Display the player's current hand to the user.
@@ -1399,6 +1332,9 @@
                """
                return self.play(random.randrange(len(self.hand)))
      #+end_src 
+     - ~self.hand = [deck.draw() for _ in range(5)]~
+     - ~self.hand.append(self.deck.draw())~
+     - ~self.hand.pop(card_index)~ 
 ** Optional Questions
 *** Q5: Tutors: Flummox
     #+begin_src python :results output
@@ -1422,8 +1358,9 @@
               True
               """
               "*** YOUR CODE HERE ***"
+              original_len = len(opponent.hand)
               opponent.hand = opponent.hand[3:] if len(opponent.hand) > 3 else []
-              for _ in range(3):
+              for _ in range(original_len - len(opponent.hand)):
                   opponent.draw()
               #Uncomment the line below when you've finished implementing this method!
               print('{} discarded and re-drew 3 cards!'.format(opponent.name))
@@ -1434,6 +1371,8 @@
               """
               return TutorCard(self.name, self.attack, self.defense)
     #+end_src 
+    - ~opponent.hand = opponent.hand[3:] if len(opponent.hand) > 3 else []~
+    - ~for _ in range(original_len - len(opponent.hand))~ 
 *** Q6: TAs: Shift
     #+begin_src python :results output
       class TACard(Card):
@@ -1462,7 +1401,7 @@
               """
               return TACard(self.name, self.attack, self.defense)
     #+end_src 
-
+    - ~other_card.attack, other_card.defense = other_card.defense, other_card.attack~ 
 *** Q7: The Professor Arrives
     #+begin_src python :results output
       class ProfessorCard(Card):
@@ -1504,5 +1443,6 @@
           def copy(self):
               return ProfessorCard(self.name, self.attack, self.defense)
     #+end_src 
+    - ~opponent_deck_cards_copy = opponent.deck.cards.copy()~ and ~for card in opponent_deck_cards_copy:~ 
 
     

@@ -749,6 +749,7 @@
               exit.entrance = self
           # END Problem 2
     #+end_src 
+    - ~exit.entrance = self~ 
 *** Problem 3 & 4
     #+begin_src python :results output
       class ThrowerAnt(Ant):
@@ -819,7 +820,7 @@
           min_range = 5
           max_range = float('inf')
     #+end_src 
-
+    - ~max_range = float('inf')~ 
 ** Phase 2: Ants Attack
 *** Problem 5
     #+begin_src python :results output
@@ -887,7 +888,6 @@
                   self.digesting -= 1
     #+end_src 
     - ~bee.reduce_armor(bee.armor)~
-
 *** Problem 7
     #+begin_src python :results output
       ... (class Bee)
@@ -917,7 +917,8 @@
                   bee.reduce_armor(self.damage)
               "*** YOUR CODE HERE ***"
     #+end_src 
-
+    - ~self.place.ant is not None and self.place.ant.blocks_path~
+    - ~for bee in self.place.bees[:]~ 
 ** Phase 3: But They Also Protect
 *** Problem 9
     #+begin_src python :results output
@@ -1001,6 +1002,8 @@
               if self.contained_ant:
                   self.contained_ant.action(colony)
     #+end_src 
+    - ~self.contained_ant is None and not other.is_container~
+    - ~insect.is_container and insect.can_contain(self.ant)~ and ~self.ant.is_container and self.ant.can_contain(insect)~ 
 *** Problem 10
     #+begin_src python :results output
       class TankAnt(BodyguardAnt):
@@ -1023,7 +1026,6 @@
               if self.contained_ant:
                   self.contained_ant.action(colony)
     #+end_src 
-
 ** Phase 4: Water and Might
 *** Problem 11
     #+begin_src python :results output
@@ -1043,7 +1045,7 @@
                       self.ant.reduce_armor(self.ant.armor)
               "*** YOUR CODE HERE ***"
     #+end_src 
-
+    - ~for bee in self.bees[:]~ 
 *** Problem 13
     #+begin_src python :results output
       ... (class Place)
@@ -1095,7 +1097,6 @@
           # BEGIN Problem 13
           implemented = True   # Change to True to view in the GUI
           is_queen = True
-          is_doubled = False
           # END Problem 13
 
           def __init__(self, armor=1):
@@ -1104,13 +1105,6 @@
               self.is_queen = QueenAnt.is_queen
               QueenAnt.is_queen = False
               self.doubled_ants = []
-
-              # if not QueenAnt.is_queen:
-              #     QueenAnt.is_queen = True
-              #     self.is_queen = True
-              # else:
-              #     self.is_queen = False
-
               "*** YOUR CODE HERE ***"
               # END Problem 13
 
@@ -1123,26 +1117,18 @@
               # BEGIN Problem 13
               "*** YOUR CODE HERE ***"
               if self.is_queen:
-                  # ant = self.place.ant
-                  # if isinstance(ant, TankAnt):
-                  #     TankAnt.action(ant, colony)
-                  # if isinstance(ant, BodyguardAnt):
-                  #     BodyguardAnt.action(ant, colony)
-                  # if isinstance(ant, QueenAnt):
-                  #     ScubaThrower.action(self, colony)
                   ScubaThrower.action(self, colony)
-                  place = self.place
-                  damage_tuple = (ThrowerAnt, ShortThrower, LongThrower, FireAnt, NinjaAnt, ScubaThrower, TankAnt)
-                  while place.exit is not None:
-                      exit_ant = place.exit.ant
-                      if exit_ant is not None:
-                          if isinstance(exit_ant, damage_tuple) and exit_ant not in self.doubled_ants:
-                              exit_ant.damage *= 2
-                              self.doubled_ants.append(exit_ant)
-                          if isinstance(exit_ant, (TankAnt, BodyguardAnt)):
-                              if isinstance(exit_ant.contained_ant, damage_tuple) and exit_ant.contained_ant not in self.doubled_ants:
-                                  exit_ant.contained_ant.damage *= 2
-                                  self.doubled_ants.append(exit_ant.contained_ant)
+                  place = self.place.exit
+                  while place:
+                      ant = place.ant
+                      if ant:
+                          if ant not in self.doubled_ants:
+                              ant.damage *= 2
+                              self.doubled_ants.append(ant)
+                          if isinstance(ant, (TankAnt, BodyguardAnt)):
+                              if ant.contained_ant and ant.contained_ant not in self.doubled_ants:
+                                  ant.contained_ant.damage *= 2
+                                  self.doubled_ants.append(ant.contained_ant)
                       place = place.exit
               else:
                   self.reduce_armor(self.armor)
@@ -1162,7 +1148,170 @@
                   else:
                       self.place.remove_insect(self)
     #+end_src 
-
+    - ~Queen.is_queen~ and ~self.is_queen~
+    - ~self.doubled_ants~
+    - ~isinstance(ant, (TankAnt, BodyguradAnt))~ 
 ** Extra Credit
+   #+begin_src python :results output
+     ... (class Bee)
+
+         def __init__(self, armor, place=None):
+             Insect.__init__(self, armor, place=None)
+             self.right_direction = True
+             self.scared = False
+
+         def action(self, colony):
+             """A Bee's action stings the Ant that blocks its exit if it is blocked,
+             or moves to the exit of its current place otherwise.
+
+             colony -- The AntColony, used to access game state information.
+             """
+             destination = self.place.exit
+             # Extra credit: Special handling for bee direction
+             # BEGIN EC
+             "*** YOUR CODE HERE ***"
+             if not self.right_direction and self.place.entrance != colony.hive:
+                 destination = self.place.entrance
+             # END EC
+             # print(self.right_direction)
+             if self.blocked():
+                 self.sting(self.place.ant)
+             elif self.armor > 0 and destination is not None:
+                 self.move_to(destination)
+     ...
+
+     def make_slow(action, bee):
+         """Return a new action method that calls ACTION every other turn.
+
+         action -- An action method of some Bee
+         """
+         # BEGIN Problem EC
+         "*** YOUR CODE HERE ***"
+         def slow_action(colony):
+             if colony.time % 2 == 0:
+                 # bee.action(colony)
+                 action(colony)
+         return slow_action
+         # END Problem EC
+
+     def make_scare(action, bee):
+         """Return a new action method that makes the bee go backwards.
+
+         action -- An action method of some Bee
+         """
+         # BEGIN Problem EC
+         "*** YOUR CODE HERE ***"
+         # bee.right_direction = False
+         def scare_action(colony):
+             # bee.action(colony)
+             action(colony)
+         return scare_action
+         # END Problem EC
+
+     def apply_effect(effect, bee, duration):
+         """Apply a status effect to a BEE that lasts for DURATION turns."""
+         # BEGIN Problem EC
+         "*** YOUR CODE HERE ***"
+         origin_action = bee.action
+         new_action = effect(origin_action, bee)
+         def action(colony):
+             nonlocal effect, bee, duration
+             if duration == 0:
+                 if effect == make_scare:
+                     bee.right_direction = True
+                 # print(duration)
+                 return origin_action(colony)
+             else:
+                 # print(duration)
+                 if effect == make_scare:
+                     bee.right_direction = False
+                 duration -= 1
+                 return new_action(colony)
+         bee.action = action
+         # END Problem EC
+
+
+     class SlowThrower(ThrowerAnt):
+         """ThrowerAnt that causes Slow on Bees."""
+         name = 'Slow'
+         # BEGIN Problem EC
+         food_cost = 4
+         implemented = True   # Change to True to view in the GUI
+         # END Problem EC
+
+         def throw_at(self, target):
+             # if target and target not in self.effected_ants:
+             if target is not None:
+                 apply_effect(make_slow, target, 3)
+
+     class ScaryThrower(ThrowerAnt):
+         """ThrowerAnt that intimidates Bees, making them back away instead of advancing."""
+
+         name = 'Scary'
+         # BEGIN Problem EC
+         food_cost = 6
+         implemented = False   # Change to True to view in the GUI
+         # END Problem EC
+
+         def throw_at(self, target):
+             # BEGIN Problem EC
+             "*** YOUR CODE HERE ***"
+             if target is not None and not target.scared:
+                 target.scared = True
+                 apply_effect(make_scare, target, 2)
+             # END Problem EC
+   #+end_src 
+   - ~SlowThrower.action~ --> ~throw_at(bee)~ --> ~apply_effect(effect, bee)~ --> ~bee.action~
+   - ~bee.action = action~ in ~apply_effect~ and ~action(colony)~ not ~bee.action(colony)~ in ~make_scare~ and ~make_slow~
+   - ~origin_action = bee.action~ and ~new_action = effect(origin_action, bee)~ won't change during the call of ~bee.action = action~ 
 ** Optional Problem
+   #+begin_src python :results output
+     class LaserAnt(ThrowerAnt):
+         # This class is optional. Only one test is provided for this class.
+
+         name = 'Laser'
+         # OVERRIDE CLASS ATTRIBUTES HERE
+         food_cost = 10
+         damage = 2
+         # BEGIN Problem OPTIONAL
+         implemented = False   # Change to True to view in the GUI
+         # END Problem OPTIONAL
+
+         def __init__(self, armor=1):
+             ThrowerAnt.__init__(self, armor)
+             self.insects_shot = 0
+
+         def insects_in_front(self, hive):
+             # BEGIN Problem OPTIONAL
+             place = self.place
+             insect = {}
+             distance = 0
+             while place is not hive:
+                 if place.ant and place.ant is not self:
+                     insect[place.ant] = distance
+                 if place.bees:
+                     for bee in place.bees:
+                         insect[bee] = distance
+                 distance += 1
+                 place = place.entrance
+
+             return insect
+             # END Problem OPTIONAL
+
+         def calculate_damage(self, distance):
+             # BEGIN Problem OPTIONAL
+             return self.damage - distance * 0.2 - self.insects_shot * 0.05
+             # END Problem OPTIONAL
+
+         def action(self, colony):
+             insects_and_distances = self.insects_in_front(colony.hive)
+             for insect, distance in insects_and_distances.items():
+                 damage = self.calculate_damage(distance)
+                 insect.reduce_armor(damage)
+                 if damage:
+                     self.insects_shot += 1
+   #+end_src 
+   - ~for insect, distance in insects_and_distances.items()~ 
+
+   
    
