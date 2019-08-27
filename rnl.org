@@ -49,7 +49,7 @@
     #+END_SRC
 
     #+RESULTS:
-    [[file:./func-1.png]]
+    [[file:pictures/./func-1.png]]
 
 *** Funcs, Values, Objects, Interpreters, and Data
 **** Objects
@@ -343,7 +343,7 @@
 ***** Compound statements 
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
-      [[file:Control/screenshot_2019-03-05_16-46-10.png]]
+      [[file:pictures/Control/screenshot_2019-03-05_16-46-10.png]]
  
       The first header determins a *statement's type*: ~def~ ~if~ ~while~...
  
@@ -464,7 +464,7 @@
      - When a user-defined func is *applied* to some args, the formal parameters are bound to the values of those arguments (which *may be funcs*) in a *new local frame*.
      
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 07:28:36
-     [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_07-28-36.png]]
+     [[file:pictures/1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_07-28-36.png]]
 
 **** Two related big ideas in computer science
      - *Naming and funcs* allow us to *abstract away* a vast amount of *complexity*.
@@ -526,7 +526,7 @@
 ****** Env analysis
 
        #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:03:05
-       [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-03-05.png]]
+       [[file:pictures/1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-03-05.png]]
 
        | Env                     | Frame(created when calling func)           | Func evaluated within frame               | Arg evaluted within frame                            |
        | Env1                    | Global                                     | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
@@ -536,7 +536,7 @@
        | Env5 extended from Env1 | f4: ~approx_eq~ [parent=Global             | None                                      | x=1, y=256, tolerance=0.001                          |
      
        #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-11 13:05:31
-       [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-05-31.png]]  
+       [[file:pictures/1.6%20Higher-Order%20Funcs/screenshot_2019-03-11_13-05-31.png]]  
  
        | Env                     | Frame(created when calling func)            | Func evaluated within frame               | Arg evaluted within frame                            |
        | Env1                    | Global                                      | ~average~, ~improve~, ~approx_eq~, ~sqrt~ | None                                                 |
@@ -581,7 +581,7 @@
 ***** Env analysis
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-12 09:30:50
-      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_09-30-50.png]]
+      [[file:pictures/1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_09-30-50.png]]
  
       | Env                     | Frame(created when calling func)  | Func evaluated within frame                                | Arg evaluted within frame   |
       | Env1                    | Global                            | ~square~, ~successor~, ~compose1~, ~f~, ~square_successor~ | None                        |
@@ -742,7 +742,7 @@
 *****  Env analysis
  
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-12 16:45:59
-      [[file:1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_16-45-59.png]]
+      [[file:pictures/1.6%20Higher-Order%20Funcs/screenshot_2019-03-12_16-45-59.png]]
  
 **** Example 2: *compound* ~lambda~ expressions
     
@@ -805,7 +805,7 @@
     
    Env analysis:
    #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 14:04:32
-   [[file:Recursion/screenshot_2019-03-18_14-04-32.png]]
+   [[file:pictures/Recursion/screenshot_2019-03-18_14-04-32.png]]
    
 *** 1.7.1 The Anatomy of Recursive Functions
     *Base cases* + *recursive calls*: to express computation by *simplifying problems incrementally*.
@@ -828,7 +828,7 @@
 ***** Env analysis(only recursion)
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 21:22:51
-      [[file:Recursion/screenshot_2019-03-18_21-22-51.png]]
+      [[file:pictures/Recursion/screenshot_2019-03-18_21-22-51.png]]
       
 ***** Differences
       *Recursive* functions leverage the *rules of evaluating call expressions* to *bind names to values*, often *avoiding the nuisance* of *correctly assigning local names* during *iteration*. 
@@ -872,7 +872,7 @@
 ***** Env analysis
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-18 23:20:17
-      [[file:Recursion/screenshot_2019-03-18_23-20-17.png]]
+      [[file:pictures/Recursion/screenshot_2019-03-18_23-20-17.png]]
  
 ***** Multually recursive to single recursive
       *Mutually* recursive functions can be turned into a *single* recursive function by *breaking the abstraction boundary* between the two functions. 
@@ -1086,15 +1086,11 @@
         - ~square_rational~ doesn't require updating even if the representation of rational nums changed
         - ~square_rational_violating_once~ require updating whenever the *selector or constructor signatures* changed
         - ~square_rational_violating_twice~ require updating whenever the *implementation* of rational numbers changed 
-
-
-
 *** 2.2.4 The Properties of Data
     As long as *behavior conditions* are met (no matter how *implementation* details below an abstraction barrier changes) $\Rightarrow$ *selectors and constructors* can constitute and remain a *valid representation* of abstract data
     - Example: *functional* representation for rational nums
       - *"pair" behavior condition*: If a pair ~p~ was constructed from values ~x~ and ~y~, then ~select(p, 0)~ returns ~x~, and ~select(p, 1)~ returns ~y~
       - implement two functions ~pair~ and ~select~ that *met behavior condition* above
-       
         #+begin_src python :results output
           def pair(x, y):
               """Return a function that represents a pair."""
@@ -1109,10 +1105,8 @@
               """Return the element at index i of pair p."""
               return p(i)
         #+end_src
-       
       - Functional representations are *sufficient but obscure* to represent *compound data* ("pair" here) 
     - The practice of data abstraction allows *switching among representations* easily.
-
 ** 2.3 Sequences
    A sequence is an *ordered collection* of values. Sequences are *instances of a collection of behaviors* that are *shared among several different types of data*. In particular,
    - Length - A sequence has a *finite* length. An empty sequence has length 0.
@@ -1359,7 +1353,7 @@
                  [4, lambda: 5]]]
     #+end_src 
     #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-14 17:21:51
-    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-14_17-21-51.png]]
+    [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-14_17-21-51.png]]
     Nesting lists within lists can introduce complexity -> ~tree~  
     The ~tree~ is a fundamental data abstraction that imposes *regularity* on how hierarchical values are *structured* and *manipulated*, it consists of the *constructor* ~tree~ and the *selectors* ~label~ and *branches*
     #+begin_src python :results output
@@ -1553,7 +1547,7 @@
         2
       #+end_src 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-17 14:19:47
-      [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-17_14-19-47.png]]
+      [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-17_14-19-47.png]]
     - Recursive manipulation
       - Length and element selections
         #+begin_src python :results output
@@ -1674,7 +1668,6 @@
       'eyes'.upper().endswith('YES')
       True
     #+end_src 
-
 *** 2.4.2 Sequence Objects
     *Imutable* objects are used to represent values that themselves *cannot change* over the *course of program execution*. Instances of *primitive built-in values* such as ~numbers~ are *immutable*. 
     *Mutable* objects are used to represent values that *change over time* due to *mutating operations*. ~Lists~ are *mutable*
@@ -1698,7 +1691,7 @@
          ['heart', 'diamond', 'spade', 'club']
        #+end_src                
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:23:10
-        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-23-10.png]]
+        [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-23-10.png]]
         - ~=~ do not create a new list 
       - Changes to one list *do not affect another*, unless they *share structure*
         #+begin_src python :results output
@@ -1714,7 +1707,7 @@
           ['heart', 'diamond', 'spade', 'club']
         #+end_src 
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:32:33
-        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-32-33.png]]
+        [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-32-33.png]]
         - ~list~ constructor func to create a *new list*
         - Two different lists can affect each other if they *shares structur*
       - ~is~, ~is not~ and ~==~
@@ -1737,7 +1730,7 @@
             b[1] = 15
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:49:57
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-49-57.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-49-57.png]]
         - Mutating *a list within a sliced list* will affect the *original list*
           #+begin_src python :results output
             a = [11, [12, 13], 14]
@@ -1745,7 +1738,7 @@
             b[1][1] = 15
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:51:35
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-51-35.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-51-35.png]]
           - Slice copies *the contents of a list* but not *the values contained within the list*. Instead, a new list is constructed that contains a *subset* of the same values as the sliced list. 
           - The built-in ~list~ function *creates a new list* that contains *the values of its argument*, which must be an *iterable value* such as a sequence. Again, the *values* placed in this list are *not copied*. ~list(s)~ = ~s[:]~ for a list ~s~
       - ~+~, ~append~, ~extend~
@@ -1760,7 +1753,7 @@
             b[0] = 16
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:26:44
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-26-44.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-26-44.png]]
           - In lists, ~a + b~ != ~b + a~  
         - ~append~
           The ~append~ method of a list takes *one value* as an argument and adds it *as a whole item* to the end of the list
@@ -1774,7 +1767,7 @@
             d = a.append(a)
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:27:37
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-27-37.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-27-37.png]]
           - Argument can be any value
           - Always returns ~None~
           - Mutating the list by *increasing its length by one*
@@ -1790,7 +1783,7 @@
             c.append(d)
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:28:30
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-28-30.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-28-30.png]]
           - Mutating the list by increasing its length by *the length of the iterable argument*
           - ~x += y~ for a *list* ~x~ and *iterable* ~y~ = ~x.extend(y)~
           - ~TypeError~ if not *iterable*
@@ -1803,7 +1796,7 @@
             c = a.pop()
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:47:05
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-05.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-05.png]]
           - Mutating the list by reducing its length by one
           - ~IndexError~ for an empty list  
         - ~remove~
@@ -1814,7 +1807,7 @@
             a.remove(10)
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:47:55
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-55.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-47-55.png]]
           - Removes the *first* equal item
           - ~ValueError~ for no equal items
         - ~index~
@@ -1837,7 +1830,7 @@
             a.insert(5, 6)
           #+end_src
           #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 16:49:47
-          [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-49-47.png]]
+          [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_16-49-47.png]]
           - Mutating by increasing size by one
           - Returns ~None~
         - ~count~
@@ -1893,7 +1886,7 @@
       - Mutating operations are not available
       - Not possible to change which *elements are in a tuple* while possible to change *the value of a mutable element* contained within a tuple
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 18:59:06
-        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_18-59-06.png]]
+        [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_18-59-06.png]]
       - Tuples are used *implicitly* in *multiple assignment* (~a,b = 1,2~) . An assignment of *two values to two names* creates a *two-element tuple* and then *unpacks* it.
 **** Question:                                             :TOLINK:QUESTIONS:
      1. Mutating *a list within a sliced list* will affect the *original list* (*link*) 中 关于 ~slice~ 和 ~list~ ，啥叫list is copied but the values are not？？？contens 和 values有毛区别？上面关于values are not copied在扯犊子？
@@ -1960,7 +1953,7 @@
       wd(3)
     #+end_src
     #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 09:05:11
-    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_09-05-11.png]]
+    [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_09-05-11.png]]
     - ~withdraw~ is *non-pure*.
     - The name ~balance~ is bound in the parent frame of ~f2~ - ~f1~
     - Without ~nonlocal~ statement, an assignment statement would always bind a name in the *first frame of the current environment* 
@@ -2004,7 +1997,7 @@
       wd(8)
     #+end_src 
     #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 10:29:04
-    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_10-29-04.png]]
+    [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_10-29-04.png]]
 *** 2.4.6 The Cost of Non-Local Assignment
     - Only function calls can *introduce new frames*. 
     - Assignment statements always change bindings in *existing frames*
@@ -2290,7 +2283,7 @@
       check_balance(a)
     #+end_src 
     #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-25 23:27:34
-    [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_23-27-34.png]]
+    [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-25_23-27-34.png]]
     - The *local state* (*balance*) of the account is stored in the dictionary *alongside the functions* that implement its behavior.
       - ~withdraw~ and ~deposit~ defined in ~account~ have access to the ~dispatch~ dictionary to *read and change* the balance (*local state*) as dictionary is *mutable*
       - ~withdraw~, ~deposit~ and ~check_balance~ are just *helper* funcs
@@ -2308,7 +2301,7 @@
         - A *connector* is an *object* that "holds" a *value* and may *participate* in one or more *constraints*.
       - Example
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-29 14:59:35
-        [[file:Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-29_14-59-35.png]]
+        [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-29_14-59-35.png]]
         - Computation: set a value for a *connector* (by the *user* or by a *constraint box* to which it is linked) --> *awakening* all of its associated *constraints* --> Each *awakened constraint* box then *polls its connectors* and trys to *set values* for *new connectors* --> awakening all of new setted connectors' *constraints*, and so on
     - Using the Constraint System
       - Linking connectors into a network that mirrors the figure above
@@ -2494,7 +2487,7 @@
         c is a
         True
       #+end_src
-      - Object identity is compared using the ~is~ and ~is not~ operators.
+      - ~Object~ identity is compared using the ~is~ and ~is not~ operators.
       - Binding an object to a new name using assignment *does not* create a *new object*.
       - *New objects* that have user-defined classes are only created when the *constructor* of this class is called
     - Methods
@@ -2680,7 +2673,7 @@
       1
     #+end_src 
     #+DOWNLOADED: http://composingprograms.com/img/multiple_inheritance.png @ 2019-07-01 08:59:29
-    [[file:Chapter_2:_Building_Abstractions_with_Data/multiple_inheritance_2019-07-01_08-59-29.png]]
+    [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/multiple_inheritance_2019-07-01_08-59-29.png]]
     - Python resolves names from *left to right*, then *upwards*: ~AsSeenOnTVAccount, CheckingAccount, SavingsAccount, Account, object~
     - No correct order, but need to select some ordering in a consistent way
     - C3 Method Resolution Ordering: ~class.mro~ 
@@ -3026,7 +3019,6 @@
       - Particular operators apply coercion to their arguments as needed
 **** Question:                                             :TOLINK:QUESTIONS:
      1. Using type tags illustrates that type... (*link*) 这句话怎么理解？ 
-
 ** 2.8 Efficiency
    Computational resources used by a representation or process
 *** 2.8.1 Measuring Efficiency
@@ -3068,8 +3060,8 @@
     - ~for <name> in <expression>:~: ~iter(expression)~ --> ~<name> = iter(expression).next~ --> ~<name> = iter(expression).next.next~ --> ... --> ~StopIteration~ --> existing ~for~ 
 *** 4.2.5 Generators
 *** 4.2.6 Python Streams                                            :TOBEORG:
-    /Streams/ offer another way to represent sequential data implicitly. 
-    A ~stream~ is a lazily computed linked list. The ~rest~ of a ~Stream~ is itself a ~Stream~, which is computed lazily
+    /Streams/ offer another way to represent *sequential* data *implicitly*, a ~Stream~ stores *how to compute (a method)* the ~rest~ of the ~Stream~, rather than always storing the ~rest~ *explicitly*.
+    A ~Stream~ is a *lazily* computed *linked list*. The ~rest~ of a ~Stream~ is itself a ~Stream~, which is computed lazily (when it is looked up)
     #+begin_src python :results output
       class Stream:
           """A lazily computed linked list."""
@@ -3106,483 +3098,80 @@
       s.rest
       Stream(5, <...>)
     #+end_src 
-    - Example: increasing integers
-      #+begin_src python :results output
-        def integer_stream(first):
-            def compute_rest():
-                return integer_stream(first+1)
-            return Stream(first, compute_rest)
-  
-        positives = integer_stream(1)
-        positives
-        Stream(1, <...>)
-        positives.first
-        1
-  
-        positives.first
-        1
-        positives.rest.first
-        2
-        positives.rest.rest
-        Stream(3, <...>)
-      #+end_src
-    - Example: ~map~ and ~filter~ on stream
-      #+begin_src python :results output
-        def map_stream(fn, s):
-            if s is Stream.empty:
-                return s
-            def compute_rest():
-                return map_stream(fn, s.rest)
-            return Stream(fn(s.first), compute_rest)
-  
-        def filter_stream(fn, s):
-            if s is Stream.empty:
-                return s
-            def compute_rest():
-                return filter_stream(fn, s.rest)
-            if fn(s.first):
-                return Stream(s.first, compute_rest)
-            else:
-                return compute_rest()
-      #+end_src
-    - Example: using ~map_stream~ and ~filter_stream~ 
-      #+begin_src python :results output
-        def first_k_as_list(s, k):
-            first_k = []
-            while s is not Stream.empty and k > 0:
-                first_k.append(s.first)
-                s, k = s.rest, k-1
-            return first_k
-  
-        s = integer_stream(3)
-        s
-        Stream(3, <...>)
-        m = map_stream(lambda x: x*x, s)
-        m
-        Stream(9, <...>)
-        first_k_as_list(m, 5)
-        [9, 16, 25, 36, 49]
-  
-        def primes(pos_stream):
-            def not_divible(x):
-                return x % pos_stream.first != 0
-            def compute_rest():
-                return primes(filter_stream(not_divible, pos_stream.rest))
-            return Stream(pos_stream.first, compute_rest)
-  
-        prime_numbers = primes(integer_stream(2))
-        first_k_as_list(prime_numbers, 7)
-        [2, 3, 5, 7, 11, 13, 17]
-  
-        prime_numbers.first
-        2
-      #+end_src 
-
-      
-* Funcs
-** Expressions
-*** Types of expressions
-    An expression describes a computation and evaluates to a value
-**** Primitive expressions
-     ~2 + 1~
-**** Call expressions
-     ~max(2,3)~
-*** Call Expressions in Python
-    All expressions can use func call notation
-    ~max(2,3)~
-*** Anatomy of a Call Expression
-    Evaluation procedure for call expressions:
-    ~add(2, 3)~ 
-    Operators and operands are also expressions, so they evaluate to values.
-**** Evaluate the operator and then the operand subexpressions
-
-    | operator | add |
-    | operand1 |   2 |
-    | operand2 |   3 |
-
-**** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
-
-    | func  | value of add |
-    | arg1 | value of 2   |
-    | arg2 | value of 3   |
-
-*** Evaluating Nested Expressions
-   ~mul(add(4,mul(4, 6)), add(3, 5))~ 
-
-   #+BEGIN_SRC dot :file ./func-1.png :exports results
-     digraph func1 {
-           a1 [label="mul(add(4,mul(4, 6)), add(3, 5))"];
-           a2 [label="add(4,mul(4,6))"];
-           a3 [label="add(3,5)"];
-           a5 [label="mul(4,6)"];
-           4 [shape=box];
-           6 [shape=box];
-           3 [shape=box];
-           5 [shape=box];
-           a1->a2->4;
-           a2->a5->4;
-           a5->6;
-           a1->a3->3;
-           a3->5;
-     }     
-   #+END_SRC
-
-   #+RESULTS:
-   [[file:./func-1.png]]
-
-** Funcs, Values, Objects, Interpreters, and Data
-*** Objects
-
-    #+BEGIN_SRC python :session Objects :results output
-      from urllib.request import urlopen
-      shakes = urlopen('http://composingprograms.com/shakespeare.txt')
-      text = shakes.read().split()
-    #+END_SRC 
-
-    #+BEGIN_SRC python :session Objects :results output
-      print(len(text),'\n',text[:25],'\n', text.count(b'the'), '\n', text.count(b','))
-    #+END_SRC 
-
-    #+RESULTS:
-    : 980637 
-    :  [b'A', b"MIDSUMMER-NIGHT'S", b'DREAM', b'Now', b',', b'fair', b'Hippolyta', b',', b'our', b'nuptial', b'hour', b'Draws', b'on', b'apace', b':', b'four', b'happy', b'days', b'bring', b'in', b'Another', b'moon', b';', b'but', b'O'] 
-    :  23272 
-    :  81827
-
-*** Sets 
-
-    #+BEGIN_SRC python :session Objects :results output
-      words = set(text)
-      print(len(words),'\n',max(words))
-    #+END_SRC 
-
-    #+RESULTS:
-    : 33505 
-    :  b'zwaggered'
-
-*** Reversals 
-
-    #+BEGIN_SRC python :session Objects :results output
-      print('draw'[::-1])
-      print({w for w in words if w == w[::-1] and len(w)>4})
-      print({w for w in words if w[::-1] in words and len(w) == 4})
-      print({w for w in words if w[::-1] in words and len(w) > 6})
-    #+END_SRC 
-
-    #+RESULTS:
-    : ward
-    : {b'rever', b'madam', b'level', b'minim', b'redder', b'refer'}
-    : {b'noon', b'snip', b'tops', b'smug', b'garb', b'maws', b'rail', b'flow', b'trap', b'ward', b'doom', b'rood', b'drab', b'dial', b'sees', b'stab', b'leer', b'keel', b'lees', b'wort', b'mood', b'spin', b'stop', b'leek', b'meed', b'loop', b'star', b'draw', b'teem', b'liar', b'poop', b'trow', b'gums', b'spot', b'gnat', b'room', b'elle', b'door', b'hoop', b'tang', b'bard', b'swam', b'live', b'pooh', b'deed', b'laid', b'rats', b'evil', b'seel', b'nips', b'brag', b'ecce', b'pool', b'spit', b'part', b'tips', b'pots', b'moor', b'meet', b'esse', b'peep', b'reel', b'deem', b'pins', b'wolf', b'deer', b'port', b'trop', b'bats', b'reed'}
-    : set()
+    - ~self._rest~ is ~None~ when a ~Stream~ instance is constructed, signifying that the rest of the ~Stream~ has not yet been *computed*
+    - ~r.rest~ itself is (*stores explicitly*) a ~Link~: ~Link(5, Link(9))~, while ~s.rest~ is *calling a property method* which calls the *func* (~compute_rest~) to *compute* the rest ~Stream~, then *caches* as ~self._rest~ and finally *returns* it *on demand*: ~Stream(5, <...>)~
+    - ~compute_rest~ is a *non-arguements* func which *conputes* a ~Stream~ or ~Stream.empty~, it is *stored* in a ~Stream~ and only ever called *once* when the *property method* ~rest~ is called, then *discarded*. (~<...>~ implies the *non-arguements* func ~compute_rest~ stored in ~Stream(5, <...>)~)
      
-* Names
-** Env Diagrams
-*** Env Diagrams
-    Env diagrams visualize the interpreter’s process.
-**** Code
-     Statements and expressions
-
-     #+BEGIN_SRC python 
-       from math import pi
-       tau = 2 * pi
-       return pi, tau
-     #+END_SRC 
-
-     #+RESULTS:
-     | 3.141592653589793 | 6.283185307179586 |
-
-**** Frames
-     Each name is bound to a value. Within a frame, a name cannot be repeated
-
-    | Global frame |        |
-    |--------------+--------|
-    | name         |  value |
-    | pi           | 3.1416 |
-    | tau          | 6.2832 |
-
-*** Assignment Statements
-**** Execution rule for assignment statements:
-     - Evaluate all expressions to the right of = from left to right.
-     - Bind all names to the left of = to those resulting values in the current frame.
-       
-     #+BEGIN_SRC python :results output
-       a = 1
-       b = 2
-       b, a = a + b, b
-       print(a,b)
-     #+END_SRC
-
-     #+RESULTS:
-     : 2 3
-
-** Defining Funcs
-*** Defining Funcs
-    Assignment is a simple means of abstraction: binds names to values
-    Func def is a more powerful means of abstraction: binds names to expressions
+    - Examples
+      - Increasing integers
+        #+begin_src python :results output
+          def integer_stream(first):
+              def compute_rest():
+                  return integer_stream(first+1)
+              return Stream(first, compute_rest)
     
-    #+BEGIN_SRC python
-      def <name>(<formal parameters>): 
-          return <return expression>
-    #+END_SRC
-
-**** Execution procedure for def statements:
-     1. Create a func with signature ~<name>(<formal parameters>)~, func signature indicates how many args a func takes, it has all the
-information needed to create a local frame.
-     2. Set the body of that func to be everything indented after the first line, func body defines the computation performed when the func is applied
-     3. Bind ~<name>~ to that func in the current frame
-*** Calling User-Defined Funcs
-**** Procedure for calling/applying user-defined funcs
-     1. Add a local frame, forming a new env
-     2. Bind the func's formal parameters to its args in that frame
-     3. Execute the body of the func in that new env
-*** Looking Up Names In Env
-    Every expression is evaluated in the context of an env. So far, the current env is either: 
-    - The global frame alone, or
-    - A local frame, followed by the global frame. 
-**** Most important two things:
-     1. An env is a sequence of frames. 
-     2. A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
-* Control
-** Print and None
-*** None Indicates that Nothing is Returned
-   - The special value ~None~ represents nothing in Python
-   - A func that does not explicitly return a value will return ~None~
-   - Careful: ~None~ is not displayed by the interpreter as the value of an expression
-     
-    #+begin_src python 
-      def does_not_return_square(a):
-          a*a
-      x = does_not_return_square(4) + 3 
-      return x
-    #+end_src
-
-*** Pure Funcs & Non-Pure Funcs
-**** Pure Funcs
-     just return *values*: ~abs()~   
-     
-     #+begin_src python 
-       return abs(-2)
-     #+end_src
-
-     #+RESULTS:
-     : 2
-
-**** Non-Pure Funcs     
-     return *values(None)* and have *side effects*: ~print()~
-
-     #+begin_src python :results output
-       a = print(2)
-       print(a)
-     #+end_src
-
-     #+RESULTS:
-     : 2
-     : None
-
-*** Nested Expressions with Print
+          positives = integer_stream(1)
+          positives
+          Stream(1, <...>)
+          positives.first
+          1
     
-    #+begin_src python :results output
-      a = print(print(1), print(2))
-      print(a)
-    #+end_src
-
-    #+RESULTS:
-    : 1
-    : 2
-    : None None
-    : None
+          positives.first
+          1
+          positives.rest.first
+          2
+          positives.rest.rest
+          Stream(3, <...>)
+        #+end_src
+      - ~map~ and ~filter~ on stream
+        #+begin_src python :results output
+          def map_stream(fn, s):
+              if s is Stream.empty:
+                  return s
+              def compute_rest():
+                  return map_stream(fn, s.rest)
+              return Stream(fn(s.first), compute_rest)
     
-** Multiple Envs
-*** Life Cycle of a User-Defined Func 
-**** Def statement:
-
-     #+begin_src python
-       def square(x):
-           return mul(x, x)
-     #+end_src
+          def filter_stream(fn, s):
+              if s is Stream.empty:
+                  return s
+              def compute_rest():
+                  return filter_stream(fn, s.rest)
+              if fn(s.first):
+                  return Stream(s.first, compute_rest)
+              else:
+                  return compute_rest()
+        #+end_src
+      - Using ~map_stream~ and ~filter_stream~ 
+        #+begin_src python :results output
+          def first_k_as_list(s, k):
+              first_k = []
+              while s is not Stream.empty and k > 0:
+                  first_k.append(s.first)
+                  s, k = s.rest, k-1
+              return first_k
     
-     - A new func is created!
-     - Name bound to that func in the current frame 
-**** Call expression: 
-     ~square(2+2)~ 
-     - Operator & operands evaluated
-     - Func (value of operator) called on args (values of operands):
-**** Calling/Applying: 
-     - A new frame is created!
-     - Body is executed in that new env
-*** Multiple Envs in One Diagram!
+          s = integer_stream(3)
+          s
+          Stream(3, <...>)
+          m = map_stream(lambda x: x*x, s)
+          m
+          Stream(9, <...>)
+          first_k_as_list(m, 5)
+          [9, 16, 25, 36, 49]
     
-    #+BEGIN_SRC python :results output
-      from operator import mul
-      def square(x):
-          return mul(x, x);
-      print(square(square(3)))
-    #+END_SRC 
-
-    #+RESULTS:
-    : 81
-
-    An env is a sequence of frames.
-    - The global frame alone
-    - A local, then the global frame
-    *One env per frame here* 
-**** ENV1 
-
-     | Frames | Global      |
-     | funcs  | mul, square |
-
-**** ENV2
-
-     | Frames       | f2: square [parent=Global |
-     | x            |                         3 |
-     | return value |                         9 |
-
-**** ENV3
-
-     | Frames       | f3: square [parent=Global |
-     | x            |                         9 |
-     | return value |                        81 |
-
-*** Names Have No Meaning Without Envs
-    - Every expression is evaluated in the context of an env.
-    - A name evaluates to the value bound to that name in the earliest frame of the current env in which that name is found.
-*** Names Have Different Meanings in Different Envs
+          def primes(pos_stream):
+              def not_divible(x):
+                  return x % pos_stream.first != 0
+              def compute_rest():
+                  return primes(filter_stream(not_divible, pos_stream.rest))
+              return Stream(pos_stream.first, compute_rest)
     
-    #+BEGIN_SRC python :results output
-      from operator import mul
-      def square(square):
-          return mul(square, square)
-      print(square(4))
-    #+END_SRC 
-
-    #+RESULTS:
-    : 16
-
-    *A call expression and the body of the func being called are evaluated in different envs*
-
-    | call of square(4) | ENV1:Global                |
-    | body of square(4) | ENV2:f1 followed by Global |
-
-** Miscellaneous Python Features
-*** Operators
-**** Addition 
-
-     #+BEGIN_SRC python :results output
-       print(2+3*4+5,'\n',(2+3)*(4+5))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 19 
-     :  45
-
-**** Division
-
-     #+BEGIN_SRC python :results output
-       print(618 / 10, 618 // 10, 618 % 10)
-       from operator import truediv, floordiv, mod
-       print(truediv(618, 10), floordiv(618, 10), mod(618, 10))
-     #+END_SRC 
-
-     #+RESULTS:
-     : 61.8 61 8
-     : 61.8 61 8
-
-*** Multiple Return Values 
-
-    #+BEGIN_SRC python :results output
-      def divide_exact(n, d):
-          return n // d, n % d
-      quotient, remainder = divide_exact(618, 10)
-      print(quotient, remainder)
-    #+END_SRC 
-
-    #+RESULTS:
-    : 61 8
-
-*** Docstrings, doctests, & default args
-    use *python3 -m doctest test.py* to doctest. 
-
-    #+BEGIN_SRC python :results output
-      def divide_exact(n, d=10):
-          """Return the quotient and remainder of dividing N by D.
-
-          >>> quotient, remainder = divide_exact(618, 10)
-          >>> quotient
-          61
-          >>> remainder
-          8
-          """
-          return floordiv(n, d), mod(n, d)
-    #+END_SRC 
-
-*** Conditional Statements
-**** Statements
-     A *statement* is executed by the *interpreter* to perform an action
-
-**** Compound statements 
-
-     #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-05 16:46:10
-     [[file:Control/screenshot_2019-03-05_16-46-10.png]]
- 
-     The first header determins a *statement's type*: ~def~ ~if~ ~while~...
- 
-**** Conditional Statements
-
-     #+begin_src python :results output
-       def absolute_value(x):
-           if x < 0:
-               return -x
-           elif x == 0:
-               return0
-           else:
-               return x
-     #+end_src 
-      
-     1 statement, 3 clauses, 3 headers, 3 suites.
-
-**** Boolean Contexts
-     In python
-
-     | False | False, 0, '', None, [], ... |
-     | True  | Not false                   |
-
-*** Iteration
-**** While Statements
-      
-     #+begin_src python :results output
-       i,total = 0, 0
-       while i < 3:
-           i = i + 1
-           total = total + 1
-     #+end_src 
-
-**** Example: The Fibonacci Sequence
-      
-     #+begin_src python :results output
-       def fib(n):
-           """Compute the nth Fibonacci number"""
-           pred, curr = 0, 1 #--> pred, curr = 1, 0
-           k = 1             #--> k = 0
-           while k < n:
-               pred, curr = curr, pred + curr
-               k = k + 1
-           return curr
-     #+end_src 
-      
-* Higher-Order Func
-* Envs
-* Iteration
-* Recursion 
-* Func Examples
-* Tree Recursion
-* Data Abstraction
-* Containers
-* Trees
-* Mutable Values
-* Mutable Funcs
-* Iterators
-* Objects
-* Inheritance
-* Representation
-* Growth
+          prime_numbers = primes(integer_stream(2))
+          first_k_as_list(prime_numbers, 7)
+          [2, 3, 5, 7, 11, 13, 17]
+    
+          prime_numbers.first
+          2
+        #+end_src 
 

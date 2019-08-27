@@ -1,3 +1,4 @@
+#+TAGS: OUTSTANDING(o) QUESTIONS(q) TOBEORG(t)
 * Project 1: The Game of Hog
 ** Phase 1: Simulator
 *** Problem 0

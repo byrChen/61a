@@ -175,7 +175,7 @@
       #+end_src 
 
       #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 21:05:16
-      [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_21-05-16.png]]
+      [[file:pictures/Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_21-05-16.png]]
 
 ***** Two ways of def funcs 
 
@@ -313,7 +313,7 @@
      #+end_src 
 
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 22:41:46
-     [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-41-46.png]]
+     [[file:pictures/Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-41-46.png]]
      
      1. ~add_ten~ is evaluated in *Global* while ~lambda k: k + n~ was evaluated in *f1*.
      2. In *Global* ~n=9~ while in *f1* ~n=10~, ~add_ten(n)~ firstly passes(*finds*) ~n=9~ to ~k~ under *Global*, secondly passes(*finds*) ~n=10~ to ~n~ under *f1*, finally returns ~9 + 10~.
@@ -331,7 +331,7 @@
      #+end_src 
 
      #+DOWNLOADED: /tmp/screenshot.png @ 2019-03-31 22:47:46
-     [[file:Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-47-46.png]]
+     [[file:pictures/Lab%202%20Higher%20Order%20Functions/screenshot_2019-03-31_22-47-46.png]]
 
      1. A *new frame created* when *calling of a func* finished *passing* (and perhaps *calculating*) *func name* and *args* under *present(or previous) frame* to its *func signature(name and paras)*, then the *body of func* will be executed under this *new frame*. 
      2. Created frame's *parent* frame = the frame where the *called func is evaluated*, not the frame where the *called func is called*.

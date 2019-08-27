@@ -686,7 +686,7 @@
      1. 还能继续简化吗？
 ** Extra                                                              :EXTRA:
 *** Q6: Anonymous factorial                                     :OUTSTANDING:
-* HW05                                                              :TOBEORG:
+* HW05
 ** Required                                                        :REQUIRED:
 *** Trees
 **** Q1: Replace Leaf
