@@ -22,6 +22,7 @@ class Fib():
     8
     """
 
+    "sol1 "
     def __init__(self, value=0, previous = 0):
         self.value = value
         self.previous = previous
@@ -34,6 +35,32 @@ class Fib():
 
     def __repr__(self):
         return str(self.value)
+
+    "sol2 "
+    def __init__(self):
+        self.value = 0
+        self.next_value = 1
+
+    def next(self):
+        b = Fib()
+        b.value = self.next_value
+        b.next_value = b.value + self.value
+        return b
+
+    def __repr__(self):
+        return str(self.value)
+
+    "sol3"
+    def __init__(self, value=0, next_value=1):
+        self.value = value
+        self.next_value = next_value
+
+    def next(self):
+        return Fib(self.next_value, self.value + self.next_value)
+
+    def __repr__(self):
+        return str(self.value)
+
 
 class VendingMachine:
     """A vending machine that vends some product for some price.
@@ -73,3 +100,35 @@ class VendingMachine:
     'Here is your soda.'
     """
     "*** YOUR CODE HERE ***"
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+        self.rest = 0
+        self.balance = 0
+
+    def restock(self, x):
+        self.rest += x
+        return 'Current {0} stock: {1}'.format(self.name, self.rest)
+
+    def deposit(self, x):
+        if self.rest == 0:
+            return 'Machine is out of stock. Here is your ${0}.'.format(x)
+        else:
+            self.balance += x
+            return 'Current balance: ${0}'.format(self.balance)
+
+    def vend(self):
+        if self.rest == 0:
+            return 'Machine is out of stock.'
+        elif self.balance < self.price:
+            more = self.price - self.balance
+            return 'You must deposit ${0} more.'.format(more)
+        else:
+            self.balance -= self.price
+            self.rest -= 1
+            if self.balance == 0:
+                return 'Here is your {0}.'.format(self.name)
+            else:
+                more = self.balance
+                self.balance = 0
+                return 'Here is your {0} and ${1} change.'.format(self.name, more)

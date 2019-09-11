@@ -1708,7 +1708,7 @@
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 15:32:33
         [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_15-32-33.png]]
         - ~list~ constructor func to create a *new list*
-        - Two different lists can affect each other if they *shares structur*
+        - Two different lists can affect each other if they *share structure*
       - ~is~, ~is not~ and ~==~
         #+begin_src python :results output
           suits is nest[0]
@@ -3607,3 +3607,4 @@
     - Linked lists vs streams
       - Linked lists provide a simple implementation of the *sequence abstraction*
       - Streams provide a simple, *functional*, *recursive data structure* that implements *lazy evaluation* through the use of *higher-order functions*.
+        
