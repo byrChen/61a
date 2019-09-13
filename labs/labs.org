@@ -1446,8 +1446,186 @@
     - ~opponent_deck_cards_copy = opponent.deck.cards.copy()~ and ~for card in opponent_deck_cards_copy:~ 
 
 * Lab 7 Linked Lists, Trees 
+  #+begin_src python :results output
+    class Link:
+        """A linked list.
+
+        >>> s = Link(1)
+        >>> s.first
+        1
+        >>> s.rest is Link.empty
+        True
+        >>> s = Link(2, Link(3, Link(4)))
+        >>> s.second
+        3
+        >>> s.first = 5
+        >>> s.second = 6
+        >>> s.rest.rest = Link.empty
+        >>> s                                    # Displays the contents of repr(s)
+        Link(5, Link(6))
+        >>> s.rest = Link(7, Link(Link(8, Link(9))))
+        >>> s
+        Link(5, Link(7, Link(Link(8, Link(9)))))
+        >>> print(s)                             # Prints str(s)
+        <5 7 <8 9>>
+        """
+        empty = ()
+
+        def __init__(self, first, rest=empty):
+            assert rest is Link.empty or isinstance(rest, Link)
+            self.first = first
+            self.rest = rest
+
+        @property
+        def second(self):
+            return self.rest.first
+
+        @second.setter
+        def second(self, value):
+            self.rest.first = value
+
+
+        def __repr__(self):
+            if self.rest is not Link.empty:
+                rest_repr = ', ' + repr(self.rest)
+            else:
+                rest_repr = ''
+            return 'Link(' + repr(self.first) + rest_repr + ')'
+
+        def __str__(self):
+            string = '<'
+            while self.rest is not Link.empty:
+                string += str(self.first) + ' '
+                self = self.rest
+            return string + str(self.first) + '>'
+
+    # Tree Class
+    class Tree:
+        """
+        >>> t = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
+        >>> t.label
+        3
+        >>> t.branches[0].label
+        2
+        >>> t.branches[1].is_leaf()
+        True
+        """
+        def __init__(self, label, branches=[]):
+            for b in branches:
+                assert isinstance(b, Tree)
+            self.label = label
+            self.branches = list(branches)
+
+        def is_leaf(self):
+            return not self.branches
+
+        def map(self, fn):
+            """
+            Apply a function `fn` to each node in the tree and mutate the tree.
+
+            >>> t1 = Tree(1)
+            >>> t1.map(lambda x: x + 2)
+            >>> t1.map(lambda x : x * 4)
+            >>> t1.label
+            12
+            >>> t2 = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
+            >>> t2.map(lambda x: x * x)
+            >>> t2
+            Tree(9, [Tree(4, [Tree(25)]), Tree(16)])
+            """
+            self.label = fn(self.label)
+            for b in self.branches:
+                b.map(fn)
+
+        def __contains__(self, e):
+            """
+            Determine whether an element exists in the tree.
+
+            >>> t1 = Tree(1)
+            >>> 1 in t1
+            True
+            >>> 8 in t1
+            False
+            >>> t2 = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
+            >>> 6 in t2
+            False
+            >>> 5 in t2
+            True
+            """
+            if self.label == e:
+                return True
+            for b in self.branches:
+                if e in b:
+                    return True
+            return False
+
+        def __repr__(self):
+            if self.branches:
+                branch_str = ', ' + repr(self.branches)
+            else:
+                branch_str = ''
+            return 'Tree({0}{1})'.format(self.label, branch_str)
+
+        def __str__(self):
+            def print_tree(t, indent=0):
+                tree_str = '  ' * indent + str(t.label) + "\n"
+                for b in t.branches:
+                    tree_str += print_tree(b, indent + 1)
+                return tree_str
+            return print_tree(self).rstrip()
+  #+end_src 
+  - ~Link~
+    - Recursive:
+      - ~__repr__~ and ~repr~: ~rest_repr = ', ' + repr(self.rest)~ and ~'Link(' + repr(self.first) + rest_repr + ')'~
+      - ~__str__~ and ~str~ (recursive and iterative): ~string += str(self.first) + ' '~ and ~string + str(self.first) + '>'~ 
+  - ~Tree~
+    - Recursive:
+      - ~__contains__~ and ~in~ (recursive and iterative): ~if e in b:~
+      - ~__repr__~ and ~repr~: ~branch_str = ', ' + repr(self.branches)~ and ~return 'Tree({0}{1})'.format(self.label, branch_str)~
+      - ~__str__~ and ~str~ (recursive and iterative): ~tree_str = '  ' * indent + str(t.label) + "\n"~ and ~tree_str += print_tree(b, indent + 1)~ and ~print_tree(self).rstrip()~ 
 ** Required 
-***  What Would Python Display?
+*** What Would Python Display?
+    #+begin_src python :results output
+      >>> from lab07 import *
+      >>> link = Link(1)
+      >>> link.rest = link
+      >>> link.rest.rest.rest.rest.first
+
+      >>> from lab07 import *
+      >>> link = Link(5, Link(6, Link(7)))
+      >>> link.second
+      6
+      >>> link.rest.second
+      7
+      >>> link.second = 10
+      >>> link                  # Look at the __repr__ method of Link
+      Link(5, Link(10, Link(7)))
+      >>> link.second = Link(8, Link(9))
+      >>> link.second.first
+      8
+      >>> print(link)          # Look at the __str__ method of Link
+      <5 <8 9> 7>
+
+      >>> t = Tree(1, Tree(2)) # Enter Function if you believe the answer is <function ...>, Error if it errors, and Nothing if nothing is displayed.
+      Error
+      >>> t = Tree(1, [Tree(2)])
+      >>> t.label
+      1
+      >>> t.branches[0]
+      Tree(2)
+      >>> t.branches[0].label
+      2
+      >>> t.label = t.branches[0].label
+      >>> t
+      Tree(2, [Tree(2)])
+      >>> t.branches.append(Tree(4, [Tree(8)]))
+      >>> len(t.branches)
+      2
+      >>> t.branches[0]
+      Tree(2)
+      >>> t.branches[1]
+      Tree(4, [Tree(8)])
+    #+end_src 
 *** Coding Practice
 **** Q6: Cumulative Sum 
      #+begin_src python :results output
@@ -1465,7 +1643,9 @@
                cumulative_sum(branch)
                t.label += branch.label
      #+end_src 
-     - 
+     - From *leaf* to *root*
+     - ~cumulative_sum(branch)~ and ~t.label += branch.label~
+     - Lists are *mutable*, compare with Java [[file:~/csnds/cs/code/61b/labs/labs.org::244][Question]] 
 **** Q7: Is BST
      #+begin_src python :results output
        def is_bst(t):
@@ -1499,12 +1679,9 @@
            if len(t.branches) == 1:
                min = bst_min(t.branches[0])
                max = bst_max(t.branches[0])
-               if t.branches[0].label > t.label:
-                   if min <= t.label:
-                       return False
-               else:
-                   if max > t.label:
-                       return False
+               if (t.branches[0].label > t.label and min <= t.label) or \
+                  (t.branches[0].label < t.label and max > t.label):
+                   return False
            if len(t.branches) == 2:
                max = bst_max(t.branches[0])
                min = bst_min(t.branches[1])
@@ -1534,7 +1711,10 @@
                    max = bst_max(branch)
            return max
      #+end_src 
-     - 
+     - 2 situations: ~len(t.branches) == 1~ and ~len(t.branches) == 2~
+     - ~bst_min~ and ~bst_max~: ~min = bst_min(branch)~ and ~max = bst_max(branch)~
+     - ~(t.branches[0].label > t.label and min <= t.label) or (t.branches[0].label < t.label and max > t.label)~ and ~max > t.label or min <= t.label~
+     - Recursive: ~not is_bst(branch)~ 
 **** Q8: In-order traversal
      #+begin_src python :results output
        def in_order_traversal(t):
@@ -1567,4 +1747,3 @@
 
      #+end_src 
      - Similar to [[file:~/csnds/cs/code/61a/hws/hws.org::1008][Generate Paths]] 
-

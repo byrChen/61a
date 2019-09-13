@@ -84,12 +84,9 @@ def is_bst(t):
     if len(t.branches) == 1:
         min = bst_min(t.branches[0])
         max = bst_max(t.branches[0])
-        if t.branches[0].label > t.label:
-            if min <= t.label:
-                return False
-        else:
-            if max > t.label:
-                return False
+        if (t.branches[0].label > t.label and min <= t.label) or \
+           (t.branches[0].label < t.label and max > t.label):
+            return False
     if len(t.branches) == 2:
         max = bst_max(t.branches[0])
         min = bst_min(t.branches[1])
@@ -143,7 +140,6 @@ def in_order_traversal(t):
     order_list = []
     if t.is_leaf():
         return [t.label]
-    # import pudb; pudb.set_trace()
     order_list += in_order_traversal(t.branches[0])
     order_list += [t.label]
     order_list += in_order_traversal(t.branches[1])
