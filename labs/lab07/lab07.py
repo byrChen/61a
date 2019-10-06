@@ -136,14 +136,27 @@ def in_order_traversal(t):
     [4, 2, 6, 5, 7, 1, 3]
     """
     "*** YOUR CODE HERE ***"
-    assert t.is_leaf() or len(t.branches) == 2, 'Each node should have either 0 or 2 branches.'
-    order_list = []
+    "*** sol1 using iter() ***"
+    # assert t.is_leaf() or len(t.branches) == 2, 'Each node should have either 0 or 2 branches.'
+    # order_list = []
+    # if t.is_leaf():
+    #     return [t.label]
+    # order_list += in_order_traversal(t.branches[0])
+    # order_list += [t.label]
+    # order_list += in_order_traversal(t.branches[1])
+    # return iter(order_list)
+
+    """ sol2 using yield """
     if t.is_leaf():
-        return [t.label]
-    order_list += in_order_traversal(t.branches[0])
-    order_list += [t.label]
-    order_list += in_order_traversal(t.branches[1])
-    return iter(order_list)
+        yield t.label
+        return
+    yield from in_order_traversal(t.branches[0])
+    # for left in in_order_traversal(t.branches[0]):
+    #     yield left
+    yield t.label
+    yield from in_order_traversal(t.branches[1])
+    # for right in in_order_traversal(t.branches[1]):
+    #     yield right
 
 # Linked List Class
 class Link:

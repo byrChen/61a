@@ -1,4 +1,4 @@
-#+TAGS: OUTSTANDING(o) QUESTIONS(q) TOBEORG(t)
+#+TAGS: UNRESOLVED(u) QUESTIONS(q) TOBEORG(t)
 
 * Lab 0 Workflow and Python Basics
   - Unlock tests: ~python ok -q testname -u~
@@ -1023,7 +1023,7 @@
            return sprout_t
      #+end_src 
      - ~sprout_t = [label(t)]~ and ~sprout_t.append(sprout_leaves(branch, vals))~ 
-**** Q7: Add trees
+**** Q7: Add trees 
      #+begin_src python :results output
        def add_trees(t1, t2):
            """
@@ -1076,7 +1076,7 @@
      - ~t2 += (len(t1) - len(t2)) * [[0]]~ and ~t1 += (len(t2) - len(t1)) * [[0]]~ -> ~add_t = [label(t1) + label(t2)]~
      - ~x, y = zip([1, 2], [3, 4])~ -> 2 *tuples* ~x = (1, 3)~ and ~y = (2, 4)~
      - ~for branch1, branch2 in zip(branches(t1), branches(t2)):~ and ~add_t.append(add_trees(list(branch1), list(branch2)))~
-     - In tree "recursive in iterative" func, base condition is usually ~is_leaf(t)~, recursive func usually invokes on ~branches(t)~, and final return value usually combines ~label(t)~ and *recursive result*.
+     - In tree "recursive in iterative" func, base condition is usually ~is_leaf(t)~, recursive func usually invokes on ~branches(t)~, and final return value usually combines ~label(t)~ and *recursive result*. <<1>> 
 **** Question:                                                    :QUESTIONS:
      1. Q7有没有更优的办法？比如不需要消耗内存补0的方法
 * Lab 6 Object-Oriented Programming
@@ -1574,16 +1574,16 @@
                 return tree_str
             return print_tree(self).rstrip()
   #+end_src 
-  - ~Link~
+  - ~Link~ 
     - Recursive:
       - ~__repr__~ and ~repr~: ~rest_repr = ', ' + repr(self.rest)~ and ~'Link(' + repr(self.first) + rest_repr + ')'~
-      - ~__str__~ and ~str~ (recursive and iterative): ~string += str(self.first) + ' '~ and ~string + str(self.first) + '>'~ 
+      - ~__str__~ and ~str~ (recursive in iterative <<2>>): ~string += str(self.first) + ' '~ and ~string + str(self.first) + '>'~
   - ~Tree~
     - Recursive:
-      - ~__contains__~ and ~in~ (recursive and iterative): ~if e in b:~
+      - ~__contains__~ and ~in~ (recursive in iterative <<3>>): ~if e in b:~
       - ~__repr__~ and ~repr~: ~branch_str = ', ' + repr(self.branches)~ and ~return 'Tree({0}{1})'.format(self.label, branch_str)~
-      - ~__str__~ and ~str~ (recursive and iterative): ~tree_str = '  ' * indent + str(t.label) + "\n"~ and ~tree_str += print_tree(b, indent + 1)~ and ~print_tree(self).rstrip()~ 
-** Required 
+      - ~__str__~ and ~str~ (recursive in iterative <<4>>): ~tree_str = '  ' * indent + str(t.label) + "\n"~ and ~tree_str += print_tree(b, indent + 1)~ and ~print_tree(self).rstrip()~ 
+** Required Questions
 *** What Would Python Display?
     #+begin_src python :results output
       >>> from lab07 import *
@@ -1714,7 +1714,9 @@
      - 2 situations: ~len(t.branches) == 1~ and ~len(t.branches) == 2~
      - ~bst_min~ and ~bst_max~: ~min = bst_min(branch)~ and ~max = bst_max(branch)~
      - ~(t.branches[0].label > t.label and min <= t.label) or (t.branches[0].label < t.label and max > t.label)~ and ~max > t.label or min <= t.label~
-     - Recursive: ~not is_bst(branch)~ 
+     - Recursive in iterative: ~not is_bst(branch)~
+***** Question:                                                   :QUESTIONS:
+      1. 关于 *recursive in iterative* [[1]] [[2]] [[3]] [[4]] ，什么时候只需要 recursive 或 iterative ？两者无论何时都可以互相转换吗？什么时候又需要 recursive in iterative ？当有并列子情况且子情况与父情况相符时就 recursive in iterative ？那能否转换成 recursive in recursive 或者 iterative in iterative 呢？
 **** Q8: In-order traversal
      #+begin_src python :results output
        def in_order_traversal(t):
@@ -1735,15 +1737,90 @@
            [4, 2, 6, 5, 7, 1, 3]
            """
            "*** YOUR CODE HERE ***"
+           "*** sol1 using iter() ***"
            assert t.is_leaf() or len(t.branches) == 2, 'Each node should have either 0 or 2 branches.'
            order_list = []
            if t.is_leaf():
                return [t.label]
-           # import pudb; pudb.set_trace()
            order_list += in_order_traversal(t.branches[0])
            order_list += [t.label]
            order_list += in_order_traversal(t.branches[1])
            return iter(order_list)
 
+           """ sol2 using yield """
+           if t.is_leaf():
+               yield t.label
+               return
+           yield from in_order_traversal(t.branches[0])
+           # for left in in_order_traversal(t.branches[0]):
+           #     yield left
+           yield t.label
+           yield from in_order_traversal(t.branches[1])
+           # for right in in_order_traversal(t.branches[1]):
+           #     yield right
      #+end_src 
-     - Similar to [[file:~/csnds/cs/code/61a/hws/hws.org::1008][Generate Paths]] 
+     - Similar to [[file:~/csnds/cs/code/61a/hws/hws.org::1008][Generate Paths]]
+     - Using ~iter()~: ~order_list +=~ and ~return inter(order_list)~ 
+     - Using ~yield~:
+       - ~yield~ can't go back in *recursive* func, need to add ~return~
+       - ~yield from a~ = ~for b in a:~ and ~yield b~ 
+       
+** Optional Questions
+*** Linked List Practice
+**** Q10: Mutable Mapping
+     #+begin_src python :results output
+       def deep_map_mut(fn, link):
+           """Mutates a deep link by replacing each item found with the
+           result of calling fn on the item.  Does NOT create new Links (so
+           no use of Link's constructor)
+
+           Does not return the modified Link object.
+
+           >>> link1 = Link(3, Link(Link(4), Link(5, Link(6))))
+           >>> deep_map_mut(lambda x: x * x, link1)
+           >>> print(link1)
+           <9 <16> 25 36>
+           """
+           "*** YOUR CODE HERE ***"
+           link_c = link
+           while link_c is not Link.empty:
+               if isinstance(link_c.first, Link):
+                   deep_map_mut(fn, link_c.first)
+               else:
+                   link_c.first = fn(link_c.first)
+               link_c = link_c.rest
+     #+end_src 
+     - ~isinstance(link_c.first, Link)~
+     - Recursive: ~deep_map_mut(fn, link_c.first)~ 
+**** Q11: Cycles                                                 :UNRESOLVED:
+*** Tree Practice
+**** Q12: Reverse Other
+     #+begin_src python :results output
+       def reverse_other(t):
+           """Mutates the tree such that nodes on every other (odd-depth) level
+           have the labels of their branches all reversed.
+
+           >>> t = Tree(1, [Tree(2), Tree(3), Tree(4)])
+           >>> reverse_other(t)
+           >>> t
+           Tree(1, [Tree(4), Tree(3), Tree(2)])
+           >>> t = Tree(1, [Tree(2, [Tree(3, [Tree(4), Tree(5)]), Tree(6, [Tree(7)])]), Tree(8)])
+           >>> reverse_other(t)
+           >>> t
+           Tree(1, [Tree(8, [Tree(3, [Tree(5), Tree(4)]), Tree(6, [Tree(7)])]), Tree(2)])
+           """
+           "*** YOUR CODE HERE ***"
+           t_c = t
+           n = len(t_c.branches)
+           for i in range(n // 2):
+               temp = t_c.branches[i].label
+               t_c.branches[i].label = t_c.branches[n-1-i].label
+               t_c.branches[n-1-i].label = temp
+           for branch_even in t_c.branches:
+               for branch_odd in branch_even.branches:
+                   reverse_other(branch_odd)
+     #+end_src 
+     - ~for i in range(n // 2)~
+     - Recursive: ~for branch_even in t_c.branches:~ and ~for branch_odd in branch_even.branches:~, ~reverse_other(branch_odd)~ 
+
+

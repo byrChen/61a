@@ -3456,6 +3456,169 @@
 ** 3.2 Functional Programming
    /Scheme/ is a dialect of /Lisp/, the second-oldest programming language that is still widely used today (after /Fortran/)
 *** 3.2.1 Expressions
+    Scheme programs consist of expressions: call expressions + special forms
+    - Call expressions: primitives + combinations (sub-expressions), same evaluation procedure as python
+      #+begin_src scheme 
+        (+ (* 3 5) (- 10 6))
+      #+end_src
+    - Special forms: syntactically like a call expression, but different evaluation procedure
+      #+begin_src scheme
+        (if <predicate> <consequent> <alternative>)
+      #+end_src
+*** 3.2.2 Definitions
+    - Values
+      #+begin_src scheme 
+        (define name value)
+      #+end_src
+    - Functions (procedures in Scheme)
+      #+begin_src scheme 
+        (define (<name> <formal parameters>) <body>)
+        (lambda (<formal-parameters>) <body>)
+      #+end_src
+      - Example
+        #+begin_src scheme 
+          (define (square x) (* x x))
+
+          (define (average x y)
+            (/ (+ x y) 2))
+
+          (define (abs x)
+            (if (< x 0)
+                (- x)
+                x))
+
+          (define (sqrt x)
+            (define (good-enough? guess)
+              (< (abs (- (square guess) x)) 0.001))
+            (define (improve guess)
+              (average guess (/ x guess)))
+            (define (sqrt-iter guess)
+              (if (good-enough? guess)
+                  guess
+                  (sqrt-iter (improve guess))))
+            (sqrt-iter 1.0))
+
+          (define (plus4 x) (+ x 4))
+          (define plus4 (lambda (x) (+ x 4)))
+
+          ((lambda (x y z) (+ x y (square z))) 1 2 3)
+        #+end_src
+*** 3.2.3 Compound values
+    - Built-in pairs
+      #+begin_src scheme 
+        (define x (cons 1 2))
+
+        x
+        (1 . 2)
+        (car x)
+        1
+        (cdr x)
+        2
+      #+end_src
+      - ~cons~, ~car~ and ~cdr~ 
+    - Built-in recursive lists: using pairs
+      #+begin_src scheme 
+        (cons 1
+              (cons 2
+                    (cons 3
+                          (cons 4 nil))))
+
+        (1 2 3 4)
+        (list 1 2 3 4)
+        (1 2 3 4)
+        (define one-through-four (list 1 2 3 4))
+        (car one-through-four)
+        1
+        (cdr one-through-four)
+        (2 3 4)
+        (car (cdr one-through-four))
+        2
+        (cons 10 one-through-four)
+        (10 1 2 3 4)
+        (cons 5 one-through-four)
+        (5 1 2 3 4)
+      #+end_src
+      - ~list~ 
+      - ~nil~ or ~'()~ represents the empty list
+      - ~length~ and ~getitem~
+        #+begin_src scheme 
+          (define (length items)
+            (if (null? items)
+                0
+                (+ 1 (length (cdr items)))))
+          (define (getitem items n)
+            (if (= n 0)
+                (car items)
+                (getitem (cdr items) (- n 1))))
+        #+end_src
+        - ~null?~ 
+*** 3.2.4 Symbolic Data
+    One of Scheme's strengths is working with *arbitrary symbols* as *data*.
+    #+begin_src scheme 
+      (define a 1)
+      (define b 2)
+
+      (list a b)
+      (1 2)
+      (list 'a 'b)
+      (a b)
+      (list 'a b)
+      (a 2)
+
+      (list 'define 'list)
+      (define list)
+
+      (car '(a b c))
+      a
+      (cdr '(a b c))
+      (b c)
+    #+end_src
+    - *Quotation* is the ability to *quote a data object*
+    - In Scheme, any expression that is *not evaluated* is said to be *quoted*
+    - In language, *quotation* allows talking about language itself
+    - *Quotation* allows typing in compound objects
+**** Question:                                                    :QUESTIONS:
+     1. 以上四点在表达什么？到底什么是 Quotation ？一种概念or一种表达？什么叫“任何未评估的表达都被称为引用”？第1 2点的 Question 是不同的概念？
+     2. Quotation 和其他语言里的字符串有什么区别？为什么说它能讨论语言本身？这与第2点“任何未评估的表达都被称为引用”有什么关系？
+     3. 第4点意味着 ~'...~ 就是Quotation ？这与第2点“任何未评估的表达都被称为引用”冲突吗？
+*** 3.2.5 Turtle graphics                                           :TOBEORG:
+    #+begin_src scheme 
+      > (define (repeat k fn) (if (> k 0)
+                                  (begin (fn) (repeat (- k 1) fn))
+                                  nil))
+      > (repeat 5
+                (lambda () (fd 100)
+                        (repeat 5
+                                (lambda () (fd 20) (rt 144)))
+                        (rt 144)))
+      nil
+    #+end_src
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-09-16 10:20:28
+    [[file:pictures/Chapter_3:_Interpreting_Computer_Programs/screenshot_2019-09-16_10-20-28.png]]
+    #+begin_src scheme 
+      > (define (repeat k fn)
+          (if (> k 0)
+              (begin (fn) (repeat (- k 1) fn))
+              nil))
+
+      > (define (tri fn)
+          (repeat 3 (lambda () (fn) (lt 120))))
+
+      > (define (sier d k)
+          (tri (lambda ()
+                 (if (= k 1) (fd d) (leg d k)))))
+
+      > (define (leg d k)
+          (sier (/ d 2) (- k 1))
+          (penup)
+          (fd d)
+          (pendown))
+
+      > (sier 400 6)
+    #+end_src
+    #+DOWNLOADED: /tmp/screenshot.png @ 2019-09-16 10:21:12
+    [[file:pictures/Chapter_3:_Interpreting_Computer_Programs/screenshot_2019-09-16_10-21-12.png]]
+** 3.3 Exceptions
 * Chapter 4: Data Processing
 ** 4.2 Implicit Sequences
    A sequence can be represented without each element being stored explicitly in the memory of the computer

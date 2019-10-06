@@ -18,6 +18,12 @@ def remove_all(link , value):
     <0 1>
     """
     "*** YOUR CODE HERE ***"
+    link_c = link
+    while link_c.rest is not Link.empty:
+        if link_c.rest.first == value:
+            link_c.rest = link_c.rest.rest
+        else: 
+            link_c = link_c.rest
 
 # Q10
 def deep_map_mut(fn, link):
@@ -33,6 +39,13 @@ def deep_map_mut(fn, link):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
+    link_c = link
+    while link_c is not Link.empty:
+        if isinstance(link_c.first, Link):
+            deep_map_mut(fn, link_c.first)
+        else:
+            link_c.first = fn(link_c.first)
+        link_c = link_c.rest
 
 # Q11
 def has_cycle(link):
@@ -50,6 +63,12 @@ def has_cycle(link):
     False
     """
     "*** YOUR CODE HERE ***"
+    link_c = link
+    while link_c is not Link.empty:
+        if link_c.rest is link:
+            return True
+        link_c = link_c.rest
+    return False
 
 def has_cycle_constant(link):
     """Return whether link contains a cycle.
@@ -63,7 +82,7 @@ def has_cycle_constant(link):
     False
     """
     "*** YOUR CODE HERE ***"
-
+    
 # Q12
 def reverse_other(t):
     """Mutates the tree such that nodes on every other (odd-depth) level
@@ -79,3 +98,12 @@ def reverse_other(t):
     Tree(1, [Tree(8, [Tree(3, [Tree(5), Tree(4)]), Tree(6, [Tree(7)])]), Tree(2)])
     """
     "*** YOUR CODE HERE ***"
+    t_c = t
+    n = len(t_c.branches)
+    for i in range(n // 2):
+        temp = t_c.branches[i].label
+        t_c.branches[i].label = t_c.branches[n-1-i].label
+        t_c.branches[n-1-i].label = temp
+    for branch_even in t_c.branches:
+        for branch_odd in branch_even.branches:
+            reverse_other(branch_odd)

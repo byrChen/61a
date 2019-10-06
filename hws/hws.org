@@ -1041,13 +1041,13 @@
            [[0, 2], [0, 2, 1, 2]]
            """
            "*** YOUR CODE HERE ***"
-           "*** sol1 using yield"
+           "*** sol1 using yield ***"
            if label(t) == x:
                yield [x]
            for branch in branches(t):
                for path in generate_paths(branch, x):
                    yield [label(t)] + path
-           "*** sol2 using iter ***"
+           "*** sol2 using iter() ***"
            paths = []
            if label(t) == x:
                paths.append([x])
@@ -1140,7 +1140,6 @@
      #+end_src 
      - ~interval(min(f_lower, f_upper), max(f_lower, f_upper))~ and ~interval(min(f_lower, f_upper, f_min_or_max), max(f_lower, f_upper, f_min_or_max))~
      - ~nonlocal a, b, c~ 
-
 * HW06
 ** Object Oriented Programming 
 *** Q1: Next Fibonacci Object
@@ -1208,7 +1207,6 @@
     #+end_src 
     - sol1 uses ~previous~ and ~value~
     - sol2 & 3 use ~next_value~ and ~value~, easier
-
 *** Q2: Vending Machine
     #+begin_src python :results output
       class VendingMachine:
