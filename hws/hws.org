@@ -1,6 +1,6 @@
 #+TAGS: UNRESOLVED(u) QUESTIONS(q) EXTRA(e) REQUIRED(r) TOBEORG(t)
 * HW01
-** Required                                                        :REQUIRED:
+** Required
 *** Q4: If Function vs Statement
    
     #+begin_src python :results output
@@ -128,7 +128,7 @@
 **** Question:                                                    :QUESTIONS:
      1. 关于quine程序的原理的理解？结合上面例子。
 * HW02
-** Required                                                        :REQUIRED:
+** Required
 *** Q1: Make Adder with a Lambda
 
     #+begin_src python :results output
@@ -153,7 +153,6 @@
     2. ~make_adder(1)(2)~. 
 
 *** Q3: Accumulate 
-
     #+begin_src python :results output
       def accumulate(combiner, base, n, term):
           """Return the result of combining the first n terms in a sequence and base.
@@ -218,7 +217,6 @@
           "*** YOUR CODE HERE ***"
           return accumulate(mul, 1, n, term)
     #+end_src 
-
     1. *Loop method*: ~combiner(combiner(...combiner(term(1), base)..., term(n-1)), term(n))~.
     2. *Recursive method*:
        - ~accumulate2~: treat ~combiner(...combiner(base, term(1))..., term(n-1))~ as ~accumulate2(combiner, base, n-1, term)~ and ~return combiner(term(n), accumulate2(combiner, base, n-1, term)~.    
@@ -368,9 +366,8 @@
 **** Question:                                                    :QUESTIONS:
      1. 怎么理解这种思路？这种问题与这种问题的解法的特点？与high order func联系起来，是否能从多级order或者说多层抽象来思考？
 * HW03 
-** Required                                                        :REQUIRED:
+** Required
 *** Q2: Ping-pong
-   
     #+begin_src python :results output
       def pingpong(n):
           """Return the nth element of the ping-pong sequence.
@@ -544,7 +541,7 @@
 
     - ~combine_if(total, term(k)~ in ~accumulate(combine_if, base, n, term)~    
 * HW04
-** Required                                                        :REQUIRED:
+** Required
 *** Q2: Squares only
     #+begin_src python :results output
       def squares(s):
@@ -686,7 +683,7 @@
 ** Extra                                                              :EXTRA:
 *** Q6: Anonymous factorial                                     :UNRESOLVED:
 * HW05
-** Required                                                        :REQUIRED:
+** Required
 *** Trees
 **** Q1: Replace Leaf
      #+begin_src python :results output
@@ -1004,7 +1001,7 @@
      - Storing ~check = withdraw(0, old_password)~ first to call ~withdraw~ just *once*
      - ~return new_withdraw if type(check) != str else check~ and ~return withdraw(amount, input) if input != new_password else withdraw(amount, old_password)~
      - *Recursive* call: Each return result from ~make_joint~ which is a ~new_withdraw~ func can still be a *formal para* transfered to ~make_joint~ 
-**** Q9: Generate Paths
+**** Q9: Generate Paths <<elink1>>
      #+begin_src python :results output
        def generate_paths(t, x):
            """Yields all possible paths from the root of t to a node with the label x
@@ -1141,7 +1138,7 @@
      - ~interval(min(f_lower, f_upper), max(f_lower, f_upper))~ and ~interval(min(f_lower, f_upper, f_min_or_max), max(f_lower, f_upper, f_min_or_max))~
      - ~nonlocal a, b, c~ 
 * HW06
-** Object Oriented Programming 
+** Object Oriented Programming
 *** Q1: Next Fibonacci Object
     #+begin_src python :results output
       class Fib():

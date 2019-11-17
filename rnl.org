@@ -1883,7 +1883,7 @@
       - *Any objects* can be placed within tuples.
       - *Empty* and *one-element* tuples have special literal syntax: ~()~, ~(a,)~
       - Mutating operations are not available
-      - Not possible to change which *elements are in a tuple* while possible to change *the value of a mutable element* contained within a tuple
+      - Not possible to change which *elements are in a tuple*, while possible to change *the value of a mutable element* contained within a tuple
         #+DOWNLOADED: /tmp/screenshot.png @ 2019-06-24 18:59:06
         [[file:pictures/Chapter_2:_Building_Abstractions_with_Data/screenshot_2019-06-24_18-59-06.png]]
       - Tuples are used *implicitly* in *multiple assignment* (~a,b = 1,2~) . An assignment of *two values to two names* creates a *two-element tuple* and then *unpacks* it.

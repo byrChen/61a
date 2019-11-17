@@ -1,4 +1,4 @@
-#+TAGS: UNRESOLVED(u) QUESTIONS(q) TOBEORG(t)
+#+TAGS: UNRESOLVED(u) QUESTIONS(q) EXTRA(e) TOBEORG(t)
 
 * Lab 0 Workflow and Python Basics
   - Unlock tests: ~python ok -q testname -u~
@@ -82,7 +82,7 @@
            return total
      #+end_src 
 
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** Q6: Falling Factorial
 
     #+begin_src python :results output
@@ -193,7 +193,7 @@
       
       However, in ~lambda~ method func ~a~ points to a *non-intrinsic name* func object, while in ~def~ method func ~a~ points to a func whose *intrinsic name* is ~a~.
 
-** Required Questions 
+** Required Questions
 *** What Would Python Display?
 **** Q1: WWPD: Lambda the Free
    
@@ -300,7 +300,7 @@
            return lambda x: lambda y: func(x, y)
      #+end_src 
      
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** Environment Diagram Practice
 **** Q4: Make Adder
 
@@ -452,7 +452,7 @@
      - Func name ~a~ -> ~ret_fn~ and ~b~ -> ~ret~
      - ~i = 0~ and ~while i < n~ to avoid discussing separately for ~n = 0~ 
 * Lab 4 Python Lists, Data Abstraction
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** More Lists Practice
 **** Q7: Flatten
      #+begin_src python :results output
@@ -899,7 +899,7 @@
 *** Question:                                                     :QUESTIONS:
     1. 关于 recursion in iteration，这么写规范吗？能否用纯 iteration 或 recursion 改写？能不能有什么本质原因？（什么样的问题必须用 recursion in iteration才能比较好的解决？）
     2. 有没有 iteration in recursion？同1疑问
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** Shakespeare and Dictionaries
 **** Q4: Successor Tables
      #+begin_src python :results output
@@ -1162,7 +1162,7 @@
             print('{}\'s score: {}'.format(self.player1.name, self.p1_score))
             print('Opponent\'s score: {}'.format(self.p2_score))
   #+end_src 
-** Required 
+** Required
 *** WWPD
 **** Q2: Using the Car class
      #+begin_src python :results output
@@ -1335,7 +1335,7 @@
      - ~self.hand = [deck.draw() for _ in range(5)]~
      - ~self.hand.append(self.deck.draw())~
      - ~self.hand.pop(card_index)~ 
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** Q5: Tutors: Flummox
     #+begin_src python :results output
       class TutorCard(Card):
@@ -1645,7 +1645,7 @@
      #+end_src 
      - From *leaf* to *root*
      - ~cumulative_sum(branch)~ and ~t.label += branch.label~
-     - Lists are *mutable*, compare with Java [[file:~/csnds/cs/code/61b/labs/labs.org::244][Question]] 
+     - Lists are *mutable*, compare with Java [[file:~/csnds/Dropbox/orglife/61b_labs.org::<<elink2>>][Question]]
 **** Q7: Is BST
      #+begin_src python :results output
        def is_bst(t):
@@ -1715,8 +1715,8 @@
      - ~bst_min~ and ~bst_max~: ~min = bst_min(branch)~ and ~max = bst_max(branch)~
      - ~(t.branches[0].label > t.label and min <= t.label) or (t.branches[0].label < t.label and max > t.label)~ and ~max > t.label or min <= t.label~
      - Recursive in iterative: ~not is_bst(branch)~
-***** Question:                                                   :QUESTIONS:
-      1. 关于 *recursive in iterative* [[1]] [[2]] [[3]] [[4]] ，什么时候只需要 recursive 或 iterative ？两者无论何时都可以互相转换吗？什么时候又需要 recursive in iterative ？当有并列子情况且子情况与父情况相符时就 recursive in iterative ？那能否转换成 recursive in recursive 或者 iterative in iterative 呢？
+***** Question:                                        :UNRESOLVED:QUESTIONS:
+      1. 关于 *recursive in iterative* [[1]] [[2]] [[3]] [[4]] ，什么时候只需要 recursive 或 iterative ？两者无论何时都可以互相转换吗？什么时候又需要 recursive in iterative ？当有并列子情况且子情况与父情况相符时就 recursive in iterative ？那能否转换成 recursive in recursive 或者 iterative in iterative 呢？ <<elink1>>
 **** Q8: In-order traversal
      #+begin_src python :results output
        def in_order_traversal(t):
@@ -1759,13 +1759,13 @@
            # for right in in_order_traversal(t.branches[1]):
            #     yield right
      #+end_src 
-     - Similar to [[file:~/csnds/cs/code/61a/hws/hws.org::1008][Generate Paths]]
+     - Similar to [[file:~/csnds/Dropbox/orglife/61a_hws.org::<<elink1>>][Generate Paths]]
      - Using ~iter()~: ~order_list +=~ and ~return inter(order_list)~ 
      - Using ~yield~:
        - ~yield~ can't go back in *recursive* func, need to add ~return~
        - ~yield from a~ = ~for b in a:~ and ~yield b~ 
        
-** Optional Questions
+** Optional Questions                                                 :EXTRA:
 *** Linked List Practice
 **** Q10: Mutable Mapping
      #+begin_src python :results output

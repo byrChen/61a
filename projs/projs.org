@@ -1,4 +1,5 @@
-#+TAGS: UNRESOLVED(u) QUESTIONS(q) TOBEORG(t)
+#+TAGS: UNRESOLVED(u) QUESTIONS(q) EXTRA(e) TOBEORG(t)
+
 * Project 1: The Game of Hog
 ** Phase 1: Simulator
 *** Problem 0
@@ -471,7 +472,7 @@
      1. 方法一是逻辑上覆盖最全面的，但方法二也能跑通，是方法一可以减少冗余还是方法二未覆盖全面？
      2. 方法三使用 ~return a if b else c~ 改写的方法二，实际工作中用哪种风格比较好？
 
-*** Optional: Problem 12                                        :UNRESOLVED:
+*** Optional: Problem 12                                   :UNRESOLVED:EXTRA:
     #+begin_src python :results output
     #+end_src 
 * Project 2: Yelp Maps 
@@ -727,7 +728,7 @@
 
 *** Question:                                                     :QUESTIONS:
     1. 主要是Phase 3的监督学习理论原理以及对应代码逻辑盘清楚(arguments, func abs and data abs)
-** Predicting your own ratings                                  :UNRESOLVED:
+** Predicting your own ratings                             :UNRESOLVED:EXTRA:
 * Project 3: Ants Vs. SomeBees 
 ** Phase 1: Basic gameplay
 *** Problem 2
@@ -1152,7 +1153,7 @@
     - ~Queen.is_queen~ and ~self.is_queen~
     - ~self.doubled_ants~
     - ~isinstance(ant, (TankAnt, BodyguradAnt))~ 
-** Extra Credit
+** Extra Credit                                                       :EXTRA:
    #+begin_src python :results output
      ... (class Bee)
 
@@ -1265,7 +1266,7 @@
    - ~SlowThrower.action~ --> ~throw_at(bee)~ --> ~apply_effect(effect, bee)~ --> ~bee.action~
    - ~bee.action = action~ in ~apply_effect~ and ~action(colony)~ not ~bee.action(colony)~ in ~make_scare~ and ~make_slow~
    - ~origin_action = bee.action~ and ~new_action = effect(origin_action, bee)~ won't change during the call of ~bee.action = action~ 
-** Optional Problem
+** Optional Problem                                                   :EXTRA:
    #+begin_src python :results output
      class LaserAnt(ThrowerAnt):
          # This class is optional. Only one test is provided for this class.
