@@ -23,7 +23,7 @@
 
 ***** Apply the func that is the value of the operator subexpression to the args that are the values of the operand subexpression
 
-     | func  | value of add |
+     | func | value of add |
      | arg1 | value of 2   |
      | arg2 | value of 3   |
 

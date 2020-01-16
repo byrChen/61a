@@ -725,7 +725,6 @@
     - ~reviewed = user_reviewed_restaurants(user, restaurants)~ 
     - To merge 2 dicts: ~{**dict1, **dict2}~
     - ~dict1 = {restaurant_name(x): predictor(x) for x in to_rate}~ and ~dict2 = {restaurant_name(x): user_rating(user, restaurant_name(x)) for x in reviewed}~ 
-
 *** Question:                                                     :QUESTIONS:
     1. 主要是Phase 3的监督学习理论原理以及对应代码逻辑盘清楚(arguments, func abs and data abs)
 ** Predicting your own ratings                             :UNRESOLVED:EXTRA:
