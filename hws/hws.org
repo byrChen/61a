@@ -468,8 +468,6 @@
           return direction(n) + pingpong(n-1)
 
     #+end_src 
-   
-
     - Both *recursive and iterative* method can start from *1 to n* or *n to 1*
       | start to end | recursive func                   | return value  | base        | example                  |
       | 1 to n       | new defined helper func ~helper~ | ~helper(i+1)~ | ~helper(n)~ | ~pingpong2~, ~pingpong3~ |
@@ -477,7 +475,6 @@
 **** Question:
      1. 关于新定义 ~helper~ 并利用它从1开始递归到n本质上不就是iterative吗？从1到n和从n到1本质上有什么区别？ 
 *** Q3: Filtered Accumulate
-
     #+begin_src python :results output
       def accumulate(combiner, base, n, term):
           """Return the result of combining the first n terms in a sequence and base.
@@ -538,7 +535,6 @@
       def greater_than_5(x):
           return x > 5
     #+end_src 
-
     - ~combine_if(total, term(k)~ in ~accumulate(combine_if, base, n, term)~    
 * HW04
 ** Required

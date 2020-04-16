@@ -1313,6 +1313,3 @@
                      self.insects_shot += 1
    #+end_src 
    - ~for insect, distance in insects_and_distances.items()~ 
-
-   
-   

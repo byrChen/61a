@@ -612,7 +612,6 @@
      #+end_src 
      - ~put_piece~ is a *one shot func, not recursive*
      - ~new_board = replace_elem(board[max_rows - 1], column, player)~ and ~new_board = replace_elem(board, max_rows - 1, new_board)~  
-
 **** Q12: Making a move
      #+begin_src python :results output
        def make_move(board, max_rows, max_cols, col, player):
@@ -1764,7 +1763,6 @@
      - Using ~yield~:
        - ~yield~ can't go back in *recursive* func, need to add ~return~
        - ~yield from a~ = ~for b in a:~ and ~yield b~ 
-       
 ** Optional Questions                                                 :EXTRA:
 *** Linked List Practice
 **** Q10: Mutable Mapping
